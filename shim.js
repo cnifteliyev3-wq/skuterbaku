@@ -153,6 +153,22 @@
     }
   };
 
+  /* Kirayəçi linki: birdəfəlik imza/yükləmə linki yaradır (köhnə açıq linklər ləğv olunur) */
+  window.skLinks = {
+    create: async function (o) {
+      await authed;
+      await sb.from('sign_links').update({ status: 'replaced' }).eq('contract_id', o.contractId).eq('kind', o.kind).eq('status', 'open');
+      var a = new Uint8Array(18); crypto.getRandomValues(a);
+      var token = Array.prototype.map.call(a, function (x) { return x.toString(16).padStart(2, '0'); }).join('');
+      var r = await sb.from('sign_links').insert({
+        token: token, contract_id: o.contractId, kind: o.kind, title: o.title, renter: o.renter, html: o.html,
+        expires_at: new Date(Date.now() + 7 * 864e5).toISOString()
+      });
+      if (r.error) fail(r.error);
+      return new URL('sign.html', location.href).href.split('#')[0].split('?')[0] + '#' + token;
+    }
+  };
+
   /* Tətbiq "claude.use(...)" çağırır. Vəsiqə oxuma (sample) veb versiyada hələ yoxdur. */
   window.claude = {
     use: async function (name) {

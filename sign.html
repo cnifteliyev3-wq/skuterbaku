@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Skuter icarə: imza və sənədlər</title>
+<style>
+:root{--bg:#f2f4f8;--surface:#fff;--ink:#111a2e;--muted:#5b667d;--line:#dbe0ea;--accent:#d94a0d;--ok:#12803c;--bad:#c0262d}
+@media (prefers-color-scheme:dark){:root{--bg:#0b1020;--surface:#141b30;--ink:#e8ecf6;--muted:#97a3bf;--line:#27314d;--accent:#ff7a3d;--ok:#4cc57a;--bad:#ff7a80}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px 16px 40px}
+main{max-width:720px;margin:0 auto;display:grid;gap:16px}
+h1{font-size:22px;margin:0}h2{font-size:17px;margin:0 0 4px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px}
+.muted{color:var(--muted);font-size:14px}
+#doc{max-height:55vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff}
+#doc .paper{padding:14px 12px;font-size:14px;max-width:none}
+#doc table{display:block;overflow-x:auto}
+.step{display:grid;gap:8px}
+.step+.step{border-top:1px solid var(--line);padding-top:16px;margin-top:4px}
+.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:99px;padding:2px 9px;background:var(--line);color:var(--muted)}
+.tag.req{background:#fde3d6;color:#9a3205}
+@media (prefers-color-scheme:dark){.tag.req{background:#4a2414;color:#ffb48f}}
+.pick{display:block;border:2px dashed var(--line);border-radius:12px;padding:14px;text-align:center;font-weight:600;cursor:pointer}
+.pick input{position:absolute;opacity:0;width:1px;height:1px}
+.pick:focus-within{outline:3px solid var(--accent)}
+.files{display:grid;gap:4px;font-size:14px}
+.files div{display:flex;justify-content:space-between;gap:8px;background:var(--bg);border-radius:8px;padding:6px 10px}
+.files button{border:0;background:none;color:var(--bad);font-weight:700;cursor:pointer;font-size:14px}
+label.chk{display:flex;gap:10px;align-items:flex-start}
+label.chk input{width:22px;height:22px;margin-top:2px;flex:none}
+input[type=text]{width:100%;font:inherit;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+canvas{width:100%;height:180px;background:#fff;border:1px solid var(--line);border-radius:10px;touch-action:none;display:block}
+button.main{font:inherit;font-weight:700;width:100%;padding:15px;border:0;border-radius:12px;background:var(--accent);color:#fff;cursor:pointer}
+button.main:disabled{opacity:.5}
+button.link{font:inherit;border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:4px 0}
+.err{color:var(--bad);font-weight:600;min-height:1.2em}
+.ok{color:var(--ok);font-weight:700}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <div class="card" id="head"><h1 id="ttl">Yüklənir…</h1><div class="muted" id="sub"></div></div>
+  <div class="card" id="msgbox" hidden></div>
+  <div id="flow" hidden>
+    <div class="card"><h2>1. Sənədi oxuyun</h2><div class="muted" style="margin-bottom:8px">Aşağıya sürüşdürərək tam oxuyun.</div><div id="doc"></div></div>
+    <div class="card" id="steps"></div>
+    <div class="card step">
+      <h2 id="sigh">Qəbul və imza</h2>
+      <label class="chk"><input type="checkbox" id="agree"><span id="agreet">Sənədin mətni ilə tanış oldum və razıyam.</span></label>
+      <div><label for="signer" class="muted">Adınız və soyadınız</label><input type="text" id="signer" autocomplete="name"></div>
+      <div><div class="muted" style="margin-bottom:4px">Barmağınızla aşağıda imza çəkin</div><canvas id="pad"></canvas><button type="button" class="link" id="clr">İmzanı təmizlə</button></div>
+      <div class="err" id="err" role="alert"></div>
+      <div class="bar" id="bar" hidden><i id="bari"></i></div>
+      <div class="muted" id="prog"></div>
+      <button class="main" id="go">Göndər və imzala</button>
+      <div class="muted">İmzanız, adınız, tarix və saat, cihaz məlumatı və yüklədiyiniz fayllar icarədara göndərilir və sənədin bir hissəsi kimi saxlanılır.</div>
+    </div>
+  </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var MAX = 50 * 1024 * 1024;
+  var token = (location.hash || '').replace(/^#/, '').trim();
+  var sb = window.supabase.createClient(SB_CONFIG.url, SB_CONFIG.key, { auth: { persistSession: false, autoRefreshToken: false } });
+  var kind = '', groups = {}, uploadedMap = new Map();
+
+  function show(title, text, cls) {
+    $('#ttl').textContent = title; $('#sub').textContent = '';
+    var b = $('#msgbox'); b.hidden = false; b.innerHTML = ''; var p = document.createElement('p'); p.style.margin = 0; if (cls) p.className = cls; p.textContent = text; b.appendChild(p);
+    $('#flow').hidden = true;
+  }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  /* qruplar: hər biri ayrıca fayl siyahısı */
+  function addStep(key, label, hint, accept, capture, required, multiple) {
+    groups[key] = { files: [], required: required };
+    var d = document.createElement('div'); d.className = 'step';
+    d.innerHTML = '<div><h2 style="display:inline">' + esc(label) + '</h2> <span class="tag ' + (required ? 'req' : '') + '">' + (required ? 'vacibdir' : 'istəyə görə') + '</span></div>' +
+      '<div class="muted">' + esc(hint) + '</div>' +
+      '<label class="pick"><span>Şəkil / video çək və ya seç</span><input type="file" accept="' + accept + '"' + (capture ? ' capture="' + capture + '"' : '') + (multiple ? ' multiple' : '') + '></label>' +
+      '<div class="files" id="f-' + key + '"></div>';
+    $('#steps').appendChild(d);
+    var inp = d.querySelector('input');
+    inp.addEventListener('change', function () {
+      Array.prototype.forEach.call(inp.files, function (f) {
+        if (f.size > MAX) { $('#err').textContent = '“' + f.name + '” 50 MB-dan böyükdür. Videonu qısa çəkin (20-30 saniyə).'; return; }
+        if (!multiple) groups[key].files = [];
+        groups[key].files.push(f);
+      });
+      inp.value = ''; draw(key);
+    });
+  }
+  function draw(key) {
+    var box = $('#f-' + key); box.innerHTML = '';
+    groups[key].files.forEach(function (f, i) {
+      var r = document.createElement('div'), n = document.createElement('span'), b = document.createElement('button');
+      n.textContent = f.name.slice(0, 30) + ' (' + (f.size / 1048576).toFixed(1) + ' MB)'; b.type = 'button'; b.textContent = 'Sil';
+      b.onclick = function () { groups[key].files.splice(i, 1); draw(key); };
+      r.appendChild(n); r.appendChild(b); box.appendChild(r);
+    });
+  }
+
+  /* imza lövhəsi */
+  var cv = $('#pad'), ctx, drawn = false, down = false;
+  function fit() {
+    var r = cv.getBoundingClientRect(), k = window.devicePixelRatio || 1;
+    cv.width = Math.round(r.width * k); cv.height = Math.round(r.height * k);
+    ctx = cv.getContext('2d'); ctx.scale(k, k); ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#000';
+    drawn = false;
+  }
+  function pos(e) { var r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
+  cv.addEventListener('pointerdown', function (e) { down = true; cv.setPointerCapture(e.pointerId); var p = pos(e); ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(p[0] + .1, p[1] + .1); ctx.stroke(); drawn = true; e.preventDefault(); });
+  cv.addEventListener('pointermove', function (e) { if (!down) return; var p = pos(e); ctx.lineTo(p[0], p[1]); ctx.stroke(); e.preventDefault(); });
+  ['pointerup', 'pointercancel'].forEach(function (n) { cv.addEventListener(n, function () { down = false; }); });
+  $('#clr').onclick = function () { fit(); };
+
+  function rid() { var a = new Uint8Array(12); crypto.getRandomValues(a); return Array.prototype.map.call(a, function (x) { return x.toString(16).padStart(2, '0'); }).join(''); }
+  function extOf(f) { var e = (f.name.split('.').pop() || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 5).toLowerCase(); return e || (f.type.indexOf('video') === 0 ? 'mp4' : 'jpg'); }
+  async function up(file, forceName) {
+    if (uploadedMap.has(file)) return uploadedMap.get(file);
+    var path = 'links/' + token + '/' + (forceName || (rid() + '.' + extOf(file)));
+    var r = await sb.storage.from('media').upload(path, file, { contentType: file.type || 'application/octet-stream', upsert: false });
+    if (r.error) throw new Error(r.error.message || 'Yüklənmədi');
+    uploadedMap.set(file, path); return path;
+  }
+
+  async function submit() {
+    var err = $('#err'); err.textContent = '';
+    var miss = Object.keys(groups).filter(function (k) { return groups[k].required && !groups[k].files.length; });
+    if (miss.length) { err.textContent = 'Vacib bölmələr doldurulmayıb: ' + miss.map(function (k) { return groups[k].label; }).join(', ') + '.'; return; }
+    if (!$('#agree').checked) { err.textContent = 'Razılıq xanasını işarələyin.'; return; }
+    var name = $('#signer').value.trim();
+    if (name.length < 3) { err.textContent = 'Adınızı və soyadınızı yazın.'; return; }
+    if (!drawn) { err.textContent = 'İmza çəkin.'; return; }
+    var go = $('#go'); go.disabled = true;
+    var total = 1; Object.keys(groups).forEach(function (k) { total += groups[k].files.length; });
+    var done = 0, bar = $('#bar'); bar.hidden = false;
+    function tick(t) { $('#prog').textContent = t; $('#bari').style.width = Math.round(done / total * 100) + '%'; }
+    try {
+      var payload = { signer: name, ua: navigator.userAgent };
+      for (var k in groups) {
+        payload[k] = [];
+        for (var i = 0; i < groups[k].files.length; i++) {
+          var f = groups[k].files[i];
+          tick('Yüklənir: ' + (done + 1) + ' / ' + total + ' (böyük video bir az çəkə bilər, səhifəni bağlamayın)');
+          var path = await up(f);
+          payload[k].push({ path: path, name: f.name, type: f.type.indexOf('video') === 0 ? 'video' : 'image' });
+          done++;
+        }
+      }
+      tick('İmza yüklənir…');
+      var blob = await new Promise(function (res) { cv.toBlob(res, 'image/png'); });
+      var sigFile = new File([blob], 'imza.png', { type: 'image/png' });
+      payload.signature = await up(sigFile, 'signature-' + rid() + '.png');
+      done++; tick('Göndərilir…');
+      var r = await sb.rpc('link_submit', { p_token: token, p_payload: payload });
+      if (r.error) throw new Error(r.error.message);
+      $('#flow').hidden = true;
+      show('Təşəkkür edirik', kind === 'handover' ? 'Müqavilə imzalandı və sənədləriniz icarədara göndərildi. Bu səhifəni bağlaya bilərsiniz.' : 'Qaytarma aktı imzalandı. Bu səhifəni bağlaya bilərsiniz.', 'ok');
+    } catch (e) {
+      err.textContent = 'Xəta: ' + (e.message || e) + '. Yenidən “Göndər” düyməsinə basın, yüklənmiş fayllar təkrar yüklənməyəcək.';
+      go.disabled = false;
+    }
+  }
+
+  async function init() {
+    if (!token) { show('Link yanlışdır', 'Bu link tam deyil. İcarədardan yeni link istəyin.'); return; }
+    var r = await sb.rpc('link_get', { p_token: token });
+    if (r.error || !r.data) { show('Link tapılmadı', 'Link yanlışdır və ya silinib. İcarədardan yeni link istəyin.'); return; }
+    var d = r.data; kind = d.kind;
+    if (d.status === 'done') { show('Artıq göndərilib', 'Bu link artıq istifadə olunub. Təşəkkür edirik.', 'ok'); return; }
+    if (d.status !== 'open') { show('Linkin vaxtı bitib', 'Bu linkin müddəti bitib və ya yenisi göndərilib. İcarədardan yeni link istəyin.'); return; }
+    $('#ttl').textContent = d.title || 'Skuter icarə'; $('#sub').textContent = d.renter ? 'İcarəçi: ' + d.renter : '';
+    $('#doc').innerHTML = d.html;
+    if (kind === 'handover') {
+      addStep('id', 'Şəxsiyyət vəsiqəsinin şəkli', 'Vəsiqənin ön və arxa üzünü aydın çəkin. Bir neçə şəkil əlavə edə bilərsiniz.', 'image/*', 'environment', true, true);
+      addStep('renter', 'Sizin videonuz', 'Üzünüz görünsün: adınızı və bu gün tarixi deyin (20-30 saniyə).', 'video/*', 'user', true, false);
+      addStep('handover', 'Skuterin şəkil / videosu', 'Skuteri bütün tərəfdən çəkin (təhvil zamanı vəziyyət). Bunu icarədar da çəkə bilər.', 'image/*,video/*', 'environment', false, true);
+      $('#agreet').textContent = 'Müqavilənin mətni ilə tanış oldum, şərtləri qəbul edirəm və əşyaları göstərilən vəziyyətdə qəbul edirəm.';
+    } else {
+      addStep('return', 'Skuterin qaytarma şəkil / videosu', 'Skuteri bütün tərəfdən və batareyaları çəkin (qaytarılan vəziyyət).', 'image/*,video/*', 'environment', true, true);
+      $('#agreet').textContent = 'Qaytarma aktının mətni ilə tanış oldum və əşyaların göstərilən vəziyyətdə qaytarıldığını təsdiq edirəm.';
+      $('#sigh').textContent = 'Təsdiq və imza';
+    }
+    Object.keys(groups).forEach(function (k) { var h = document.querySelector('#f-' + k).parentNode.querySelector('h2'); groups[k].label = h.textContent; });
+    var n = 2; document.querySelectorAll('#steps h2').forEach(function (h) { h.textContent = (n++) + '. ' + h.textContent; });
+    $('#sigh').textContent = n + '. ' + $('#sigh').textContent;
+    $('#flow').hidden = false; fit();
+    $('#go').onclick = submit;
+    window.addEventListener('resize', function () { if (!drawn) fit(); });
+  }
+  init().catch(function (e) { show('Xəta', 'Səhifə yüklənmədi: ' + (e.message || e)); });
+})();
+</script>
+</body>
+</html>

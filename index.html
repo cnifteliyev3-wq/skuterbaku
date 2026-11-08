@@ -403,21 +403,26 @@ function contractForm(c, presetScooter) {
     });
 }
 const toIntl = ph => { let d = String(ph || '').replace(/\D/g, ''); if (d.startsWith('00')) d = d.slice(2); if (d.startsWith('0')) d = '994' + d.slice(1); else if (d.length === 9) d = '994' + d; return d; };
-function sendMsg(c) {
+function sendMsg(c, url, kind) {
   const L = S.settings || {}, sn = c.snap || {};
+  if (kind === 'return') return 'Salam, ' + (c.renter || '') + '. Skuteri (' + (sn.name || scooterName(c.scooterId)) + ') qaytararkən aşağıdakı linkdən qaytarma aktını oxuyub imzalayın və skuterin şəkillərini yükləyin:\n' + (url || '(link hazırlanır…)');
+  if (url) return 'Salam, ' + (c.renter || '') + '. ' + (L.name ? L.name + ' tərəfindən ' : '') + 'skuter icarə müqaviləsi hazırdır.\n' +
+    'Skuter: ' + (sn.name || scooterName(c.scooterId)) + '\nBaşlama: ' + dfmt(c.start) + (c.end ? ' → ' + dfmt(c.end) : '') + '\nTarif: ' + money(effRate(c)) + ' / ' + UNIT[c.unit] + (c.deposit ? '\nDepozit: ' + money(c.deposit) : '') +
+    '\n\nAşağıdakı linkdən müqaviləni oxuyun, vəsiqənizin şəklini və öz videonuzu çəkin, sonra imzalayın (link 7 gün qüvvədədir):\n' + url;
   return 'Salam, ' + (c.renter || '') + '. ' + (L.name ? L.name + ' tərəfindən ' : '') + 'skuter icarə müqaviləsi hazırdır.\n' +
     'Skuter: ' + (sn.name || scooterName(c.scooterId)) + '\nBaşlama: ' + dfmt(c.start) + (c.end ? ' → ' + dfmt(c.end) : '') + '\nTarif: ' + money(effRate(c)) + ' / ' + UNIT[c.unit] + (c.deposit ? '\nDepozit: ' + money(c.deposit) : '') +
     '\nMüqaviləni oxuyub imzalayın. Təhvil zamanı vəsiqənizi gətirin.';
 }
-function sendForm(c) {
+function sendForm(c, kind) {
+  kind = kind === 'return' ? 'return' : 'handover';
   const cu = S.customers.find(x => x.id === c.customerId) || {};
   const nums = [[c.phone, 'əsas']].concat((cu.phones || []).map(p => [p.n, p.l || 'əlavə'])).filter(n => n[0]);
-  openForm('Müqaviləni göndər: ' + (c.renter || ''),
-    '<div class="hint">Müqavilə yaradıldı. Aşağıdan icarəçiyə mesaj göndərin. Müqavilənin özünü “Müqavilə” düyməsi ilə yükləyib mesaja əlavə edin.</div>' +
+  openForm((kind === 'return' ? 'Qaytarma linki: ' : 'Müqaviləni göndər: ') + (c.renter || ''),
+    '<div class="hint">' + (kind === 'return' ? 'İcarəçi bu linkdən qaytarma aktını imzalayır və skuterin qaytarma şəkillərini yükləyir.' : 'İcarəçi bu linkdən müqaviləni oxuyur, vəsiqə şəklini və videosunu çəkir, imzalayır. İmzalayanda müqavilə bağlanmış sayılır.') + '</div>' +
     (nums.length ? sel('to', 'Hansı nömrəyə', nums.map(n => [n[0], n[0] + ' (' + n[1] + ')']), nums[0][0]) : fld('to', 'Telefon nömrəsi', 'tel', '', 'placeholder="+994 50 000 00 00"')) +
-    '<div class="f"><label for="msg">Mesaj mətni (dəyişə bilərsiniz)</label><textarea id="msg" name="msg" rows="7">' + esc(sendMsg(c)) + '</textarea></div>' +
+    '<div class="f"><label for="msg">Mesaj mətni (dəyişə bilərsiniz)</label><textarea id="msg" name="msg" rows="7">' + esc(sendMsg(c, null, kind)) + '</textarea></div>' +
     '<div class="row"><a class="btn sm primary" id="swa" target="_blank" rel="noopener">WhatsApp-da aç</a><a class="btn sm" id="ssms">SMS</a><button type="button" class="sm" id="scopy">Mətni kopyala</button><button type="button" class="sm" id="sdoc">Müqaviləni aç / yüklə</button></div>' +
-    '<div class="hint" id="smsg">Onlayn imza linki (icarəçi öz telefonundan imzalasın) veb sayta keçəndən sonra olacaq. İndi müqavilə çap edilib və ya faylla göndərilib imzalanır, imzalı variantı “İmzalandı” ilə yükləyirsiniz.</div>',
+    '<div class="hint" id="smsg">Link yaradılır…</div>',
     async () => {}, 'Bağla');
   const upd = () => {
     const to = toIntl($('#mf').elements.to.value), text = encodeURIComponent($('#msg').value);
@@ -426,7 +431,18 @@ function sendForm(c) {
   };
   upd(); $('#msg').oninput = upd; $('#mf').elements.to.onchange = upd; $('#mf').elements.to.oninput = upd;
   $('#scopy').onclick = () => { const t = $('#msg'); t.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e) {} $('#smsg').textContent = ok ? 'Mətn kopyalandı.' : 'Mətn seçildi, Ctrl+C ilə kopyalayın.'; };
-  $('#sdoc').onclick = () => { closeForm(); showDoc(c.snap || snapOf(S.scooters.find(x => x.id === c.scooterId) || {}), c); };
+  $('#sdoc').onclick = () => { closeForm(); showDoc(c.snap || snapOf(S.scooters.find(x => x.id === c.scooterId) || {}), c, kind === 'return' ? 'return' : undefined); };
+  const sn0 = c.snap || snapOf(S.scooters.find(x => x.id === c.scooterId) || {});
+  if (!window.skLinks) { $('#smsg').textContent = 'Onlayn link bu versiyada mövcud deyil.'; return; }
+  window.skLinks.create({
+    contractId: c.id, kind, renter: c.renter || '',
+    title: kind === 'return' ? 'Qaytarma aktı: ' + (sn0.name || '') : 'Skuter icarə müqaviləsi: ' + (sn0.name || ''),
+    html: '<style>' + DOC_CSS + '</style><div class="paper">' + docHtml(sn0, c, kind === 'return' ? 'return' : undefined) + '</div>'
+  }).then(url => {
+    if (!$('#msg')) return;
+    $('#msg').value = sendMsg(c, url, kind); upd();
+    $('#smsg').textContent = 'Birdəfəlik link hazırdır və 7 gün qüvvədədir. Mesajı göndərin. Yeni link yaratsanız köhnəsi ləğv olur.';
+  }).catch(e => { if ($('#smsg')) $('#smsg').textContent = 'Link yaradılmadı: ' + (e.message || e.code); });
 }
 function payForm(contractId) {
   const list = S.contracts.filter(c => c.status === 'aktiv' || c.id === contractId);
@@ -544,11 +560,14 @@ function viewContracts() {
       '<dt>Batareyalar</dt><dd>' + esc((c.snap || {}).bat1 || '—') + ' / ' + esc((c.snap || {}).bat2 || '—') + '</dd>' +
       '<dt>Skan</dt><dd>' + (c.scanUrl ? '<a href="' + esc(c.scanUrl) + '" target="_blank" rel="noopener">' + esc(c.scanName || 'Faylı aç') + '</a>' : '<span class="muted">yüklənməyib</span>') + '</dd></dl>' +
       (c.note ? '<div class="small muted">' + esc(c.note) + '</div>' : '') +
-      (c.signedAt ? '<div class="small"><span class="pill ok">İmzalanıb · ' + dfmt(c.signedAt) + '</span></div>' : '') +
+      (c.signedAt ? '<div class="small"><span class="pill ok">İmzalanıb' + (c.signedOnline ? ' (onlayn)' : '') + ' · ' + dfmt(c.signedAt) + '</span></div>' : '') +
+      (c.signature && safe(c.signature.url) ? '<details><summary>Onlayn imza: ' + esc(c.signature.name || '') + '</summary><div class="sub"><div><span>' + esc(String(c.signature.at || '').replace('T', ' ').replace('Z', ' UTC')) + (c.signature.ip ? ' · IP ' + esc(c.signature.ip) : '') + '</span></div></div><a href="' + esc(c.signature.url) + '" target="_blank" rel="noopener"><img src="' + esc(c.signature.url) + '" alt="İmza" style="max-width:240px;background:#fff;border:1px solid var(--line);border-radius:8px"></a></details>' : '') +
+      (c.returnSignedAt ? '<div class="small"><span class="pill ok">Qaytarma aktı imzalanıb · ' + dfmt(c.returnSignedAt) + '</span></div>' : '') +
+      (c.returnSignature && safe(c.returnSignature.url) ? '<details><summary>Qaytarma imzası: ' + esc(c.returnSignature.name || '') + '</summary><a href="' + esc(c.returnSignature.url) + '" target="_blank" rel="noopener"><img src="' + esc(c.returnSignature.url) + '" alt="İmza" style="max-width:240px;background:#fff;border:1px solid var(--line);border-radius:8px"></a></details>' : '') +
       ['handover', 'id', 'renter', 'return'].map(ph => mediaOf(c, ph).length ? '<details><summary>' + PH[ph] + ' (' + mediaOf(c, ph).length + ')</summary>' + mediaGrid(mediaOf(c, ph)) + '</details>' : '').join('') +
       (k.pays.length ? '<details><summary>Ödənişlər (' + k.pays.length + ')</summary><div class="sub">' + k.pays.sort((a, b) => b.date.localeCompare(a.date)).map(p => '<div><span>' + dfmt(p.date) + ' · ' + esc(p.kind) + ' · ' + esc(p.method) + '</span><span class="num">' + money(p.amount) + '</span></div>').join('') + '</div></details>' : '') +
       '<div class="actions">' + (!closed ? '<button class="sm primary" data-act="pay" data-id="' + c.id + '">Ödəniş</button><button class="sm" data-act="close" data-id="' + c.id + '">Müqaviləni bağla</button>' : '<button class="sm" data-act="reopen" data-id="' + c.id + '">Yenidən aç</button>') +
-      '<button class="sm" data-act="sched" data-id="' + c.id + '">Ödəniş cədvəli</button><button class="sm primary" data-act="send" data-id="' + c.id + '">Link göndər</button><button class="sm" data-act="docc" data-id="' + c.id + '">Müqavilə / akt</button><button class="sm" data-act="docr" data-id="' + c.id + '">Qaytarma aktı</button><button class="sm" data-act="mh" data-id="' + c.id + '">Təhvil foto/video</button><button class="sm" data-act="mr" data-id="' + c.id + '">Qaytarma foto/video</button><button class="sm" data-act="editc" data-id="' + c.id + '">Redaktə</button></div></div>';
+      '<button class="sm" data-act="sched" data-id="' + c.id + '">Ödəniş cədvəli</button><button class="sm primary" data-act="send" data-id="' + c.id + '">Link göndər</button><button class="sm" data-act="docc" data-id="' + c.id + '">Müqavilə / akt</button><button class="sm" data-act="docr" data-id="' + c.id + '">Qaytarma aktı</button><button class="sm primary" data-act="sendr" data-id="' + c.id + '">Qaytarma linki</button><button class="sm" data-act="mh" data-id="' + c.id + '">Təhvil foto/video</button><button class="sm" data-act="mr" data-id="' + c.id + '">Qaytarma foto/video</button><button class="sm" data-act="editc" data-id="' + c.id + '">Redaktə</button></div></div>';
   }).join('');
   return '<div class="row between"><h2 style="margin:0">Müqavilələr</h2><button class="primary" data-act="addc">+ Yeni müqavilə</button></div>' +
     '<div class="seg" role="group" aria-label="Filtr">' + [['aktiv', 'Aktiv'], ['baglanib', 'Bağlanmış'], ['hamisi', 'Hamısı']].map(x => '<button data-act="cf" data-v="' + x[0] + '" aria-pressed="' + (f === x[0]) + '">' + x[1] + '</button>').join('') + '</div>' +
@@ -1158,6 +1177,7 @@ $('#app').addEventListener('click', async e => {
     else if (a === 'toff') trackOff();
     else if (a === 'sign') signForm(co);
     else if (a === 'send') sendForm(co);
+    else if (a === 'sendr') sendForm(co, 'return');
     else if (a === 'addcu') customerForm();
     else if (a === 'editcu') customerForm(S.customers.find(x => x.id === id));
     else if (a === 'cnewc') { const x = S.customers.find(y => y.id === id); contractForm({ customerId: x.id, renter: x.name, phone: x.phone, fin: x.fin }); }
