@@ -169,6 +169,34 @@
     }
   };
 
+  /* Ön sayt şəkilləri: ictimai "catalog" qovluğu; şəkil yüklənmədən əvvəl 1600 px-ə kiçildilir */
+  function shrink(file) {
+    return new Promise(function (res) {
+      if (!/^image\//.test(file.type) || /svg|gif/.test(file.type)) return res(file);
+      var img = new Image(), u = URL.createObjectURL(file);
+      img.onload = function () {
+        var k = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(u);
+        c.toBlob(function (b) { res(b || file); }, 'image/jpeg', 0.85);
+      };
+      img.onerror = function () { URL.revokeObjectURL(u); res(file); };
+      img.src = u;
+    });
+  }
+  window.skPublic = {
+    upload: async function (file) {
+      await authed;
+      var blob = await shrink(file);
+      var id = (self.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2);
+      var path = 's/' + id + (blob === file ? '.' + (((file.name || '').split('.').pop() || 'jpg').replace(/[^A-Za-z0-9]/g, '').slice(0, 5)) : '.jpg');
+      var r = await sb.storage.from('catalog').upload(path, blob, { contentType: blob.type || 'image/jpeg', cacheControl: '31536000' });
+      if (r.error) throw new Error(r.error.message || 'Şəkil yüklənmədi');
+      return sb.storage.from('catalog').getPublicUrl(path).data.publicUrl;
+    }
+  };
+
   /* Tətbiq "claude.use(...)" çağırır. Vəsiqə oxuma (sample) veb versiyada hələ yoxdur. */
   window.claude = {
     use: async function (name) {

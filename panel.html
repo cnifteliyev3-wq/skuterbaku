@@ -1,0 +1,1338 @@
+<!doctype html>
+<html lang="az"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex">
+<title>Skuter İcarə Paneli</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: dark navy sidebar (bottom tab bar on phones) + light work area; scooter cards carry a status stripe, money shown as a 3-cell strip. */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --surface2:#eaedf3; --ink:#111a2e; --muted:#5b667d; --line:#dbe0ea;
+  --accent:#d9480f; --accent-ink:#ffffff; --accent-soft:#ffe9dc;
+  --side:#0f1930; --side-ink:#aeb8d0; --side-on:#ffffff;
+  --ok:#0f7b4f; --ok-soft:#d8f0e5; --warn:#9a5b00; --warn-soft:#fbebc9; --bad:#b42318; --bad-soft:#fbdcd8;
+  --display:'Sora','Segoe UI',system-ui,sans-serif; --body:'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b1020; --surface:#141b30; --surface2:#1c2540; --ink:#e8ecf6; --muted:#97a3bf; --line:#27314d;
+  --accent:#ff8a4c; --accent-ink:#1a0a00; --accent-soft:#3b2314; --side:#080d1b; --side-ink:#8d99b6;
+  --ok:#5fd29a; --ok-soft:#14392b; --warn:#f0b955; --warn-soft:#3f3110; --bad:#ff8f84; --bad-soft:#4a1d19; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b1020; --surface:#141b30; --surface2:#1c2540; --ink:#e8ecf6; --muted:#97a3bf; --line:#27314d;
+  --accent:#ff8a4c; --accent-ink:#1a0a00; --accent-soft:#3b2314; --side:#080d1b; --side-ink:#8d99b6;
+  --ok:#5fd29a; --ok-soft:#14392b; --warn:#f0b955; --warn-soft:#3f3110; --bad:#ff8f84; --bad-soft:#4a1d19; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:14.5px/1.55 var(--body);margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:100vh}
+.side{background:var(--side);color:var(--side-ink);position:sticky;top:0;align-self:start;height:100vh;padding:26px 14px;display:flex;flex-direction:column;gap:28px}
+.brand{display:flex;align-items:center;gap:11px;color:var(--side-on);padding:0 8px}
+.brand .logo{width:38px;height:38px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex:none}
+.brand b{font:700 16px/1.15 var(--display);letter-spacing:.01em}
+.brand small{display:block;font:500 11.5px var(--body);color:var(--side-ink);letter-spacing:.04em}
+nav{display:flex;flex-direction:column;gap:4px}
+nav a{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:9px;color:var(--side-ink);text-decoration:none;font-weight:600;font-size:14px;border-left:3px solid transparent}
+nav a[data-t="ayarlar"]{order:9}
+nav a svg{width:19px;height:19px;flex:none}
+nav a:hover{background:rgba(255,255,255,.06);color:var(--side-on)}
+nav a[aria-current="page"]{background:rgba(255,255,255,.1);color:var(--side-on);border-left-color:var(--accent)}
+nav a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{padding:30px max(24px,env(safe-area-inset-right,0px)) 60px 32px;display:flex;flex-direction:column;gap:24px;max-width:1120px;width:100%}
+h2{font:700 22px/1.2 var(--display);margin:0;letter-spacing:-.01em}
+h3{font:700 16px/1.3 var(--display);margin:0}
+.section-t{font:700 13px/1 var(--body);text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0 0 12px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.row.between{justify-content:space-between}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr))}
+.tiles{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))}
+.tile{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--ink);border-radius:12px;padding:16px 18px;min-width:0}
+.tile:nth-child(2){border-top-color:var(--ok)} .tile:nth-child(3){border-top-color:var(--bad)} .tile:nth-child(4){border-top-color:var(--accent)}
+.tile .k{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.tile .v{font:700 28px/1.2 var(--display);font-variant-numeric:tabular-nums;margin:6px 0 2px}
+.tile .s{font-size:13px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0 0 auto;height:4px;background:var(--line)}
+.card.st-ok::before{background:var(--ok)} .card.st-acc::before{background:var(--accent)} .card.st-warn::before{background:var(--warn)} .card.st-bad::before{background:var(--bad)} .card.st-mute::before{background:var(--muted)}
+.card .head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding-top:4px}
+.plate{display:inline-block;margin-top:5px;font:500 12px var(--mono);letter-spacing:.08em;color:var(--ink);background:var(--surface2);border:1.5px solid var(--ink);border-radius:5px;padding:1px 8px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 11px;border-radius:99px;font-size:12px;font-weight:700;white-space:nowrap}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.acc{background:var(--accent-soft);color:var(--accent)} .pill.mute{background:var(--surface2);color:var(--muted)}
+.kv{display:grid;grid-template-columns:96px 1fr;gap:6px 12px;font-size:14px;margin:0}
+.kv dt{color:var(--muted);font-size:13px} .kv dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.money{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.money div{padding:9px 10px;min-width:0} .money div+div{border-left:1px solid var(--line)}
+.money small{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.money b{font:700 15px var(--display);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.muted{color:var(--muted)} .small{font-size:13px} .num{font-variant-numeric:tabular-nums}
+.debt{color:var(--bad);font-weight:700} .credit{color:var(--ok);font-weight:700}
+button,.btn{font:700 13.5px var(--body);padding:9px 15px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-block}
+button:hover,.btn:hover{background:var(--surface2)}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)} button.primary:hover{filter:brightness(1.07);background:var(--accent)}
+button.danger{color:var(--bad);border-color:var(--bad);background:transparent}
+button.sm{padding:6px 11px;font-size:13px}
+button:disabled{opacity:.55;cursor:default}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:4px}
+.seg{display:inline-flex;background:var(--surface2);border-radius:10px;padding:3px;align-self:flex-start}
+.seg button{border:0;background:transparent;color:var(--muted)} .seg button:hover{background:transparent;color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.alert{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--bad);border-radius:10px;padding:12px 16px;display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:space-between;align-items:center}
+.alert.warn{border-left-color:var(--warn)}
+.empty{border:1.5px dashed var(--line);border-radius:12px;padding:30px;text-align:center;color:var(--muted);background:var(--surface)}
+.tablebox{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:14px}
+th{text-align:left;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:12px 14px;background:var(--surface2);font-weight:700}
+td{padding:12px 14px;border-top:1px solid var(--line);vertical-align:top}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+details summary{cursor:pointer;color:var(--accent);font-weight:700;font-size:13px}
+.sub{border-top:1px solid var(--line);margin-top:8px;padding-top:8px;font-size:13px;display:flex;flex-direction:column;gap:5px}
+.sub div{display:flex;justify-content:space-between;gap:10px}
+#modal{position:fixed;inset:0;background:rgba(8,13,27,.62);z-index:50;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:max(16px,env(safe-area-inset-top,0px)) 16px 40px}
+#modal[hidden]{display:none}
+#modal form{background:var(--surface);border-radius:16px;padding:24px;width:min(540px,100%);display:grid;gap:14px;margin-top:4vh;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.f{display:flex;flex-direction:column;gap:5px;min-width:0} .f label{font-size:12.5px;font-weight:700;color:var(--muted)}
+.two{display:grid;gap:12px;grid-template-columns:1fr 1fr} @media(max-width:460px){.two{grid-template-columns:1fr}}
+input,select,textarea{font:15px var(--body);padding:10px 12px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%;min-width:0}
+.hint{font-size:12.5px;color:var(--muted)}
+/* Ödənişlər: öz teal rəng sxemi və kart/lent düzümü */
+.pay{--pa:#0f766e;--pa-soft:#d5f3ee;display:flex;flex-direction:column;gap:26px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pay{--pa:#2dd4bf;--pa-soft:#12403b}}
+:root[data-theme="dark"] .pay{--pa:#2dd4bf;--pa-soft:#12403b}
+.ptitle{font:700 12.5px/1 var(--body);text-transform:uppercase;letter-spacing:.1em;color:var(--pa);margin:0 0 12px;display:flex;align-items:center;gap:10px}
+.ptitle::after{content:"";flex:1;height:1px;background:var(--line)}
+button.pbtn{background:#0f766e;border-color:#0f766e;color:#fff}
+button.pbtn:hover{background:#0c5f59;filter:none}
+.pay-hero{background:linear-gradient(135deg,#0f766e 0%,#0c4a6e 100%);color:#fff;border-radius:20px;padding:24px;display:grid;gap:22px;position:relative;overflow:hidden}
+.pay-hero::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.07)}
+.pay-hero>*{position:relative;z-index:1}
+.hl{font-size:12px;letter-spacing:.1em;text-transform:uppercase;opacity:.8;font-weight:700}
+.hbig{font:700 40px/1.1 var(--display);font-variant-numeric:tabular-nums;margin-top:4px}
+.hsel{min-width:150px}.hsel label{color:rgba(255,255,255,.8)}
+.hsel select{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.3)}
+.hsel select option{color:#111}
+.hgrid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.hs{background:rgba(255,255,255,.12);border-radius:14px;padding:12px 14px;min-width:0}
+.hs span{display:block;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;opacity:.8;font-weight:700}
+.hs b{display:block;font:700 21px var(--display);font-variant-numeric:tabular-nums;margin:3px 0 1px;overflow-wrap:anywhere}
+.hs small{opacity:.75;font-size:12px}
+.duegrid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr))}
+.due{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--pa);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.due.late{border-left-color:var(--bad)}
+.due .dm{flex:1 1 140px;min-width:0}.due .dm small{display:block;color:var(--muted)}
+.due .da{font:700 22px var(--display);font-variant-numeric:tabular-nums}
+.scgrid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr))}
+.sc{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.sc .bar{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden}
+.sc .bar i{display:block;height:100%;background:linear-gradient(90deg,#14b8a6,#0ea5e9);border-radius:99px}
+.mets{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.mets small{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.mets b{font:700 16px var(--display);font-variant-numeric:tabular-nums}
+.sc.total{background:linear-gradient(135deg,#0f766e,#0c4a6e);color:#fff;border-color:transparent}
+.sc.total .mets small{color:rgba(255,255,255,.75)}
+.feed{display:flex;flex-direction:column;gap:14px}
+.day{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.dh{display:flex;justify-content:space-between;padding:10px 16px;background:var(--pa-soft);font-size:13.5px}
+.dh span{color:var(--pa);font-weight:700;font-variant-numeric:tabular-nums}
+.tx{display:flex;align-items:center;gap:12px;padding:11px 16px;border-top:1px solid var(--line)}
+.tx:first-of-type{border-top:0}
+.tx .ic{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;color:#fff;font:700 16px var(--display);flex:none}
+.k-kira{background:#0f766e}.k-cer{background:#d97706}.k-dep{background:#2563eb}.k-ret{background:#7c3aed}.k-guz{background:#16a34a}
+.tx .tm{flex:1;min-width:0}.tx .tm small{display:block;color:var(--muted);overflow-wrap:anywhere}
+.tx .ta{font:700 16px var(--display);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tx .ta.neg{color:var(--bad)}
+/* Ödəniş cədvəli */
+.sstrip{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.sstrip>div{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface2);min-width:0}
+.sstrip small{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.sstrip b{font:700 18px var(--display);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.sstrip .bad b{color:var(--bad)}.sstrip .warn b{color:var(--warn)}.sstrip .ok b{color:var(--ok)}
+.sprog{display:flex;align-items:center;gap:12px}
+.sprog .bar{flex:1;height:8px;border-radius:99px;background:var(--surface2);overflow:hidden}
+.sprog .bar i{display:block;height:100%;background:var(--ok);border-radius:99px}
+.slist{display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow-y:auto;padding-right:2px;position:relative}
+.srow{display:grid;grid-template-columns:34px minmax(110px,1.1fr) minmax(90px,1fr) minmax(110px,1.1fr) auto;gap:10px 14px;align-items:center;border:1px solid var(--line);border-left:6px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
+.srow small{display:block;color:var(--muted);font-size:12px}
+.srow .sn{font:700 13px var(--mono);color:var(--muted);text-align:center}
+.srow .sd b{font-size:14.5px}
+.srow .sa b{font:700 17px var(--display);font-variant-numeric:tabular-nums}
+.srow .sb{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.srow.s-ok{border-left-color:var(--ok);background:var(--ok-soft)}
+.srow.s-bad{border-left-color:var(--bad);background:var(--bad-soft)}
+.srow.s-warn{border-left-color:var(--warn);background:var(--warn-soft);box-shadow:0 0 0 2px var(--warn) inset}
+.srow.s-mute{border-left-color:var(--muted)}
+@media(max-width:640px){.srow{grid-template-columns:30px 1fr auto}.srow .ss{grid-column:2 / 3}.srow .sb{grid-column:1 / -1;justify-content:flex-start}}
+.grid.one{grid-template-columns:1fr}
+/* Ödənişlər: skuter blokları alt-alta */
+.scstack{display:flex;flex-direction:column;gap:18px}
+.scb{background:var(--surface);border:1px solid var(--line);border-left:8px solid var(--line);border-radius:16px;overflow:hidden}
+.scb.st-ok{border-left-color:var(--ok)}.scb.st-warn{border-left-color:var(--warn)}.scb.st-bad{border-left-color:var(--bad)}.scb.st-mute{border-left-color:var(--muted)}
+.scb-h{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface2)}
+.scb-h .scn{width:34px;height:34px;border-radius:10px;background:var(--pa);color:#fff;display:grid;place-items:center;font:700 15px var(--display);flex:none}
+.scb-t{flex:1;min-width:0}.scb-t b{font:700 17px var(--display)}.scb-t small{display:block;color:var(--muted)}
+.lines{display:flex;flex-direction:column}
+.ln{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:11px 16px;border-top:1px solid var(--line)}
+.ln .lt{min-width:0}.ln .lt b{font-size:14.5px}.ln .lt small{display:block;color:var(--muted);font-size:12.5px}
+.ln .lv{font:700 17px var(--display);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.lv.badc{color:var(--bad)}.lv.okc{color:var(--ok)}
+.verd{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 16px;border-top:2px solid var(--line)}
+.verd small{display:block;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;opacity:.8}
+.verd span{font-size:14.5px;font-weight:600}
+.verd b{font:700 26px var(--display);font-variant-numeric:tabular-nums;white-space:nowrap}
+.verd.ok{background:var(--ok-soft);color:var(--ok)}.verd.warn{background:var(--warn-soft);color:var(--warn)}.verd.bad{background:var(--bad-soft);color:var(--bad)}.verd.mute{background:var(--surface2);color:var(--muted)}
+.scb.total{border-left-width:8px;border-color:var(--pa);border-left-color:var(--pa);box-shadow:0 0 0 2px var(--pa)}
+.scb.total .scb-h{background:linear-gradient(135deg,#0f766e,#0c4a6e);color:#fff}
+.scb.total .scb-t small{color:rgba(255,255,255,.8)}
+.scb.total .scn{background:rgba(255,255,255,.2)}
+@media(max-width:560px){.ln{flex-wrap:wrap}.verd{flex-direction:column;align-items:flex-start}}
+/* Ödənişlər: sətir-sətir siyahı */
+.plist{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface)}
+.plh,.plr{display:grid;grid-template-columns:minmax(160px,1.6fr) repeat(7,minmax(0,1fr));gap:8px;padding:12px 14px;align-items:center}
+.plh{background:var(--surface2);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.plh .c,.plr .c{text-align:right;font-variant-numeric:tabular-nums}
+.plr{border-top:1px solid var(--line);border-left:5px solid transparent}
+.plr.late{border-left-color:var(--bad);background:var(--bad-soft)}
+.plr .nm{display:flex;align-items:center;gap:10px;min-width:0}
+.plr .nm small{display:block;color:var(--muted);overflow-wrap:anywhere}
+.plr .no{width:28px;height:28px;border-radius:8px;background:var(--pa);color:#fff;display:grid;place-items:center;font:700 13px var(--display);flex:none}
+.plr .c{font-weight:600}
+.plr .c.fin{font:700 16px var(--display)}
+.plr.total{background:var(--pa-soft);border-top:2px solid var(--pa);border-left-color:var(--pa)}
+.plr.total .c{font-weight:700}
+.badc{color:var(--bad)}.okc{color:var(--ok)}
+@media(max-width:820px){
+  .plh{display:none}
+  .plr{grid-template-columns:1fr 1fr}
+  .plr .nm{grid-column:1 / -1}
+  .plr .c{text-align:left;display:flex;flex-direction:column}
+  .plr .c::before{content:attr(data-l);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:700}
+}
+.dtab tr.idle td{background:var(--surface2);color:var(--muted)}
+/* İllik doluluq təqvimi */
+.mons{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(min(100%,232px),1fr))}
+.mon{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--surface);display:flex;flex-direction:column;gap:8px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal .wd{font-size:9.5px;text-align:center;color:var(--muted);font-weight:700}
+.cal .d,.legend .d{display:grid;place-items:center;font-size:11px;border-radius:5px;aspect-ratio:1}
+.d.full{background:var(--ok);color:var(--surface)}
+.d.part{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.d.idle{background:var(--surface2);color:var(--muted)}
+.d.fut{border:1px dashed var(--line);color:var(--muted);opacity:.6}
+.mon .ms{font-size:12.5px;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend .d{width:18px;height:18px;aspect-ratio:auto;display:inline-block}
+@media(max-width:820px){nav a{font-size:10.5px;padding:7px 0}}
+.mgrid{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.mth{display:block;text-decoration:none;color:var(--ink)}
+.mth img{width:84px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line);display:block}
+.mth span{display:grid;place-items:center;width:84px;height:64px;border-radius:8px;border:1px solid var(--line);background:var(--surface2);font-size:12px;text-align:center;padding:4px;overflow:hidden}
+.err{color:var(--bad);font-size:13px}
+@media(max-width:820px){
+  .shell{display:block}
+  .side{position:fixed;inset:auto 0 0 0;height:auto;z-index:40;padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));flex-direction:row;gap:0}
+  .brand{display:none}
+  nav{flex-direction:row;width:100%;gap:2px}
+  nav a{flex:1;flex-direction:column;gap:3px;font-size:11.5px;padding:7px 2px;border-left:0;border-top:3px solid transparent;border-radius:8px;text-align:center}
+  nav a[aria-current="page"]{border-top-color:var(--accent)}
+  main{padding:20px max(16px,env(safe-area-inset-right,0px)) 110px max(16px,env(safe-area-inset-left,0px))}
+}
+/* 1gə üslubu: bənövşəyi rəng, yumşaq lavanda fon, yuvarlaq kartlar və düymələr */
+:root{
+  --bg:#f5f0ff; --surface:#ffffff; --surface2:#efe8fd; --ink:#1c1235; --muted:#6b6485; --line:#e6dcf7;
+  --accent:#6d2bd6; --accent-ink:#ffffff; --accent-soft:#ece0ff;
+  --side:#ffffff; --side-ink:#6b6485; --side-on:#4a1fa8;
+  --ok:#0f8a5f; --ok-soft:#dcf5ea; --warn:#a15c00; --warn-soft:#fdeccb; --bad:#d23a3a; --bad-soft:#fde0e0;
+  --display:'Manrope','Plus Jakarta Sans','Segoe UI',system-ui,sans-serif; --body:'Manrope','Plus Jakarta Sans','Segoe UI',system-ui,sans-serif;
+  --shadow:0 8px 28px rgba(109,43,214,.09);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#130b25; --surface:#1d1434; --surface2:#2a1d4a; --ink:#f1ebff; --muted:#a99fc7; --line:#33265a;
+  --accent:#a77bff; --accent-ink:#1a0a3a; --accent-soft:#32215e; --side:#1d1434; --side-ink:#a99fc7; --side-on:#d9c8ff;
+  --ok:#5fd29a; --ok-soft:#14392b; --warn:#f0b955; --warn-soft:#3f3110; --bad:#ff8f8f; --bad-soft:#4a1d25; --shadow:0 8px 28px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{
+  --bg:#130b25; --surface:#1d1434; --surface2:#2a1d4a; --ink:#f1ebff; --muted:#a99fc7; --line:#33265a;
+  --accent:#a77bff; --accent-ink:#1a0a3a; --accent-soft:#32215e; --side:#1d1434; --side-ink:#a99fc7; --side-on:#d9c8ff;
+  --ok:#5fd29a; --ok-soft:#14392b; --warn:#f0b955; --warn-soft:#3f3110; --bad:#ff8f8f; --bad-soft:#4a1d25; --shadow:0 8px 28px rgba(0,0,0,.35)}
+body{font-weight:500}
+h2,h3{font-weight:800}
+.side{border-right:1px solid var(--line);box-shadow:0 0 30px rgba(109,43,214,.06)}
+.brand .logo{background:linear-gradient(135deg,#8b4dff,#5a1fc4);color:#fff;border-radius:14px}
+.brand b{color:var(--side-on);font-weight:800}
+nav a{border-left:0;border-radius:99px;font-weight:700}
+nav a:hover{background:var(--accent-soft);color:var(--accent)}
+nav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent);border-left-color:transparent}
+.tile{border:1px solid var(--line);border-top:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}
+.tile .v{color:var(--ink);font-weight:800}
+.tile:nth-child(1) .v{color:var(--accent)}
+.card{border-radius:22px;border:1px solid var(--line);box-shadow:var(--shadow)}
+.card::before{height:5px}
+.tablebox,.empty,.alert{border-radius:18px}
+.alert{box-shadow:var(--shadow)}
+.pill{font-weight:800}
+button,.btn{border-radius:99px;font-weight:800;padding:9px 17px;border-color:var(--line)}
+button.sm{padding:6px 13px}
+button.primary{background:linear-gradient(135deg,#8b4dff,#5a1fc4);border-color:transparent;color:#fff}
+button.primary:hover{background:linear-gradient(135deg,#9a62ff,#6a2fd6);filter:none}
+.seg{border-radius:99px}.seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+input,select,textarea{border-radius:14px;background:var(--surface)}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+#modal{background:rgba(28,18,53,.62)}
+#modal form{border-radius:24px}
+th{background:var(--surface2)}
+details summary{color:var(--accent)}
+/* Ödənişlər bölməsi də bənövşəyi */
+.pay{--pa:#6d2bd6;--pa-soft:#ece0ff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pay{--pa:#a77bff;--pa-soft:#32215e}}
+:root[data-theme="dark"] .pay{--pa:#a77bff;--pa-soft:#32215e}
+button.pbtn{background:linear-gradient(135deg,#8b4dff,#5a1fc4);border-color:transparent;color:#fff}
+button.pbtn:hover{background:linear-gradient(135deg,#9a62ff,#6a2fd6)}
+.pay-hero{background:linear-gradient(135deg,#8b4dff 0%,#4c1a9e 100%);border-radius:26px}
+.sc{border-radius:22px;box-shadow:var(--shadow)}
+.sc .bar i{background:linear-gradient(90deg,#a77bff,#6d2bd6)}
+.sc.total{background:linear-gradient(135deg,#8b4dff,#4c1a9e)}
+.scb.total .scb-h{background:linear-gradient(135deg,#8b4dff,#4c1a9e)}
+.k-kira{background:#6d2bd6}
+.due{border-radius:20px;box-shadow:var(--shadow)}
+@media(max-width:820px){
+  .side{border-right:0;border-top:1px solid var(--line);border-radius:26px 26px 0 0;box-shadow:0 -8px 30px rgba(109,43,214,.14)}
+  nav a{border-radius:16px}
+  nav a[aria-current="page"]{border-top-color:transparent;background:var(--accent-soft);color:var(--accent)}
+}
+</style>
+</head><body>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="17" r="3"/><circle cx="19" cy="17" r="2"/><path d="M9 17h8M19 15 16 4h-2M6 14l2-6h5"/></svg></span><div><b>Skuter İcarə</b><small>İDARƏETMƏ PANELİ</small></div></div>
+    <nav id="nav" aria-label="Bölmələr">
+      <a href="#umumi" data-t="umumi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Ümumi</span></a>
+      <a href="#skuterler" data-t="skuterler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="17" r="3"/><circle cx="19" cy="17" r="2"/><path d="M9 17h8M19 15 16 4h-2M6 14l2-6h5"/></svg><span>Skuterlər</span></a>
+      <a href="#izleme" data-t="izleme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span>İzləmə</span></a>
+      <a href="#muqavileler" data-t="muqavileler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg><span>Müqavilələr</span></a>
+      <a href="#musteriler" data-t="musteriler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.8a3.5 3.5 0 0 1 0 6.4M18 14.4c2 .7 3.5 2.6 3.5 5.6"/></svg><span>Müştərilər</span></a>
+      <a href="#ayarlar" data-t="ayarlar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Ayarlar</span></a>
+      <a href="#odenisler" data-t="odenisler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19M6.5 15h4"/></svg><span>Ödənişlər</span></a>
+    </nav>
+  </aside>
+  <main id="app"><div class="empty">Yüklənir…</div></main>
+</div>
+<div id="modal" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="shim.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2, '0');
+const today = () => { const d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
+const dayN = s => { const [y, m, d] = s.split('-').map(Number); return Math.floor(Date.UTC(y, m - 1, d) / 864e5); };
+const money = n => (Math.round(n * 100) / 100).toLocaleString('en', { maximumFractionDigits: 2 }) + ' ₼';
+const dfmt = s => { if (!s) return '—'; const [y, m, d] = s.split('-'); return d + '.' + m + '.' + y; };
+const UNIT = { day: 'gün', week: 'həftə', month: 'ay' };
+const S = { scooters: [], contracts: [], payments: [], customers: [], cq: '', ready: {}, tab: 'umumi', cfilter: 'aktiv', pmonth: '' };
+let db = null, assets = null, dl = null;
+S.settings = {};
+const safe = u => /^https:\/\//i.test(u || '');
+const nz = x => x ? esc(x) : '<span class="muted">yazılmayıb</span>';
+const snapOf = s => ({ name: s.name || '', no: s.no || '', plate: s.plate || '', bat1: s.bat1 || '', bat2: s.bat2 || '', adapter: s.adapter || '' });
+
+/* ---------- hesablama ---------- */
+function units(c) {
+  if (c.handed === false) return 0;
+  const end = c.status === 'baglanib' && c.closedAt ? c.closedAt : (c.end && c.end < today() ? c.end : today());
+  const days = Math.max(0, dayN(end) - dayN(c.start) + 1);
+  if (c.unit === 'week') return Math.ceil(days / 7);
+  if (c.unit === 'month') return Math.ceil(days / 30);
+  return days;
+}
+/* endirimdən sonrakı tarif: discType = 'percent' (%) və ya 'amount' (₼ hər dövr üçün) */
+function effRate(c) {
+  const r = +c.rate || 0, v = +c.discVal || 0;
+  if (c.discType === 'percent') return Math.max(0, Math.round(r * (1 - Math.min(v, 100) / 100) * 100) / 100);
+  if (c.discType === 'amount') return Math.max(0, Math.round((r - v) * 100) / 100);
+  return r;
+}
+const discLabel = c => c.discType === 'percent' && +c.discVal ? '−' + (+c.discVal) + '%' : c.discType === 'amount' && +c.discVal ? '−' + money(+c.discVal) : '';
+function calc(c) {
+  const pays = S.payments.filter(p => p.contractId === c.id);
+  const sum = k => pays.filter(p => p.kind === k).reduce((a, p) => a + (+p.amount || 0), 0);
+  const due = Math.max(0, units(c) * effRate(c) - sum('güzəşt'));
+  const paid = sum('kirayə');
+  const dep = sum('depozit') - sum('depozit qaytarılması');
+  return { pays, due, paid, debt: due - paid, dep };
+}
+const activeOf = id => S.contracts.find(c => c.scooterId === id && c.status === 'aktiv');
+const scooterName = id => (S.scooters.find(s => s.id === id) || {}).name || 'Silinmiş skuter';
+function mapLink(loc) {
+  if (!loc) return '';
+  const raw = (loc.coords || '').trim();
+  if (/^https:\/\//i.test(raw)) return raw;
+  if (/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(raw)) return 'https://www.google.com/maps?q=' + encodeURIComponent(raw.replace(/\s/g, ''));
+  if (loc.text) return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(loc.text);
+  return '';
+}
+function status(s) {
+  const ac = activeOf(s.id);
+  if (ac && ac.handed === false) return ['Təhvil gözlənilir', 'warn'];
+  if (ac) return ['Kirayədə', 'acc'];
+  if (s.status === 'temir') return ['Təmirdə', 'warn'];
+  if (s.status === 'itib') return ['İtkin', 'bad'];
+  return ['Boş', 'ok'];
+}
+
+/* ---------- modal ---------- */
+function openForm(title, body, onSubmit, submitLabel) {
+  const m = $('#modal');
+  m.innerHTML = '<form id="mf"><h2 style="margin:0">' + esc(title) + '</h2>' + body +
+    '<div class="err" id="mferr" role="alert"></div><div class="row" style="justify-content:flex-end"><button type="button" id="mcancel">Ləğv et</button><button class="primary" id="msave">' + esc(submitLabel || 'Yadda saxla') + '</button></div></form>';
+  m.hidden = false;
+  const form = $('#mf');
+  $('#mcancel').onclick = closeForm;
+  form.onsubmit = async e => {
+    e.preventDefault();
+    const btn = $('#msave'); btn.disabled = true; $('#mferr').textContent = '';
+    try { await onSubmit(Object.fromEntries(new FormData(form)), form); closeForm(); }
+    catch (er) { $('#mferr').textContent = 'Xəta: ' + (er.message || er.code || 'saxlanmadı'); btn.disabled = false; }
+  };
+  const first = form.querySelector('input,select,textarea'); if (first) first.focus();
+  const cu = form.elements.customerId;
+  if (cu && form.elements.renter && form.elements.fin) cu.onchange = () => { const x = S.customers.find(y => y.id === cu.value); if (x) { form.elements.renter.value = x.name || ''; form.elements.phone.value = x.phone || ''; form.elements.fin.value = x.fin || ''; } };
+  const sc = form.elements.scooterId;
+  if (sc && form.elements.rate && form.elements.unit) sc.onchange = () => { const x = S.scooters.find(y => y.id === sc.value); if (x && x.rate) { form.elements.rate.value = x.rate; form.elements.unit.value = x.unit || 'day'; } };
+}
+function closeForm() { const m = $('#modal'); S.sched = null; S.dsc = null; m.hidden = true; m.innerHTML = ''; }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeForm(); });
+const fld = (id, label, type, val, extra) => '<div class="f"><label for="' + id + '">' + label + '</label><input id="' + id + '" name="' + id + '" type="' + type + '" value="' + esc(val ?? '') + '" ' + (extra || '') + '></div>';
+const sel = (id, label, opts, val) => '<div class="f"><label for="' + id + '">' + label + '</label><select id="' + id + '" name="' + id + '">' + opts.map(o => '<option value="' + esc(o[0]) + '"' + (o[0] === val ? ' selected' : '') + '>' + esc(o[1]) + '</option>').join('') + '</select></div>';
+
+/* ---------- formalar ---------- */
+function scooterForm(s) {
+  s = s || {};
+  openForm(s.id ? 'Skuteri redaktə et' : 'Yeni skuter',
+    fld('name', 'Ad', 'text', s.name, 'required placeholder="Skuter 1"') +
+    '<div class="two">' + fld('no', 'Öz nömrəsi (daxili)', 'text', s.no, 'placeholder="1"') + fld('plate', 'Skuterin nömrəsi / seriyası', 'text', s.plate, 'placeholder="SK-000123"') + '</div>' +
+    '<div class="two">' + fld('bat1', 'Batareya 1 (skuterin üstündəki)', 'text', s.bat1, 'placeholder="B-0001"') + fld('bat2', 'Batareya 2 (əlavə)', 'text', s.bat2, 'placeholder="B-0002"') + '</div>' +
+    fld('adapter', 'Adaptorun nömrəsi (şarj cihazı)', 'text', s.adapter, 'placeholder="AD-0001"') +
+    '<div class="two">' + fld('gpsId', 'GPS cihazının nömrəsi', 'text', s.gpsId) + fld('gpsLink', 'GPS izləmə linki (https://…)', 'url', s.gpsLink) + '</div>' +
+    '<div class="two">' + fld('rate', 'Bu skuterin kirayə qiyməti (₼)', 'number', s.rate, 'min="0" step="0.01" placeholder="məs. 15"') + sel('unit', 'Hər', [['day', 'gün'], ['week', 'həftə'], ['month', 'ay']], s.unit || 'day') + '</div>' +
+    '<div class="hint">Qiymət hər skuter üçün fərqli ola bilər. Müqavilə yaradanda avtomatik gəlir, orada dəyişmək olar.</div>' +
+    sel('state', 'Vəziyyət', [['', 'İşlək'], ['temir', 'Təmirdə'], ['itib', 'İtkin']], s.status || '') +
+    '<div class="f"><label for="note">Qeyd</label><textarea id="note" name="note" rows="2">' + esc(s.note) + '</textarea></div>' +
+    '<h3 style="margin:8px 0 0">Ön sayt (müştərilər görür)</h3>' +
+    '<label class="chk" style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="public" value="1"' + (s.public ? ' checked' : '') + '> Bu skuteri saytda göstər</label>' +
+    '<div class="f"><label for="desc">Qısa təsvir (saytda görünür)</label><textarea id="desc" name="desc" rows="3" placeholder="məs. Şəhər daxili gəzinti üçün yüngül və rahat skuter">' + esc(s.desc) + '</textarea></div>' +
+    '<div class="two">' + fld('sp_range', 'Bir şarjla məsafə (km)', 'text', (s.specs || {}).range, 'placeholder="40"') + fld('sp_speed', 'Maksimum sürət (km/s)', 'text', (s.specs || {}).speed, 'placeholder="25"') + '</div>' +
+    fld('sp_battery', 'Batareya', 'text', (s.specs || {}).battery, 'placeholder="48V 20Ah"') +
+    ((s.photos || []).length ? '<div class="f"><label>Mövcud şəkillər (ilki əsas şəkildir; silmək üçün işarələyin)</label><div class="row" style="flex-wrap:wrap;gap:10px">' + s.photos.map((u, i) => '<label style="display:grid;gap:4px;justify-items:center;font-size:12px"><img src="' + esc(u) + '" alt="" style="width:84px;height:64px;object-fit:cover;border-radius:8px"><span><input type="checkbox" class="rmph" value="' + i + '"> sil</span></label>').join('') + '</div></div>' : '') +
+    (window.skPublic ? '<div class="f"><label for="phimg">Yeni şəkillər (bir neçə seçmək olar)</label><input id="phimg" name="phimg" type="file" accept="image/*" multiple></div><div class="hint">Şəkillər avtomatik kiçildilir. İlk şəkil saytda əsas şəkil kimi görünəcək.</div>' : ''),
+    async (v, form) => {
+      const data = { name: v.name.trim(), no: v.no.trim(), plate: v.plate.trim(), bat1: v.bat1.trim(), bat2: v.bat2.trim(), adapter: v.adapter.trim(), gpsId: v.gpsId.trim(), gpsLink: safe(v.gpsLink.trim()) ? v.gpsLink.trim() : '', rate: +v.rate || 0, unit: v.unit, status: v.state, note: v.note.trim(),
+        public: !!v.public, desc: (v.desc || '').trim(), specs: { range: (v.sp_range || '').trim(), speed: (v.sp_speed || '').trim(), battery: (v.sp_battery || '').trim() } };
+      const rm = new Set([...form.querySelectorAll('.rmph:checked')].map(x => +x.value));
+      const photos = (s.photos || []).filter((u, i) => !rm.has(i));
+      const files = form.elements.phimg ? [...form.elements.phimg.files].filter(f => f.size) : [];
+      for (const f of files) { $('#msave').textContent = 'Şəkil yüklənir…'; photos.push(await window.skPublic.upload(f)); }
+      data.photos = photos;
+      if (s.id) await db.doc('scooters/' + s.id).update(data);
+      else await db.collection('scooters').add({ ...data, loc: null, locLog: [], createdAt: today() });
+    });
+}
+function locForm(s) {
+  openForm('Yer: ' + s.name,
+    fld('text', 'Yer / ünvan', 'text', s.loc && s.loc.text, 'required placeholder="Nizami küç. 12, Bakı"') +
+    fld('coords', 'Koordinat və ya xəritə linki (ixtiyari)', 'text', s.loc && s.loc.coords, 'placeholder="40.4093, 49.8671"') +
+    '<div class="hint">Google Maps-də yeri basılı tutub koordinatı kopyalaya və ya paylaşma linkini bura yapışdıra bilərsiniz.</div>',
+    async v => {
+      const at = today();
+      const loc = { text: v.text.trim(), coords: v.coords.trim(), at };
+      const log = [{ text: loc.text, coords: loc.coords, at }, ...(s.locLog || [])].slice(0, 15);
+      await db.doc('scooters/' + s.id).update({ loc, locLog: log });
+    });
+}
+function contractForm(c, presetScooter) {
+  c = c || {};
+  const free = S.scooters.filter(s => !activeOf(s.id) && s.status !== 'itib' || (c.scooterId === s.id));
+  if (!c.id && !free.length) { alert2('Boş skuter yoxdur.'); return; }
+  openForm(c.id ? 'Müqaviləni redaktə et' : 'Yeni müqavilə',
+    sel('scooterId', 'Skuter', free.map(s => [s.id, s.name + (s.plate ? ' · ' + s.plate : '')]), c.scooterId || presetScooter) +
+    (S.customers.length ? sel('customerId', 'Müştəri (siyahıdan seçin)', [['', '— siyahıda yoxdur, əl ilə yazacam —'], ...S.customers.map(x => [x.id, x.name + (x.phone ? ' · ' + x.phone : '')])], c.customerId || '') : '') +
+    fld('renter', 'İcarəçinin adı', 'text', c.renter, 'required') +
+    '<div class="two">' + fld('phone', 'Telefon', 'tel', c.phone, 'placeholder="+994 50 000 00 00"') + fld('fin', 'Şəxsiyyət vəsiqəsi / FİN', 'text', c.fin) + '</div>' +
+    '<div class="two">' + fld('start', 'Başlama tarixi', 'date', c.start || today(), 'required') + fld('end', 'Bitmə tarixi', 'date', c.end, '') + '</div>' +
+    '<div class="two">' + fld('rate', 'Tarif (₼)', 'number', c.rate ?? ((S.scooters.find(x => x.id === (c.scooterId || presetScooter)) || {}).rate || ''), 'required min="0" step="0.01"') + sel('unit', 'Hər', [['day', 'gün'], ['week', 'həftə'], ['month', 'ay']], c.unit || (S.scooters.find(x => x.id === (c.scooterId || presetScooter)) || {}).unit || 'day') + '</div>' +
+    fld('deposit', 'Depozit (₼) — yoxdursa 0 qalsın', 'number', c.deposit || 0, 'min="0" step="0.01"') +
+    (assets ? '<div class="f"><label for="scan">Müqavilənin skanı / şəkli (PDF, şəkil)</label><input id="scan" name="scan" type="file" accept="image/*,application/pdf">' + (c.scanUrl ? '<div class="hint">Mövcud fayl: ' + esc(c.scanName) + ' (yenisini seçsəniz əvəz olunacaq)</div>' : '') + '</div>' : '<div class="hint">Fayl yükləmə bu hesabda mövcud deyil.</div>') +
+    '<div class="f"><label for="note">Qeyd</label><textarea id="note" name="note" rows="2">' + esc(c.note) + '</textarea></div>',
+    async (v, form) => {
+      const data = { scooterId: v.scooterId, customerId: v.customerId || '', renter: v.renter.trim(), phone: v.phone.trim(), fin: v.fin.trim(), start: v.start, end: v.end || '', rate: +v.rate || 0, unit: v.unit, discType: '', discVal: 0, deposit: +v.deposit || 0, note: v.note.trim() };
+      const file = form.elements.scan && form.elements.scan.files[0];
+      if (file && assets) { const r = await assets.upload(file); data.scanId = r.id; data.scanUrl = r.url; data.scanName = file.name; }
+      if (!c.id || c.scooterId !== v.scooterId || !c.snap) data.snap = snapOf(S.scooters.find(x => x.id === v.scooterId) || {});
+      if (c.id) await db.doc('contracts/' + c.id).update(data);
+      else {
+        const ref = await db.collection('contracts').add({ ...data, status: 'aktiv', handed: false, createdAt: today() });
+        const nc = { id: ref.id, ...data, status: 'aktiv', handed: false };
+        setTimeout(() => sendForm(nc), 0);
+      }
+    });
+}
+const toIntl = ph => { let d = String(ph || '').replace(/\D/g, ''); if (d.startsWith('00')) d = d.slice(2); if (d.startsWith('0')) d = '994' + d.slice(1); else if (d.length === 9) d = '994' + d; return d; };
+function sendMsg(c, url, kind) {
+  const L = S.settings || {}, sn = c.snap || {};
+  if (kind === 'return') return 'Salam, ' + (c.renter || '') + '. Skuteri (' + (sn.name || scooterName(c.scooterId)) + ') qaytararkən aşağıdakı linkdən qaytarma aktını oxuyub imzalayın və skuterin şəkillərini yükləyin:\n' + (url || '(link hazırlanır…)');
+  if (url) return 'Salam, ' + (c.renter || '') + '. ' + (L.name ? L.name + ' tərəfindən ' : '') + 'skuter icarə müqaviləsi hazırdır.\n' +
+    'Skuter: ' + (sn.name || scooterName(c.scooterId)) + '\nBaşlama: ' + dfmt(c.start) + (c.end ? ' → ' + dfmt(c.end) : '') + '\nTarif: ' + money(effRate(c)) + ' / ' + UNIT[c.unit] + (c.deposit ? '\nDepozit: ' + money(c.deposit) : '') +
+    '\n\nAşağıdakı linkdən müqaviləni oxuyun, vəsiqənizin şəklini və öz videonuzu çəkin, sonra imzalayın (link 7 gün qüvvədədir):\n' + url;
+  return 'Salam, ' + (c.renter || '') + '. ' + (L.name ? L.name + ' tərəfindən ' : '') + 'skuter icarə müqaviləsi hazırdır.\n' +
+    'Skuter: ' + (sn.name || scooterName(c.scooterId)) + '\nBaşlama: ' + dfmt(c.start) + (c.end ? ' → ' + dfmt(c.end) : '') + '\nTarif: ' + money(effRate(c)) + ' / ' + UNIT[c.unit] + (c.deposit ? '\nDepozit: ' + money(c.deposit) : '') +
+    '\nMüqaviləni oxuyub imzalayın. Təhvil zamanı vəsiqənizi gətirin.';
+}
+function sendForm(c, kind) {
+  kind = kind === 'return' ? 'return' : 'handover';
+  const cu = S.customers.find(x => x.id === c.customerId) || {};
+  const nums = [[c.phone, 'əsas']].concat((cu.phones || []).map(p => [p.n, p.l || 'əlavə'])).filter(n => n[0]);
+  openForm((kind === 'return' ? 'Qaytarma linki: ' : 'Müqaviləni göndər: ') + (c.renter || ''),
+    '<div class="hint">' + (kind === 'return' ? 'İcarəçi bu linkdən qaytarma aktını imzalayır və skuterin qaytarma şəkillərini yükləyir.' : 'İcarəçi bu linkdən müqaviləni oxuyur, vəsiqə şəklini və videosunu çəkir, imzalayır. İmzalayanda müqavilə bağlanmış sayılır.') + '</div>' +
+    (nums.length ? sel('to', 'Hansı nömrəyə', nums.map(n => [n[0], n[0] + ' (' + n[1] + ')']), nums[0][0]) : fld('to', 'Telefon nömrəsi', 'tel', '', 'placeholder="+994 50 000 00 00"')) +
+    '<div class="f"><label for="msg">Mesaj mətni (dəyişə bilərsiniz)</label><textarea id="msg" name="msg" rows="7">' + esc(sendMsg(c, null, kind)) + '</textarea></div>' +
+    '<div class="row"><a class="btn sm primary" id="swa" target="_blank" rel="noopener">WhatsApp-da aç</a><a class="btn sm" id="ssms">SMS</a><button type="button" class="sm" id="scopy">Mətni kopyala</button><button type="button" class="sm" id="sdoc">Müqaviləni aç / yüklə</button></div>' +
+    '<div class="hint" id="smsg">Link yaradılır…</div>',
+    async () => {}, 'Bağla');
+  const upd = () => {
+    const to = toIntl($('#mf').elements.to.value), text = encodeURIComponent($('#msg').value);
+    $('#swa').href = 'https://wa.me/' + to + '?text=' + text;
+    $('#ssms').href = 'sms:+' + to + '?body=' + text;
+  };
+  upd(); $('#msg').oninput = upd; $('#mf').elements.to.onchange = upd; $('#mf').elements.to.oninput = upd;
+  $('#scopy').onclick = () => { const t = $('#msg'); t.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e) {} $('#smsg').textContent = ok ? 'Mətn kopyalandı.' : 'Mətn seçildi, Ctrl+C ilə kopyalayın.'; };
+  $('#sdoc').onclick = () => { closeForm(); showDoc(c.snap || snapOf(S.scooters.find(x => x.id === c.scooterId) || {}), c, kind === 'return' ? 'return' : undefined); };
+  const sn0 = c.snap || snapOf(S.scooters.find(x => x.id === c.scooterId) || {});
+  if (!window.skLinks) { $('#smsg').textContent = 'Onlayn link bu versiyada mövcud deyil.'; return; }
+  window.skLinks.create({
+    contractId: c.id, kind, renter: c.renter || '',
+    title: kind === 'return' ? 'Qaytarma aktı: ' + (sn0.name || '') : 'Skuter icarə müqaviləsi: ' + (sn0.name || ''),
+    html: '<style>' + DOC_CSS + '</style><div class="paper">' + docHtml(sn0, c, kind === 'return' ? 'return' : undefined) + '</div>'
+  }).then(url => {
+    if (!$('#msg')) return;
+    $('#msg').value = sendMsg(c, url, kind); upd();
+    $('#smsg').textContent = 'Birdəfəlik link hazırdır və 7 gün qüvvədədir. Mesajı göndərin. Yeni link yaratsanız köhnəsi ləğv olur.';
+  }).catch(e => { if ($('#smsg')) $('#smsg').textContent = 'Link yaradılmadı: ' + (e.message || e.code); });
+}
+function payForm(contractId) {
+  const list = S.contracts.filter(c => c.status === 'aktiv' || c.id === contractId);
+  if (!list.length) { alert2('Əvvəlcə müqavilə yaradın.'); return; }
+  const sel0 = contractId || list[0].id;
+  openForm('Ödəniş əlavə et',
+    sel('contractId', 'Müqavilə', list.map(c => [c.id, c.renter + ' · ' + scooterName(c.scooterId)]), sel0) +
+    '<div class="two">' + fld('amount', 'Məbləğ (₼)', 'number', '', 'required min="0.01" step="0.01"') + fld('date', 'Tarix', 'date', today(), 'required') + '</div>' +
+    '<div class="two">' + sel('kind', 'Növ', [['kirayə', 'Kirayə'], ['depozit', 'Depozit'], ['depozit qaytarılması', 'Depozit qaytarılması'], ['cərimə', 'Cərimə / zərər']], 'kirayə') + sel('method', 'Üsul', [['nağd', 'Nağd'], ['kart', 'Kart'], ['köçürmə', 'Köçürmə']], 'nağd') + '</div>' +
+    fld('note', 'Qeyd', 'text', ''),
+    async v => { await db.collection('payments').add({ contractId: v.contractId, amount: +v.amount, date: v.date, kind: v.kind, method: v.method, note: v.note.trim() }); });
+}
+const PH = { handover: 'Skuterin təhvil şəkil/videosu', id: 'İcarəçinin vəsiqə şəkli', renter: 'İcarəçinin videosu', return: 'Qaytarma şəkil/videosu' };
+const ACCEPT = { id: 'image/*', renter: 'video/*' };
+const mediaOf = (c, ph) => (c.media && c.media[ph]) || [];
+/* skuteri təhvil vermək üçün 4 şərt */
+const reqs = c => [
+  ['mh', PH.handover, mediaOf(c, 'handover').length > 0],
+  ['mi', PH.id, mediaOf(c, 'id').length > 0 || ((S.customers.find(x => x.id === c.customerId) || {}).idPhotos || []).length > 0],
+  ['mv', PH.renter, mediaOf(c, 'renter').length > 0],
+  ['sign', 'Müqavilə imzalanıb', !!c.signedAt]
+];
+function signForm(c) {
+  openForm('Müqavilə imzalandı',
+    '<div class="muted small">İcarəçi müqaviləni imzaladıqdan sonra imzalı müqavilənin skanını/şəklini yükləyin.</div>' +
+    (assets ? '<div class="f"><label for="scan">İmzalı müqavilə (PDF, şəkil)</label><input id="scan" name="scan" type="file" accept="image/*,application/pdf" required></div>' : '<div class="hint">Fayl yükləmə bu hesabda mövcud deyil.</div>'),
+    async (v, form) => {
+      const data = { signedAt: today() };
+      const file = form.elements.scan && form.elements.scan.files[0];
+      if (file && assets) { const r = await assets.upload(file); data.scanId = r.id; data.scanUrl = r.url; data.scanName = file.name; }
+      await db.doc('contracts/' + c.id).update(data);
+    }, 'İmzalandı');
+}
+const mediaGrid = list => '<div class="mgrid">' + list.map(m => safe(m.url) ? '<a class="mth" href="' + esc(m.url) + '" target="_blank" rel="noopener" title="' + esc(m.name) + '">' + (m.type === 'video' ? '<span>▶ ' + esc(m.name) + '</span>' : '<img src="' + esc(m.url) + '" alt="' + esc(m.name) + '" loading="lazy">') + '</a>' : '').join('') + '</div>';
+function mediaForm(c, ph) {
+  const cur = mediaOf(c, ph);
+  openForm(PH[ph],
+    (cur.length ? '<div class="f"><label>Mövcud fayllar (silmək üçün işarələyin)</label>' + cur.map((m, i) => '<label style="display:flex;gap:8px;align-items:center;font-weight:500"><input type="checkbox" name="rm' + i + '" value="1" style="width:auto"> ' + esc(m.name) + '</label>').join('') + '</div>' : '') +
+    (assets ? '<div class="f"><label for="files">Yeni şəkil / video (bir neçə fayl seçmək olar)</label><input id="files" name="files" type="file" accept="' + (ACCEPT[ph] || 'image/*,video/*') + '" multiple></div><div class="hint">Telefonda kameranı seçib birbaşa çəkə bilərsiniz. Böyük video yüklənərkən bir az gözləyin.</div>' : '<div class="hint">Fayl yükləmə bu hesabda mövcud deyil.</div>'),
+    async (v, form) => {
+      const keep = cur.filter((m, i) => !form.elements['rm' + i].checked);
+      const files = form.elements.files ? [...form.elements.files.files] : [];
+      for (const f of files) {
+        $('#msave').textContent = 'Yüklənir: ' + f.name.slice(0, 20);
+        const r = await assets.upload(f);
+        keep.push({ id: r.id, url: r.url, name: f.name, type: f.type.startsWith('video/') ? 'video' : 'image', at: today() });
+      }
+      await db.doc('contracts/' + c.id).update({ media: { ...(c.media || {}), [ph]: keep } });
+    });
+}
+function alert2(msg) { openForm('Diqqət', '<p style="margin:0">' + esc(msg) + '</p>', async () => {}, 'Oldu'); }
+
+/* ---------- görünüşlər ---------- */
+function viewHome() {
+  const t = today(), ym = t.slice(0, 7);
+  const act = S.contracts.filter(c => c.status === 'aktiv');
+  const rented = S.scooters.filter(s => activeOf(s.id)).length;
+  const repair = S.scooters.filter(s => !activeOf(s.id) && (s.status === 'temir' || s.status === 'itib')).length;
+  const monthIncome = S.payments.filter(p => p.kind === 'kirayə' && (p.date || '').startsWith(ym)).reduce((a, p) => a + p.amount, 0);
+  const calcs = act.map(c => ({ c, k: calc(c) }));
+  const totalDebt = calcs.reduce((a, x) => a + Math.max(0, x.k.debt), 0);
+  const deposits = S.contracts.filter(c => c.status === 'aktiv').reduce((a, c) => a + calc(c).dep, 0);
+  const alerts = [];
+  calcs.filter(x => x.k.debt > 0).sort((a, b) => b.k.debt - a.k.debt).forEach(x => alerts.push('<div class="alert"><span><b>' + esc(x.c.renter) + '</b> · ' + esc(scooterName(x.c.scooterId)) + '</span><span class="debt num">Borc ' + money(x.k.debt) + '</span></div>'));
+  act.filter(c => c.end).forEach(c => {
+    const left = dayN(c.end) - dayN(t);
+    if (left < 0) alerts.push('<div class="alert"><span><b>' + esc(c.renter) + '</b> · ' + esc(scooterName(c.scooterId)) + '</span><span class="debt">Müddət ' + (-left) + ' gün əvvəl bitib</span></div>');
+    else if (left <= 3) alerts.push('<div class="alert warn"><span><b>' + esc(c.renter) + '</b> · ' + esc(scooterName(c.scooterId)) + '</span><span style="color:var(--warn);font-weight:700">' + (left === 0 ? 'Bu gün bitir' : left + ' gün qalıb') + '</span></div>');
+  });
+  S.scooters.forEach(s => { const z = zoneState(s); if (z && z.st === 'out') alerts.push('<div class="alert"><span><b>' + esc(s.name) + '</b> · icazə verilən ərazidən kənardadır</span><span class="debt">' + z.d + ' m (' + esc(z.z.name) + ')</span></div>'); });
+  const mini = S.scooters.map(s => { const [lab, cls] = status(s), a = activeOf(s.id); return '<tr><td><b>' + esc(s.name) + '</b></td><td><span class="pill ' + cls + '">' + lab + '</span></td><td>' + esc(a ? a.renter : '—') + '</td><td>' + esc(s.loc ? s.loc.text : '—') + '</td></tr>'; }).join('');
+  return '<div class="tiles">' +
+    tile('Skuterlər', rented + ' / ' + S.scooters.length, 'kirayədə' + (repair ? ' · ' + repair + ' təmir/itkin' : '')) +
+    tile('Bu ay gəlir', money(monthIncome), 'kirayə ödənişləri') +
+    tile('Ümumi borc', '<span class="' + (totalDebt > 0 ? 'debt' : '') + '">' + money(totalDebt) + '</span>', 'aktiv müqavilələr üzrə') +
+    tile('Saxlanılan depozit', money(deposits), 'aktiv müqavilələr') + '</div>' +
+    '<section><h2 style="margin-bottom:14px">Diqqət tələb edənlər</h2><div style="display:grid;gap:8px">' + (alerts.join('') || '<div class="empty">Hazırda borc və ya bitən müqavilə yoxdur.</div>') + '</div></section>' +
+    '<section><h2 style="margin-bottom:14px">Skuterlərin vəziyyəti</h2>' + (S.scooters.length ? '<div class="tablebox"><table><thead><tr><th>Skuter</th><th>Status</th><th>İcarəçi</th><th>Son yer</th></tr></thead><tbody>' + mini + '</tbody></table></div>' : '<div class="empty">Hələ skuter əlavə edilməyib. “Skuterlər” bölməsindən əlavə edin.</div>') + '</section>';
+}
+const tile = (k, v, s) => '<div class="tile"><div class="k">' + k + '</div><div class="v">' + v + '</div><div class="s">' + s + '</div></div>';
+
+function viewScooters() {
+  const cards = S.scooters.map(s => {
+    const [lab, cls] = status(s), a = activeOf(s.id), link = mapLink(s.loc);
+    const log = (s.locLog || []).slice(1, 6);
+    return '<div class="card st-' + cls + '"><div class="head"><div><h3>' + esc(s.name) + '</h3><span class="plate">' + esc(s.plate || 'nömrə yoxdur') + '</span>' + (s.public ? ' <span class="muted small">· saytda görünür</span>' : '') + '</div><span class="pill ' + cls + '">' + lab + '</span></div>' +
+      '<dl class="kv"><dt>Skuter №</dt><dd>' + nz(s.plate) + '</dd><dt>Batareya 1</dt><dd>' + nz(s.bat1) + '</dd><dt>Batareya 2</dt><dd>' + nz(s.bat2) + '</dd><dt>Adaptor</dt><dd>' + nz(s.adapter) + '</dd><dt>Qiymət</dt><dd>' + (s.rate ? '<b>' + money(s.rate) + '</b> / ' + UNIT[s.unit || 'day'] : '<span class="muted">yazılmayıb</span>') + '</dd><dt>GPS</dt><dd>' + nz(s.gpsId) + '</dd>' +
+      '<dt>Yer</dt><dd>' + (s.loc ? esc(s.loc.text) + '<div class="muted small">yenilənib ' + dfmt(s.loc.at) + '</div>' : '<span class="muted">qeyd olunmayıb</span>') + '</dd>' +
+      (s.note ? '<dt>Qeyd</dt><dd>' + esc(s.note) + '</dd>' : '') + '</dl>' +
+      (log.length ? '<details><summary>Yer tarixçəsi</summary><div class="sub">' + log.map(l => '<div><span>' + esc(l.text) + '</span><span class="muted">' + dfmt(l.at) + '</span></div>').join('') + '</div></details>' : '') +
+      '<div class="actions"><button class="sm primary" data-act="days" data-id="' + s.id + '">Gün-gün qazanc</button><button class="sm" data-act="loc" data-id="' + s.id + '">Yeri yenilə</button>' +
+      (link ? '<a class="btn sm" href="' + esc(link) + '" target="_blank" rel="noopener">Xəritədə aç</a>' : '') +
+      (safe(s.gpsLink) ? '<a class="btn sm" href="' + esc(s.gpsLink) + '" target="_blank" rel="noopener">GPS-də izlə</a>' : '') +
+      '<button class="sm" data-act="edits" data-id="' + s.id + '">Redaktə</button></div></div>';
+  }).join('');
+  return '<div class="row between"><h2 style="margin:0">Skuterlər</h2><div class="row"><button data-act="days" data-id="all">Doluluq təqvimi (hamısı)</button><button class="primary" data-act="adds">+ Skuter əlavə et</button></div></div>' +
+    (cards ? '<div class="grid one">' + cards + '</div>' : '<div class="empty">Hələ skuter yoxdur.</div>');
+}
+
+function viewContracts() {
+  const f = S.cfilter;
+  const list = S.contracts.filter(c => f === 'hamisi' || (f === 'aktiv' ? c.status === 'aktiv' : c.status === 'baglanib')).sort((a, b) => (b.start || '').localeCompare(a.start || ''));
+  const cards = list.map(c => {
+    const k = calc(c), closed = c.status === 'baglanib';
+    return '<div class="card st-' + (closed ? 'mute' : k.debt > 0 ? 'bad' : 'ok') + '"><div class="head"><div><h3>' + esc(c.renter) + '</h3><div class="muted small">' + esc(scooterName(c.scooterId)) + '</div></div><span class="pill ' + (closed ? 'mute' : 'acc') + '">' + (closed ? 'Bağlanıb' : c.handed === false ? 'Təhvil gözlənilir' : 'Aktiv') + '</span></div>' +
+      (!closed && c.handed === false ? '<div class="sub" style="border:1px solid var(--line);border-radius:10px;padding:10px;margin:0"><b class="small">Skuteri verməzdən əvvəl hamısı olmalıdır:</b>' +
+        reqs(c).map(r => '<div><span>' + (r[2] ? '<span class="credit">✓</span> ' : '<span class="debt">✗</span> ') + esc(r[1]) + '</span><button class="sm" data-act="' + r[0] + '" data-id="' + c.id + '">' + (r[2] ? 'Dəyiş' : 'Əlavə et') + '</button></div>').join('') +
+        '<button class="sm primary" data-act="give" data-id="' + c.id + '"' + (reqs(c).every(r => r[2]) ? '' : ' disabled') + '>Skuteri təhvil ver</button>' +
+        '<div class="hint">Kirayə hesablanması təhvil verdiyiniz gündən başlayır. Başlama tarixi (' + dfmt(c.start) + ') düz deyilsə “Redaktə” ilə dəyişin.</div></div>' : '') +
+      '<dl class="kv"><dt>Telefon</dt><dd>' + esc(c.phone || '—') + '</dd><dt>Vəsiqə/FİN</dt><dd>' + esc(c.fin || '—') + '</dd>' +
+      '<dt>Müddət</dt><dd>' + dfmt(c.start) + ' → ' + (closed ? dfmt(c.closedAt) : dfmt(c.end)) + '</dd>' +
+      '<dt>Tarif</dt><dd>' + (discLabel(c) ? '<s class="muted">' + money(c.rate) + '</s> ' : '') + '<b>' + money(effRate(c)) + '</b> / ' + UNIT[c.unit] + (discLabel(c) ? ' <span class="pill ok">endirim ' + discLabel(c) + '</span>' : '') + '</dd>' +
+      '</dl><div class="money"><div><small>Hesablanıb</small><b>' + money(k.due) + '</b></div><div><small>Ödənilib</small><b>' + money(k.paid) + '</b></div><div><small>' + (k.debt < 0 ? 'Əvvəlcədən' : 'Borc') + '</small><b class="' + (k.debt > 0 ? 'debt' : k.debt < 0 ? 'credit' : '') + '">' + money(Math.abs(k.debt)) + '</b></div></div><dl class="kv">' +
+      '<dt>Depozit</dt><dd>' + (c.deposit ? money(k.dep) + ' / ' + money(c.deposit) : 'Yoxdur') + '</dd>' +
+      '<dt>Batareyalar</dt><dd>' + esc((c.snap || {}).bat1 || '—') + ' / ' + esc((c.snap || {}).bat2 || '—') + '</dd>' +
+      '<dt>Skan</dt><dd>' + (c.scanUrl ? '<a href="' + esc(c.scanUrl) + '" target="_blank" rel="noopener">' + esc(c.scanName || 'Faylı aç') + '</a>' : '<span class="muted">yüklənməyib</span>') + '</dd></dl>' +
+      (c.note ? '<div class="small muted">' + esc(c.note) + '</div>' : '') +
+      (c.signedAt ? '<div class="small"><span class="pill ok">İmzalanıb' + (c.signedOnline ? ' (onlayn)' : '') + ' · ' + dfmt(c.signedAt) + '</span></div>' : '') +
+      (c.signature && safe(c.signature.url) ? '<details><summary>Onlayn imza: ' + esc(c.signature.name || '') + '</summary><div class="sub"><div><span>' + esc(String(c.signature.at || '').replace('T', ' ').replace('Z', ' UTC')) + (c.signature.ip ? ' · IP ' + esc(c.signature.ip) : '') + '</span></div></div><a href="' + esc(c.signature.url) + '" target="_blank" rel="noopener"><img src="' + esc(c.signature.url) + '" alt="İmza" style="max-width:240px;background:#fff;border:1px solid var(--line);border-radius:8px"></a></details>' : '') +
+      (c.returnSignedAt ? '<div class="small"><span class="pill ok">Qaytarma aktı imzalanıb · ' + dfmt(c.returnSignedAt) + '</span></div>' : '') +
+      (c.returnSignature && safe(c.returnSignature.url) ? '<details><summary>Qaytarma imzası: ' + esc(c.returnSignature.name || '') + '</summary><a href="' + esc(c.returnSignature.url) + '" target="_blank" rel="noopener"><img src="' + esc(c.returnSignature.url) + '" alt="İmza" style="max-width:240px;background:#fff;border:1px solid var(--line);border-radius:8px"></a></details>' : '') +
+      ['handover', 'id', 'renter', 'return'].map(ph => mediaOf(c, ph).length ? '<details><summary>' + PH[ph] + ' (' + mediaOf(c, ph).length + ')</summary>' + mediaGrid(mediaOf(c, ph)) + '</details>' : '').join('') +
+      (k.pays.length ? '<details><summary>Ödənişlər (' + k.pays.length + ')</summary><div class="sub">' + k.pays.sort((a, b) => b.date.localeCompare(a.date)).map(p => '<div><span>' + dfmt(p.date) + ' · ' + esc(p.kind) + ' · ' + esc(p.method) + '</span><span class="num">' + money(p.amount) + '</span></div>').join('') + '</div></details>' : '') +
+      '<div class="actions">' + (!closed ? '<button class="sm primary" data-act="pay" data-id="' + c.id + '">Ödəniş</button><button class="sm" data-act="close" data-id="' + c.id + '">Müqaviləni bağla</button>' : '<button class="sm" data-act="reopen" data-id="' + c.id + '">Yenidən aç</button>') +
+      '<button class="sm" data-act="sched" data-id="' + c.id + '">Ödəniş cədvəli</button><button class="sm primary" data-act="send" data-id="' + c.id + '">Link göndər</button><button class="sm" data-act="docc" data-id="' + c.id + '">Müqavilə / akt</button><button class="sm" data-act="docr" data-id="' + c.id + '">Qaytarma aktı</button><button class="sm primary" data-act="sendr" data-id="' + c.id + '">Qaytarma linki</button><button class="sm" data-act="mh" data-id="' + c.id + '">Təhvil foto/video</button><button class="sm" data-act="mr" data-id="' + c.id + '">Qaytarma foto/video</button><button class="sm" data-act="editc" data-id="' + c.id + '">Redaktə</button></div></div>';
+  }).join('');
+  return '<div class="row between"><h2 style="margin:0">Müqavilələr</h2><button class="primary" data-act="addc">+ Yeni müqavilə</button></div>' +
+    '<div class="seg" role="group" aria-label="Filtr">' + [['aktiv', 'Aktiv'], ['baglanib', 'Bağlanmış'], ['hamisi', 'Hamısı']].map(x => '<button data-act="cf" data-v="' + x[0] + '" aria-pressed="' + (f === x[0]) + '">' + x[1] + '</button>').join('') + '</div>' +
+    (cards ? '<div class="grid">' + cards + '</div>' : '<div class="empty">Bu filtrdə müqavilə yoxdur.</div>');
+}
+
+const KM = { 'kirayə': ['kira', '₼'], 'cərimə': ['cer', '!'], 'depozit': ['dep', '↓'], 'depozit qaytarılması': ['ret', '↑'], 'güzəşt': ['guz', '%'] };
+function viewPayments() {
+  const data = reportData();
+  const months = [...new Set(S.payments.map(p => (p.date || '').slice(0, 7)).filter(Boolean))].sort().reverse();
+  const m = S.pmonth;
+  const list = S.payments.filter(p => !m || (p.date || '').startsWith(m)).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const isInc = p => p.kind === 'kirayə' || p.kind === 'cərimə';
+  const byDay = {};
+  list.forEach(p => { (byDay[p.date || '—'] = byDay[p.date || '—'] || []).push(p); });
+  const feed = Object.keys(byDay).map(d => {
+    const items = byDay[d], tot = items.filter(isInc).reduce((a, p) => a + p.amount, 0);
+    return '<div class="day"><div class="dh"><b>' + dfmt(d) + '</b><span>' + (tot ? '+' + money(tot) : '') + '</span></div>' + items.map(p => {
+      const c = S.contracts.find(x => x.id === p.contractId), km = KM[p.kind] || ['kira', '₼'], neg = p.kind === 'depozit qaytarılması' || p.kind === 'güzəşt';
+      return '<div class="tx"><span class="ic k-' + km[0] + '">' + km[1] + '</span><div class="tm"><b>' + esc(c ? c.renter : '—') + '</b><small>' + esc(c ? scooterName(c.scooterId) : '') + ' · ' + esc(p.kind) + (p.method && p.method !== '—' ? ' · ' + esc(p.method) : '') + (p.note ? ' · ' + esc(p.note) : '') + '</small></div><b class="ta ' + (neg ? 'neg' : '') + '">' + (neg ? '−' : '+') + money(p.amount) + '</b><button class="sm danger" data-act="delp" data-id="' + p.id + '">Sil</button></div>';
+    }).join('') + '</div>';
+  }).join('');
+  return '<div class="row between"><h2 style="margin:0">Ödənişlər</h2><button class="primary pbtn" data-act="addp">+ Ödəniş əlavə et</button></div>' +
+    '<div class="pay">' +
+    '<div class="row"><div class="f" style="width:220px"><label for="pm">Qazanc hansı dövr üçün</label><select id="pm"><option value="">Bütün dövr</option>' + months.map(x => '<option value="' + x + '"' + (x === m ? ' selected' : '') + '>' + x.slice(5) + '.' + x.slice(0, 4) + '</option>').join('') + '</select></div></div>' +
+    dueList() + scooterCards(data) +
+    '<section><h3 class="ptitle">Əməliyyatlar (ödənişlərin siyahısı)</h3>' + (feed ? '<div class="feed">' + feed + '</div>' : '<div class="empty">Hələ ödəniş qeyd olunmayıb. “Ödəniş əlavə et” düyməsini basın.</div>') + '</section></div>';
+}
+
+/* ---------- izləmə ---------- */
+S.tstat = ''; S.tsel = ''; S.track = null;
+const hav = (a, b, c, d) => { const R = 6371000, r = Math.PI / 180, dl = (c - a) * r, dn = (d - b) * r, x = Math.sin(dl / 2) ** 2 + Math.cos(a * r) * Math.cos(c * r) * Math.sin(dn / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(x)); };
+function trackMsg(html) { S.tstat = html; if (S.tab === 'izleme') render(); }
+const geoErr = e => e && e.code === 1 ? 'GPS icazəsi verilmədi. Telefonda bu səhifə üçün “Yer / Location” icazəsini açın, sonra yenidən yoxlayın.' : e && e.code === 2 ? 'Yer müəyyən edilə bilmədi (GPS siqnalı yoxdur). Açıq havada yoxlayın.' : e && e.code === 3 ? 'GPS vaxtında cavab vermədi. Yenidən yoxlayın.' : 'Telefonun GPS-i bu görünüşdə əlçatan deyil.';
+const llink = (lat, lon) => '<a href="https://www.google.com/maps?q=' + lat.toFixed(6) + ',' + lon.toFixed(6) + '" target="_blank" rel="noopener">xəritədə aç</a>';
+function myPos() {
+  if (!navigator.geolocation) { trackMsg('Bu brauzerdə GPS dəstəyi yoxdur.'); return; }
+  trackMsg('Yer axtarılır…');
+  navigator.geolocation.getCurrentPosition(p => trackMsg('Sizin yeriniz: <b>' + p.coords.latitude.toFixed(6) + ', ' + p.coords.longitude.toFixed(6) + '</b> (±' + Math.round(p.coords.accuracy || 0) + ' m) · ' + llink(p.coords.latitude, p.coords.longitude)),
+    e => trackMsg(esc(geoErr(e))), { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+}
+function trackOff(silent) {
+  if (S.track && S.track.wid != null && navigator.geolocation) navigator.geolocation.clearWatch(S.track.wid);
+  S.track = null; if (!silent) trackMsg('İzləmə dayandırıldı.');
+}
+function trackOn(id) {
+  const s = S.scooters.find(x => x.id === id);
+  if (!s) return;
+  if (!navigator.geolocation) { trackMsg('Bu brauzerdə GPS dəstəyi yoxdur.'); return; }
+  trackOff(true);
+  const T = S.track = { id, last: null, wid: null };
+  trackMsg('GPS siqnalı gözlənilir… (' + esc(s.name) + ')');
+  T.wid = navigator.geolocation.watchPosition(async p => {
+    if (S.track !== T) return;
+    const lat = p.coords.latitude, lon = p.coords.longitude, acc = Math.round(p.coords.accuracy || 0), now = Date.now(), L = T.last;
+    if (L && now - L.t < 10000) return;
+    if (L && hav(L.lat, L.lon, lat, lon) < 10 && now - L.t < 60000) return;
+    T.last = { lat, lon, t: now };
+    try {
+      await db.doc('scooters/' + id).update({ loc: { text: 'Telefon GPS (±' + acc + ' m)', coords: lat.toFixed(6) + ', ' + lon.toFixed(6), at: today(), ts: now } });
+      trackMsg('İzlənir: <b>' + esc(s.name) + '</b> · ' + new Date(now).toTimeString().slice(0, 5) + ' · ±' + acc + ' m · ' + llink(lat, lon) + '<br><span class="muted">Bu səhifə telefonda açıq qalmalıdır. İzləmə bölməsində yer avtomatik yenilənir.</span>');
+    } catch (er) { trackMsg('Yer yazıla bilmədi: ' + esc(er.message || er.code || '')); }
+  }, e => { trackMsg(esc(geoErr(e))); trackOff(true); }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 30000 });
+}
+/* icazə verilən ərazilər (dairə: mərkəz + radius) */
+S.zones = [];
+const parseXY = s => { const m = /^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/.exec(s || ''); return m ? [+m[1], +m[2]] : null; };
+function zoneState(s) {
+  if (!S.zones.length || s.status === 'temir') return null;
+  const xy = s.loc && parseXY(s.loc.coords);
+  if (!xy) return { st: 'unk' };
+  let best = null;
+  for (const z of S.zones) { const d = hav(xy[0], xy[1], z.lat, z.lon) - z.r; if (!best || d < best.d) best = { d, z }; }
+  return best.d <= 0 ? { st: 'in', z: best.z } : { st: 'out', z: best.z, d: Math.round(best.d) };
+}
+const saveZones = list => db.doc('settings/zones').set({ list });
+function zoneForm(z) {
+  z = z || {};
+  openForm(z.id ? 'Ərazini redaktə et' : 'Yeni icazə verilən ərazi',
+    fld('name', 'Ərazinin adı', 'text', z.name, 'required placeholder="məs. Mərkəz"') +
+    fld('xy', 'Mərkəzin koordinatı (enlik, uzunluq)', 'text', z.id ? z.lat + ', ' + z.lon : '', 'required placeholder="40.4093, 49.8671"') +
+    '<div class="row"><button type="button" class="sm" id="zme">Mənim yerimi götür</button><span class="hint" id="zmsg">Google Maps-də nöqtəni basılı tutub koordinatı kopyalaya bilərsiniz.</span></div>' +
+    fld('r', 'Radius (metr)', 'number', z.r || 500, 'required min="50" step="10"') +
+    '<div class="hint">Skuter bu dairənin içindədirsə “ərazidə”, kənardadırsa xəbərdarlıq çıxır.</div>',
+    async v => {
+      const xy = parseXY(v.xy); if (!xy) throw new Error('Koordinat düzgün deyil. Nümunə: 40.4093, 49.8671');
+      const item = { id: z.id || Date.now().toString(36), name: v.name.trim(), lat: xy[0], lon: xy[1], r: Math.max(50, +v.r || 500) };
+      await saveZones(z.id ? S.zones.map(q => q.id === z.id ? item : q) : [...S.zones, item]);
+    });
+  $('#zme').onclick = () => {
+    const msg = t => { $('#zmsg').textContent = t; };
+    if (!navigator.geolocation) { msg('GPS bu görünüşdə əlçatan deyil.'); return; }
+    msg('Yer axtarılır…');
+    navigator.geolocation.getCurrentPosition(p => { $('#xy').value = p.coords.latitude.toFixed(6) + ', ' + p.coords.longitude.toFixed(6); msg('Yerinizin koordinatı yazıldı.'); }, e => msg(geoErr(e)), { enableHighAccuracy: true, timeout: 20000 });
+  };
+}
+function viewTracking() {
+  const t = today(), ago = at => at ? dayN(t) - dayN(at) : null;
+  const rows = S.scooters.map(s => ({ s, a: activeOf(s.id), d: s.loc ? ago(s.loc.at) : null }));
+  const known = rows.filter(r => r.s.loc).length, stale = rows.filter(r => !r.s.loc || r.d >= 2).length;
+  const gps = rows.filter(r => safe(r.s.gpsLink)).length, rented = rows.filter(r => r.a && r.a.handed !== false).length;
+  const zonePill = s => { const z = zoneState(s); return !z ? '<span class="muted">—</span>' : z.st === 'in' ? '<span class="pill ok">Ərazidə · ' + esc(z.z.name) + '</span>' : z.st === 'out' ? '<span class="pill bad">Kənarda · ' + z.d + ' m</span><div class="muted small">ən yaxın: ' + esc(z.z.name) + '</div>' : '<span class="pill mute">koordinat yoxdur</span>'; };
+  const outN = S.scooters.filter(s => (zoneState(s) || {}).st === 'out').length;
+  const zrows = S.zones.map(z => '<tr><td><b>' + esc(z.name) + '</b></td><td>' + z.lat.toFixed(5) + ', ' + z.lon.toFixed(5) + '</td><td class="r">' + z.r + ' m</td><td><div class="row" style="flex-wrap:nowrap"><button class="sm" data-act="editz" data-id="' + z.id + '">Redaktə</button><button class="sm danger" data-act="delz" data-id="' + z.id + '">Sil</button></div></td></tr>').join('');
+  const agoPill = r =>!r.s.loc ? '<span class="pill bad">qeyd yoxdur</span>' : r.d <= 0 ? '<span class="pill ok">bu gün</span>' : '<span class="pill ' + (r.d >= 2 ? 'warn' : 'ok') + '">' + r.d + ' gün əvvəl</span>';
+  const body = rows.map(r => {
+    const [lab, cls] = status(r.s), link = mapLink(r.s.loc);
+    return '<tr' + (!r.s.loc || r.d >= 2 ? ' style="background:var(--warn-soft)"' : '') + '><td><b>' + esc(r.s.name) + '</b><div class="muted small">' + esc(r.s.plate || '') + '</div></td><td><span class="pill ' + cls + '">' + lab + '</span></td><td>' + (r.a ? esc(r.a.renter) : '—') + '</td>' +
+      '<td>' + (r.s.loc ? esc(r.s.loc.text) + (r.s.loc.coords ? '<div class="muted small">' + esc(r.s.loc.coords) + '</div>' : '') : '<span class="muted">qeyd olunmayıb</span>') + '</td><td>' + zonePill(r.s) + '</td><td>' + agoPill(r) + (r.s.loc ? '<div class="muted small">' + dfmt(r.s.loc.at) + (r.s.loc.ts ? ' · ' + new Date(r.s.loc.ts).toTimeString().slice(0, 5) : '') + '</div>' : '') + '</td>' +
+      '<td>' + (r.s.gpsId ? esc(r.s.gpsId) : '<span class="muted">—</span>') + '</td><td><div class="row" style="flex-wrap:nowrap">' + (link ? '<a class="btn sm" href="' + esc(link) + '" target="_blank" rel="noopener">Xəritədə aç</a>' : '') + (safe(r.s.gpsLink) ? '<a class="btn sm primary" href="' + esc(r.s.gpsLink) + '" target="_blank" rel="noopener">GPS-də izlə</a>' : '') + '<button class="sm" data-act="loc" data-id="' + r.s.id + '">Yeri yenilə</button></div></td></tr>';
+  }).join('');
+  const hist = S.scooters.flatMap(s => (s.locLog || []).map(l => ({ s, l }))).sort((a, b) => (b.l.at || '').localeCompare(a.l.at || '')).slice(0, 25)
+    .map(x => '<tr><td>' + dfmt(x.l.at) + '</td><td><b>' + esc(x.s.name) + '</b></td><td>' + esc(x.l.text) + (x.l.coords ? '<div class="muted small">' + esc(x.l.coords) + '</div>' : '') + '</td></tr>').join('');
+  return '<div class="row between"><h2 style="margin:0">İzləmə</h2></div>' +
+    '<div class="tiles">' + tile('Yeri məlum', known + ' / ' + S.scooters.length, 'skuter') + tile('Yenilənməli', '<span class="' + (stale ? 'debt' : '') + '">' + stale + '</span>', 'yeri yoxdur və ya 2+ gün köhnədir') + tile('GPS linki olan', gps + ' / ' + S.scooters.length, 'canlı izləmə linki') + tile('Kirayədə', rented + ' / ' + S.scooters.length, 'təhvil verilmiş') + (S.zones.length ? tile('Ərazidən kənarda', '<span class="' + (outN ? 'debt' : '') + '">' + outN + '</span>', 'icazə verilən ərazilərdən') : '') + '</div>' +
+    (outN ? '<div class="alert"><span><b>Diqqət:</b> ' + S.scooters.filter(s => (zoneState(s) || {}).st === 'out').map(s => esc(s.name)).join(', ') + ' icazə verilən ərazidən kənardadır.</span></div>' : '') +
+    '<section><h3 class="ptitle">İcazə verilən ərazilər</h3>' + (zrows ? '<div class="tablebox"><table style="min-width:520px"><thead><tr><th>Ad</th><th>Mərkəz</th><th class="r">Radius</th><th></th></tr></thead><tbody>' + zrows + '</tbody></table></div>' : '<div class="empty">Ərazi təyin olunmayıb. Əlavə etsəniz, skuter bu dairələrdən kənara çıxanda xəbərdarlıq görünəcək.</div>') + '<div style="margin-top:10px"><button class="primary" data-act="addz">+ Ərazi əlavə et</button></div></section>' +
+    (S.scooters.length ? '<section><h3 class="ptitle">GPS sınağı (telefonun GPS-i ilə)</h3><div class="card" style="gap:10px"><div class="hint">GPS cihazı gələnə qədər izləmənin işlədiyini yoxlamaq üçün: telefonu skuterin yerinə qoyun, aşağıdan skuteri seçib izləməni başladın. Telefon hərəkət etdikcə skuterin yeri avtomatik yenilənir, başqa cihazdan (işçinin telefonu) bu bölməyə baxıb yoxlaya bilərsiniz.</div>' +
+      '<div class="f" style="max-width:320px"><label for="tsel">Hansı skuter kimi izlənsin</label><select id="tsel"' + (S.track ? ' disabled' : '') + '>' + S.scooters.map(s => '<option value="' + s.id + '"' + ((S.tsel || S.scooters[0].id) === s.id ? ' selected' : '') + '>' + esc(s.name) + '</option>').join('') + '</select></div>' +
+      '<div class="row"><button data-act="tmy">Mənim yerimi göstər</button>' + (S.track ? '<button class="danger" data-act="toff">İzləməni dayandır</button>' : '<button class="primary" data-act="ton">Bu telefonu skuter kimi izlə</button>') + '</div>' +
+      '<div class="small" id="tstat">' + (S.tstat || '') + '</div></div></section>' : '') +
+    (S.scooters.length ? '<section><h3 class="ptitle">Skuterlərin yeri</h3><div class="tablebox"><table style="min-width:900px"><thead><tr><th>Skuter</th><th>Vəziyyət</th><th>İcarəçi</th><th>Son yer</th><th>Ərazi</th><th>Yenilənib</th><th>GPS №</th><th></th></tr></thead><tbody>' + body + '</tbody></table></div>' +
+      '<div class="hint" style="margin-top:8px">Sarı fonlu sətirlərin yeri qeyd olunmayıb və ya 2 gündən çoxdur yenilənməyib. “Yeri yenilə” ilə yeni ünvan yazın.</div></section>' : '<div class="empty">Hələ skuter yoxdur.</div>') +
+    (hist ? '<section><h3 class="ptitle">Yer tarixçəsi (son 25)</h3><div class="tablebox"><table style="min-width:520px"><thead><tr><th>Tarix</th><th>Skuter</th><th>Yer</th></tr></thead><tbody>' + hist + '</tbody></table></div></section>' : '') +
+    '<div class="hint">Skuterlərə GPS cihazı qoşulanda canlı xəritə bu bölməyə əlavə olunacaq. İndi yer əl ilə yazılır, GPS izləmə linki varsa “GPS-də izlə” düyməsi onu açır.</div>';
+}
+
+/* ---------- müştərilər ---------- */
+const lc = x => (x || '').trim().toLowerCase();
+const contractsOf = cu => S.contracts.filter(c => c.customerId === cu.id || (!c.customerId && ((cu.fin && lc(c.fin) === lc(cu.fin)) || (!cu.fin && lc(c.renter) === lc(cu.name) && lc(c.phone) === lc(cu.phone)))));
+const ID_PROMPT = 'Bu, Azərbaycan şəxsiyyət vəsiqəsinin (və ya pasportun / sürücülük vəsiqəsinin) şəkli və ya şəkilləridir. Üzərində yazılanları oxu və YALNIZ bir JSON obyekti qaytar: {"name": "tam ad: soyad, ad, ata adı ardıcıllığı ilə", "fin": "FİN kodu (7 simvol)", "series": "vəsiqənin seriya və nömrəsi, məs. AZE1234567", "birth": "doğum tarixi YYYY-MM-DD formatında", "address": "ünvan"}. Oxuya bilmədiyin və ya şəkildə olmayan sahəni boş sətir "" qoy, heç nə uydurma.';
+function customerForm(x) {
+  x = x || {};
+  const phRow = p => '<div class="two phrow"><input name="phn" type="tel" placeholder="Telefon" value="' + esc(p.n || '') + '"><input name="phl" type="text" placeholder="Kimin nömrəsidir (məs. həyat yoldaşı)" value="' + esc(p.l || '') + '"></div>';
+  const old = x.idPhotos || [];
+  openForm(x.id ? 'Müştərini redaktə et' : 'Yeni müştəri',
+    (assets ? '<div class="f"><label for="idimg">Vəsiqənin şəkli (ön və arxa)</label><input id="idimg" name="idimg" type="file" accept="image/*" multiple>' +
+      '<div class="row"><button type="button" class="sm" id="idread">Vəsiqədən məlumatı oxu</button><span class="hint" id="idmsg">Şəkli seçin, məlumatlar aşağıdakı xanalara avtomatik yazılacaq. Yoxlayıb düzəldin.</span></div></div>' : '') +
+    (old.length ? '<div class="f"><label>Yüklənmiş vəsiqə şəkilləri (silmək üçün işarələyin)</label>' + old.map((m, i) => '<label style="display:flex;gap:8px;align-items:center;font-weight:500"><input type="checkbox" name="rmid' + i + '" value="1" style="width:auto"> ' + esc(m.name) + '</label>').join('') + '</div>' : '') +
+    fld('name', 'Ad, soyad, ata adı', 'text', x.name, 'required') +
+    '<div class="two">' + fld('phone', 'Telefon (əsas)', 'tel', x.phone, 'placeholder="+994 50 000 00 00"') + fld('fin', 'FİN', 'text', x.fin) + '</div>' +
+    '<div class="two">' + fld('idSeries', 'Vəsiqənin seriya / nömrəsi', 'text', x.idSeries) + fld('birth', 'Doğum tarixi', 'date', x.birth) + '</div>' +
+    fld('address', 'Ünvan', 'text', x.address) +
+    '<div class="f"><label>Əlavə telefonlar</label><div id="phs" style="display:grid;gap:8px">' + (x.phones || []).map(phRow).join('') + '</div><div><button type="button" class="sm" id="phadd">+ Əlavə telefon</button></div></div>' +
+    '<div class="f"><label for="note">Qeyd</label><textarea id="note" name="note" rows="2">' + esc(x.note) + '</textarea></div>',
+    async (v, form) => {
+      const ns = [...form.querySelectorAll('input[name=phn]')], ls = [...form.querySelectorAll('input[name=phl]')];
+      const phones = ns.map((el, i) => ({ n: el.value.trim(), l: (ls[i] ? ls[i].value : '').trim() })).filter(p => p.n);
+      const data = { name: v.name.trim(), phone: v.phone.trim(), fin: v.fin.trim(), idSeries: (v.idSeries || '').trim(), birth: v.birth || '', address: v.address.trim(), phones, note: v.note.trim() };
+      const keep = old.filter((m, i) => !(form.elements['rmid' + i] && form.elements['rmid' + i].checked));
+      const files = form.elements.idimg ? [...form.elements.idimg.files] : [];
+      for (const f of files) {
+        $('#msave').textContent = 'Yüklənir…';
+        const r = await assets.upload(f);
+        keep.push({ id: r.id, url: r.url, name: f.name, type: 'image', at: today() });
+      }
+      data.idPhotos = keep;
+      if (x.id) await db.doc('customers/' + x.id).update(data);
+      else await db.collection('customers').add({ ...data, createdAt: today() });
+    });
+  const msg = t => { const m = $('#idmsg'); if (m) m.textContent = t; };
+  $('#phadd').onclick = () => { $('#phs').insertAdjacentHTML('beforeend', phRow({})); const r = $('#phs').lastElementChild; if (r) r.querySelector('input').focus(); };
+  const rd = $('#idread');
+  if (rd) rd.onclick = async () => {
+    const inp = $('#idimg'), files = inp ? [...inp.files] : [];
+    if (!files.length) { msg('Əvvəlcə vəsiqənin şəklini seçin.'); return; }
+    rd.disabled = true; msg('Oxunur… (bir az gözləyin)');
+    try {
+      const sample = await claude.use('sample');
+      const lim = sample ? await sample.limits().catch(() => null) : null;
+      if (!sample || !lim || !lim.images) { msg('Avtomatik oxuma bu hesabda əlçatan deyil, məlumatı əl ilə yazın.'); return; }
+      const d = await sample.json(ID_PROMPT, { images: files.slice(0, lim.images.maxCount || 2), cache: false });
+      const set = (id, val) => { const el = $('#' + id); if (el && typeof val === 'string' && val.trim()) el.value = val.trim(); };
+      set('name', d.name); set('fin', d.fin); set('idSeries', d.series); set('address', d.address);
+      if (typeof d.birth === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d.birth)) $('#birth').value = d.birth;
+      msg('Məlumatlar yazıldı. Şəkillə tutuşdurub yoxlayın, səhv varsa düzəldin.');
+    } catch (e) {
+      msg(e && e.code === 'not_granted' ? 'Oxumaq üçün icazə verilmədi. Məlumatı əl ilə yazın.' : e && e.code === 'rate_limited' ? 'Çox sorğu göndərildi, bir az sonra yenidən yoxlayın.' : e && e.code === 'image_rejected' ? 'Şəkil oxunmadı. Başqa şəkil seçin.' : 'Oxunmadı. Şəkli daha aydın çəkin və ya məlumatı əl ilə yazın.');
+    } finally { rd.disabled = false; }
+  };
+}
+async function importCustomers() {
+  const un = S.contracts.filter(c => !c.customerId && c.renter), groups = {};
+  un.forEach(c => { const k = c.fin ? 'f:' + lc(c.fin) : 'n:' + lc(c.renter) + '|' + lc(c.phone); (groups[k] = groups[k] || []).push(c); });
+  for (const list of Object.values(groups)) {
+    const f = list.slice().sort((a, b) => (b.start || '').localeCompare(a.start || ''))[0];
+    const ref = await db.collection('customers').add({ name: f.renter, phone: f.phone || '', fin: f.fin || '', address: '', note: '', createdAt: today() });
+    for (const c of list) await db.doc('contracts/' + c.id).update({ customerId: ref.id });
+  }
+}
+function viewCustomers() {
+  const q = lc(S.cq);
+  const list = S.customers.filter(x => !q || lc(x.name).includes(q) || lc(x.phone).includes(q) || lc(x.fin).includes(q) || (x.phones || []).some(p => lc(p.n).includes(q)));
+  const unlinked = S.contracts.filter(c => !c.customerId && c.renter).length;
+  const cards = list.map(x => {
+    const cs = contractsOf(x), ids = cs.map(c => c.id);
+    const act = cs.find(c => c.status === 'aktiv');
+    const paid = S.payments.filter(p => ids.includes(p.contractId) && (p.kind === 'kirayə' || p.kind === 'cərimə')).reduce((a, p) => a + p.amount, 0);
+    const debt = cs.filter(c => c.status === 'aktiv').reduce((a, c) => a + Math.max(0, calc(c).debt), 0);
+    const idm = [...(x.idPhotos || []), ...cs.flatMap(c => mediaOf(c, 'id'))];
+    return '<div class="card st-' + (debt > 0 ? 'bad' : act ? 'acc' : 'mute') + '"><div class="head"><div><h3>' + esc(x.name) + '</h3><div class="muted small">' + esc(x.phone || 'telefon yoxdur') + '</div></div>' + (act ? '<span class="pill acc">' + esc(scooterName(act.scooterId)) + '</span>' : '<span class="pill mute">kirayədə deyil</span>') + '</div>' +
+      '<dl class="kv"><dt>Vəsiqə/FİN</dt><dd>' + nz(x.fin) + '</dd>' + (x.idSeries ? '<dt>Seriya/№</dt><dd>' + esc(x.idSeries) + '</dd>' : '') + (x.birth ? '<dt>Doğum</dt><dd>' + dfmt(x.birth) + '</dd>' : '') + '<dt>Ünvan</dt><dd>' + nz(x.address) + '</dd>' + (x.phones || []).map(p => '<dt>Əlavə tel.</dt><dd>' + esc(p.n) + (p.l ? ' <span class="muted small">(' + esc(p.l) + ')</span>' : '') + '</dd>').join('') + (x.note ? '<dt>Qeyd</dt><dd>' + esc(x.note) + '</dd>' : '') + '</dl>' +
+      '<div class="money"><div><small>Müqavilə</small><b>' + cs.length + '</b></div><div><small>Ödəyib</small><b>' + money(paid) + '</b></div><div><small>Borc</small><b class="' + (debt > 0 ? 'debt' : '') + '">' + money(debt) + '</b></div></div>' +
+      (cs.length ? '<details><summary>Müqavilə tarixçəsi (' + cs.length + ')</summary><div class="sub">' + cs.slice().sort((a, b) => (b.start || '').localeCompare(a.start || '')).map(c => '<div><span>' + esc(scooterName(c.scooterId)) + ' · ' + dfmt(c.start) + ' → ' + (c.status === 'baglanib' ? dfmt(c.closedAt) : 'davam edir') + '</span><span class="pill ' + (c.status === 'baglanib' ? 'mute' : 'acc') + '">' + (c.status === 'baglanib' ? 'bağlanıb' : 'aktiv') + '</span></div>').join('') + '</div></details>' : '') +
+      (idm.length ? '<details><summary>Vəsiqə şəkli (' + idm.length + ')</summary>' + mediaGrid(idm) + '</details>' : '') +
+      '<div class="actions"><button class="sm primary" data-act="cnewc" data-id="' + x.id + '">Yeni müqavilə</button><button class="sm" data-act="editcu" data-id="' + x.id + '">Redaktə</button><button class="sm danger" data-act="delcu" data-id="' + x.id + '">Sil</button></div></div>';
+  }).join('');
+  return '<div class="row between"><h2 style="margin:0">Müştərilər</h2><button class="primary" data-act="addcu">+ Müştəri əlavə et</button></div>' +
+    (unlinked ? '<div class="alert warn"><span>' + unlinked + ' müqavilə müştəriyə bağlı deyil.</span><button class="sm" data-act="cimport">Müqavilələrdən müştəri yarat</button></div>' : '') +
+    '<div class="f" style="max-width:360px"><label for="cq">Axtar (ad, telefon, FİN)</label><input id="cq" type="search" value="' + esc(S.cq) + '"></div>' +
+    (cards ? '<div class="grid">' + cards + '</div>' : '<div class="empty">' + (S.customers.length ? 'Heç nə tapılmadı.' : 'Hələ müştəri yoxdur. “Müştəri əlavə et” düyməsini basın.') + '</div>');
+}
+
+/* ---------- ayarlar (icarədar məlumatı) ---------- */
+function viewSettings() {
+  const L = S.settings || {};
+  const empty = !L.name;
+  return '<div class="row between"><h2>Ayarlar</h2><button class="primary" data-act="sets">Məlumatları dəyiş</button></div>' +
+    (empty ? '<div class="alert warn"><span>İcarədar (sizin) məlumatlarınız yazılmayıb. Müqavilələrdə bu xanalar boş qalacaq.</span></div>' : '') +
+    '<div class="card"><h3>İcarədar (müqavilədə avtomatik yazılır)</h3><dl class="kv" style="grid-template-columns:150px 1fr">' +
+    '<dt>Ad, soyad / şirkət</dt><dd>' + nz(L.name) + '</dd><dt>FİN / VÖEN</dt><dd>' + nz(L.idno) + '</dd><dt>Ünvan</dt><dd>' + nz(L.address) + '</dd><dt>Telefon</dt><dd>' + nz(L.phone) + '</dd><dt>Şəhər</dt><dd>' + nz(L.city) + '</dd>' +
+    '<dt>Skuterin dəyəri</dt><dd>' + (L.scooterValue ? money(L.scooterValue) : nz('')) + '</dd><dt>Batareyanın dəyəri</dt><dd>' + (L.batteryValue ? money(L.batteryValue) : nz('')) + '</dd></dl>' +
+    '<div class="hint">Skuter və batareyanın dəyəri itirmə və ya zədə halında icarəçidən tələb olunan məbləğ kimi müqaviləyə yazılır.</div></div>' +
+    siteCard();
+}
+function siteCard() {
+  const W = S.site || {};
+  return '<div class="card" style="margin-top:16px"><div class="row between"><h3>Ön sayt (skuterbaku.az)</h3><button class="sm" data-act="siteset">Dəyiş</button></div><dl class="kv" style="grid-template-columns:150px 1fr">' +
+    '<dt>Şüar</dt><dd>' + nz(W.tagline) + '</dd><dt>Telefon</dt><dd>' + nz(W.phone) + '</dd><dt>WhatsApp</dt><dd>' + nz(W.whatsapp) + '</dd><dt>Instagram</dt><dd>' + nz(W.instagram) + '</dd><dt>Telegram</dt><dd>' + nz(W.telegram) + '</dd><dt>Ünvan</dt><dd>' + nz(W.address) + '</dd><dt>İş saatı</dt><dd>' + nz(W.hours) + '</dd></dl>' +
+    '<div class="hint">Bu məlumat ictimai saytda görünür. Skuterləri saytda göstərmək üçün “Skuterlər” bölməsində skuteri redaktə edib “Saytda göstər” xanasını işarələyin.</div></div>';
+}
+function siteForm() {
+  const W = S.site || {};
+  openForm('Ön sayt məlumatları',
+    fld('tagline', 'Şüar (böyük başlıq)', 'text', W.tagline, 'placeholder="Bakıda elektrik skuter icarəsi"') +
+    '<div class="f"><label for="intro">Qısa izah (başlığın altında)</label><textarea id="intro" name="intro" rows="2" placeholder="Sürətli, rahat və sərfəli. Müqaviləni telefondan imzalayın.">' + esc(W.intro) + '</textarea></div>' +
+    '<div class="two">' + fld('phone', 'Telefon (zəng)', 'tel', W.phone, 'placeholder="+994 50 000 00 00"') + fld('whatsapp', 'WhatsApp nömrəsi', 'tel', W.whatsapp, 'placeholder="+994 50 000 00 00"') + '</div>' +
+    '<div class="two">' + fld('instagram', 'Instagram istifadəçi adı', 'text', W.instagram, 'placeholder="skuterbaku"') + fld('telegram', 'Telegram istifadəçi adı', 'text', W.telegram, 'placeholder="skuterbaku"') + '</div>' +
+    fld('address', 'Ünvan / götürmə yeri', 'text', W.address, 'placeholder="Nizami küç. 12, Bakı"') +
+    fld('mapUrl', 'Xəritə linki (https://…)', 'url', W.mapUrl) +
+    fld('hours', 'İş saatı', 'text', W.hours, 'placeholder="Hər gün 09:00 – 21:00"') +
+    '<div class="f"><label for="terms">Şərtlər (hər sətir ayrıca bənd)</label><textarea id="terms" name="terms" rows="5" placeholder="Şəxsiyyət vəsiqəsi tələb olunur&#10;Depozit: 50 ₼">' + esc(W.terms) + '</textarea></div>',
+    async v => {
+      const h = x => (x || '').trim().replace(/^@/, '');
+      await db.doc('settings/site').set({ tagline: v.tagline.trim(), intro: v.intro.trim(), phone: v.phone.trim(), whatsapp: v.whatsapp.trim(), instagram: h(v.instagram), telegram: h(v.telegram), address: v.address.trim(), mapUrl: safe(v.mapUrl.trim()) ? v.mapUrl.trim() : '', hours: v.hours.trim(), terms: v.terms.trim() });
+    });
+}
+function settingsForm() {
+  const L = S.settings || {};
+  openForm('İcarədar məlumatları',
+    fld('name', 'Ad, soyad / şirkət', 'text', L.name, 'required') +
+    '<div class="two">' + fld('idno', 'FİN / VÖEN', 'text', L.idno) + fld('phone', 'Telefon', 'tel', L.phone) + '</div>' +
+    fld('address', 'Ünvan', 'text', L.address) + fld('city', 'Müqavilə şəhəri', 'text', L.city || 'Bakı') +
+    '<div class="two">' + fld('scooterValue', 'Skuterin dəyəri (₼)', 'number', L.scooterValue, 'min="0" step="0.01"') + fld('batteryValue', 'Batareyanın dəyəri (₼)', 'number', L.batteryValue, 'min="0" step="0.01"') + '</div>',
+    async v => { await db.doc('settings/owner').set({ name: v.name.trim(), idno: v.idno.trim(), phone: v.phone.trim(), address: v.address.trim(), city: v.city.trim(), scooterValue: +v.scooterValue || 0, batteryValue: +v.batteryValue || 0 }); });
+}
+
+/* ---------- müqavilə sənədi ---------- */
+const DOC_CSS = ".docwrap{width:min(860px,100%);margin-top:2vh}" +
+  ".paper{background:#fff;color:#000;font:13px/1.5 'Times New Roman',Georgia,serif;padding:28px 34px;max-width:794px;margin:0 auto}" +
+  ".paper h1{font:700 17px/1.3 'Times New Roman',serif;text-align:center;margin:0 0 4px;text-transform:uppercase}" +
+  ".paper h3{font:700 13px 'Times New Roman',serif;margin:12px 0 4px;text-transform:uppercase;color:#000}" +
+  ".paper p{margin:3px 0;text-align:justify}.paper .meta{display:flex;justify-content:space-between;margin-bottom:12px}" +
+  ".paper table{width:100%;min-width:0;border-collapse:collapse;margin:6px 0}" +
+  ".paper th,.paper td{border:1px solid #000;padding:5px 7px;font-size:12.5px;background:#fff;color:#000;text-transform:none;letter-spacing:0;vertical-align:middle}" +
+  ".paper th{background:#e9e9e9;font-weight:700}" +
+  ".paper .bl{display:inline-block;border-bottom:1px solid #000;height:1.05em;vertical-align:baseline}" +
+  ".paper .sig{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:24px}.paper .sig div{line-height:2}" +
+  ".paper .brk{break-before:page;page-break-before:always;margin-top:28px;border-top:1px dashed #888;padding-top:18px}";
+function docHtml(sn, c, part) {
+  const L = S.settings || {};
+  const bl = w => '<span class="bl" style="min-width:' + (w || 170) + 'px"></span>';
+  const v = (x, w) => x ? '<b>' + esc(x) + '</b>' : bl(w);
+  c = c || null;
+  const noText = c ? (sn.no || sn.name || 'S') + '/' + c.start.replaceAll('-', '') : '';
+  const unit = c ? UNIT[c.unit] : '';
+  const items = [
+    ['Elektrik skuter' + (sn.no ? ' (daxili № ' + esc(sn.no) + ')' : ''), sn.plate],
+    ['Batareya № 1 (skuterin üzərində)', sn.bat1],
+    ['Batareya № 2 (əlavə batareya)', sn.bat2],
+    ['Adaptor (şarj cihazı)', sn.adapter || '1 ədəd']
+  ];
+  const numCell = x => x ? '<b>' + esc(x) + '</b>' : bl(90);
+  const t1 = '<table><tr><th>Əşya</th><th>Nömrə / seriya</th></tr>' + items.map(i => '<tr><td>' + i[0] + '</td><td>' + (i[1] === '1 ədəd' ? i[1] : numCell(i[1])) + '</td></tr>').join('') + '</table>';
+  const handover = '<table><tr><th>Əşya</th><th>Nömrə</th><th>Təhvil zamanı vəziyyət</th><th>Qeyd</th></tr>' +
+    items.map(i => '<tr><td>' + i[0] + '</td><td>' + (i[1] === '1 ədəd' ? '—' : numCell(i[1])) + '</td><td>☐ Yaxşı &nbsp; ☐ Qüsurlu</td><td>' + bl(80) + '</td></tr>').join('') + '</table>';
+  const ret = '<table><tr><th>Əşya</th><th>Müqavilədəki nömrə</th><th>Nömrə uyğundur</th><th>Qaytarılan vəziyyət</th><th>Qeyd</th></tr>' +
+    items.map(i => '<tr><td>' + i[0] + '</td><td>' + (i[1] === '1 ədəd' ? '—' : numCell(i[1])) + '</td><td>☐ Bəli &nbsp; ☐ Xeyr</td><td>☐ Yaxşı &nbsp; ☐ Zədəli</td><td>' + bl(60) + '</td></tr>').join('') + '</table>';
+  const sig = '<div class="sig"><div><b>İcarədar:</b><br>' + (L.name ? esc(L.name) : bl(180)) + '<br>İmza: ' + bl(120) + '</div><div><b>İcarəçi:</b><br>' + (c && c.renter ? esc(c.renter) : bl(180)) + '<br>İmza: ' + bl(120) + '</div></div>';
+  const main = '<h1>Skuter icarə müqaviləsi</h1>' +
+    '<div class="meta"><span>№ ' + (noText ? '<b>' + esc(noText) + '</b>' : bl(90)) + '</span><span>' + esc(L.city || 'Bakı') + ' şəhəri, ' + (c ? '<b>' + dfmt(c.start) + '</b>' : bl(110)) + '</span></div>' +
+    '<p><b>İcarədar:</b> ' + v(L.name, 200) + ', FİN/VÖEN: ' + v(L.idno, 100) + ', ünvan: ' + v(L.address, 220) + ', tel.: ' + v(L.phone, 110) + '.</p>' +
+    '<p><b>İcarəçi:</b> ' + v(c && c.renter, 200) + ', vəsiqə seriyası / FİN: ' + v(c && c.fin, 120) + ', ünvan: ' + bl(220) + ', tel.: ' + v(c && c.phone, 110) + '.</p>' +
+    '<p>Tərəflər aşağıdakılar barədə bu müqaviləni bağladılar.</p>' +
+    '<h3>1. Müqavilənin predmeti</h3>' +
+    '<p>1.1. İcarədar icarəçiyə müvəqqəti istifadə üçün aşağıdakı əşyaları verir, icarəçi isə icarə haqqını ödəməyi və əşyaları müddətində qaytarmağı öhdəsinə götürür:</p>' + t1 +
+    '<p>1.2. Skuter yerləşməni izləmə (GPS) sistemi ilə təchiz oluna bilər. İcarəçi bununla razıdır.</p>' +
+    '<h3>2. İcarə müddəti və haqqı</h3>' +
+    '<p>2.1. İcarə müddəti: ' + v(c && dfmt(c.start), 90) + ' tarixindən ' + v(c && c.end && dfmt(c.end), 90) + ' tarixinədək.</p>' +
+    '<p>2.2. İcarə haqqı: hər ' + (c ? '<b>' + unit + '</b>' : bl(60)) + ' üçün ' + v(c && c.rate ? String(effRate(c)) : '', 70) + ' ₼' + (c && discLabel(c) ? ' (' + discLabel(c).replace('−', '') + ' endirim nəzərə alınıb; əsas tarif ' + c.rate + ' ₼)' : '') + '.</p>' +
+    (c && !c.deposit ? '<p>2.3. Depozit tələb olunmur. Əşyalara dəyən zərər icarəçi tərəfindən ödənilir.</p>' : '<p>2.3. Girov (depozit, yoxdursa «yoxdur» yazılır): ' + v(c && c.deposit ? String(c.deposit) : '', 70) + ' ₼. Əşyalar zədəsiz və tam qaytarıldıqda depozit geri verilir. Zərər olarsa, zərər depozitdən tutulur, çatmayan hissəni icarəçi əlavə ödəyir.</p>') +
+    '<p>2.4. İcarə haqqı hər ' + (c ? '<b>' + unit + '</b>' : 'gün') + ' sonunda ödənilir. Ödəniş gecikdikdə icarədar əşyaları geri tələb etmək hüququna malikdir.</p>' +
+    '<h3>3. İcarəçinin öhdəlikləri</h3>' +
+    '<p>3.1. Əşyalardan yalnız özü istifadə edir; onları üçüncü şəxsə vermir, icarəyə və ya girova qoymur.</p>' +
+    '<p>3.2. Yol hərəkəti qaydalarına riayət edir; spirtli içki və ya narkotik maddə təsiri altında skuteri idarə etmir.</p>' +
+    '<p>3.3. Batareyaları yalnız verilmiş adaptor ilə doldurur, onları sökmür və dəyişdirmir.</p>' +
+    '<p>3.4. İstifadə zamanı yaranan cərimələr və üçüncü şəxslərə dəyən zərər icarəçiyə aiddir.</p>' +
+    '<p>3.5. Qəza, oğurluq və ya nasazlıq halında icarədara dərhal xəbər verir.</p>' +
+    '<h3>4. Məsuliyyət</h3>' +
+    '<p>4.1. Əşyalar itirildikdə və ya təmiri mümkün olmayacaq dərəcədə zədələndikdə icarəçi aşağıdakı dəyəri ödəyir: skuter ' + v(L.scooterValue ? String(L.scooterValue) : '', 70) + ' ₼, hər batareya ' + v(L.batteryValue ? String(L.batteryValue) : '', 70) + ' ₼. Qismən zədə halında təmir xərci ödənilir.</p>' +
+    '<p>4.2. Əşyalar vaxtında qaytarılmazsa, gecikmiş hər gün üçün icarə haqqı tarifi üzrə ödəniş edilir.</p>' +
+    '<h3>5. Yekun müddəalar</h3>' +
+    '<p>5.1. Müqavilə iki nüsxədə tərtib edilib, hər tərəfdə bir nüsxə qalır və imzalandığı gündən qüvvəyə minir. Təhvil Əlavə 1-ə əsasən aparılır; qaytarma ayrıca qaytarma aktı ilə rəsmiləşdirilir.</p>' +
+    '<p>5.2. Mübahisələr danışıqlarla, razılıq olmadıqda qüvvədə olan qanunvericiliyə uyğun məhkəmə qaydasında həll edilir.</p>' + sig;
+  const who = '<p><b>İcarədar:</b> ' + v(L.name, 200) + ', tel.: ' + v(L.phone, 110) + '. <b>İcarəçi:</b> ' + v(c && c.renter, 200) + ', FİN: ' + v(c && c.fin, 120) + ', tel.: ' + v(c && c.phone, 110) + '. Skuter: <b>' + esc(sn.name || '') + '</b>.</p>';
+  const mno = '<p>Müqavilə № ' + (noText ? '<b>' + esc(noText) + '</b>' : bl(90)) + '. ';
+  const act1 = (cls, pre) => '<div class="' + cls + '"><h1>' + pre + 'Təhvil-təslim aktı (icarəyə verilərkən)</h1>' + (part ? who : '') +
+    mno + 'Təhvil tarixi və saatı: ' + (c ? '<b>' + dfmt(c.start) + '</b>, saat ' + bl(50) : bl(150)) + '. Batareya doluluğu: ' + bl(40) + ' %.</p>' + handover +
+    '<p>İcarəçi əşyaları yuxarıdakı vəziyyətdə və nömrələrlə qəbul etdi. Təhvil zamanı skuterin şəkil və videosu çəkilib: ☐ bəli &nbsp; ☐ xeyr.</p>' + sig + '</div>';
+  const act2 = (cls, pre) => '<div class="' + cls + '"><h1>' + pre + 'Qaytarma aktı (skuter təhvil alınarkən)</h1>' + (part ? who : '') +
+    mno + 'Qaytarma tarixi və saatı: ' + (c && c.closedAt ? '<b>' + dfmt(c.closedAt) + '</b>, saat ' + bl(50) : bl(150)) + '. Batareya doluluğu: ' + bl(40) + ' %.</p>' + ret +
+    '<p>Qeydlər (zədə, çatışmazlıq): ' + bl(380) + '</p><p>Qaytarma zamanı skuterin şəkil və videosu çəkilib: ☐ bəli &nbsp; ☐ xeyr.</p><p>Depozitdən tutulan məbləğ: ' + bl(90) + ' ₼. Geri qaytarılan depozit: ' + bl(90) + ' ₼.</p>' + sig + '</div>';
+  if (part === 'return') return act2('', '');
+  return main + act1('brk', 'Əlavə 1. ');
+}
+function showDoc(sn, c, part) {
+  const body = docHtml(sn, c, part), m = $('#modal');
+  const ttl = part === 'handover' ? 'Təhvil-təslim aktı hazırdır' : part === 'return' ? 'Qaytarma aktı hazırdır' : 'Müqavilə hazırdır (müqavilə + təhvil aktı)';
+  m.innerHTML = '<style>' + DOC_CSS + '</style><div class="docwrap"><div class="row between" style="margin-bottom:10px"><b style="color:#fff">' + ttl + '</b><div class="row"><button class="primary" id="dlbtn">Yüklə</button><button id="dclose">Bağla</button></div></div><div class="paper">' + body + '</div><div class="err" id="dlerr" style="background:#fff;padding:6px 10px;margin-top:8px;border-radius:8px"></div></div>';
+  m.hidden = false;
+  $('#dclose').onclick = closeForm;
+  $('#dlbtn').onclick = async () => {
+    const err = $('#dlerr'); err.textContent = '';
+    if (!dl) { err.textContent = 'Yükləmə bu hesabda əlçatan deyil.'; return; }
+    const file = '<!doctype html><html lang="az"><head><meta charset="utf-8"><title>Skuter icarə müqaviləsi</title><style>' + DOC_CSS + '@page{size:A4;margin:16mm}body{margin:0;background:#fff}.docwrap{width:auto;margin:0}</style></head><body><div class="paper">' + body + '</div></body></html>';
+    const name = (part === 'handover' ? 'Tehvil-akti-' : part === 'return' ? 'Qaytarma-akti-' : 'Muqavile-') +((sn.name || 'skuter').replace(/[^A-Za-z0-9]+/g, '-') || 'skuter') + '-' + (c ? c.start : today()) + '.html';
+    try { await dl.save({ filename: name, data: file }); err.style.color = 'var(--ok)'; err.textContent = 'Fayl yadda saxlanıldı. Onu açıb Ctrl+P ilə çap edin.'; }
+    catch (e) { err.style.color = ''; err.textContent = e.code === 'declined' ? 'Yükləmə ləğv edildi.' : 'Yüklənmədi: ' + (e.message || e.code); }
+  };
+}
+
+/* ---------- ödəniş cədvəli ---------- */
+const isoOf = n => new Date(n * 864e5).toISOString().slice(0, 10);
+const PLEN = { day: 1, week: 7, month: 30 };
+const armedS = {};
+S.method = 'nağd';
+function schedule(c) {
+  if (c.handed === false) return [];
+  const L = PLEN[c.unit] || 1, t = dayN(today()), s0 = dayN(c.start);
+  const lastDay = c.status === 'baglanib' && c.closedAt ? dayN(c.closedAt) : (c.end ? dayN(c.end) : t + L);
+  const out = [];
+  for (let k = 0; k < 400; k++) {
+    const from = s0 + k * L;
+    if (from > lastDay) break;
+    const to = Math.min(from + L - 1, lastDay);
+    const pay = S.payments.find(p => p.contractId === c.id && p.kind === 'kirayə' && p.period === k);
+    const dp = S.payments.find(p => p.contractId === c.id && p.kind === 'güzəşt' && p.period === k);
+    const base = effRate(c), amount = Math.max(0, Math.round((base - (dp ? +dp.amount || 0 : 0)) * 100) / 100);
+    const free = !pay && amount === 0;
+    out.push({ k, from: isoOf(from), to: isoOf(to), amount, base, dp, free, pay, late: !pay && !free && to < t, dueToday: !pay && !free && to === t });
+  }
+  return out;
+}
+const rng = r => r.from === r.to ? dfmt(r.from) : dfmt(r.from) + ' – ' + dfmt(r.to);
+async function addPeriodPay(c, r, date) {
+  await db.collection('payments').add({ contractId: c.id, amount: r.amount, date: date || today(), kind: 'kirayə', method: S.method || 'nağd', period: r.k, note: 'Cədvəl: ' + rng(r) });
+}
+async function payOldest(c) {
+  const t = today(), r = schedule(c).find(x => !x.pay && !x.free && x.to <= t);
+  if (r) await addPeriodPay(c, r);
+}
+function dueList() {
+  const t = today();
+  const rows = S.contracts.filter(c => c.status === 'aktiv').map(c => ({ c, due: schedule(c).filter(r => !r.pay && !r.free && r.to <= t) })).filter(x => x.due.length);
+  const cards = rows.map(x => {
+    const late = x.due.filter(r => r.to < t).length, sum = x.due.reduce((a, r) => a + r.amount, 0);
+    return '<div class="due' + (late ? ' late' : '') + '"><div class="dm"><b>' + esc(scooterName(x.c.scooterId)) + '</b><small>' + esc(x.c.renter) + ' · ' + x.due.length + ' ' + (x.c.unit === 'day' ? 'gün' : 'dövr') + (late ? ' · <span class="debt">' + late + ' gecikmiş</span>' : ' · bu gün') + '</small></div>' +
+      '<div class="da">' + money(sum) + '</div><div class="row" style="flex-wrap:nowrap"><button class="sm primary pbtn" data-act="ppay" data-id="' + x.c.id + '">Ödənildi</button><button class="sm" data-act="sched" data-id="' + x.c.id + '">Cədvəl</button></div></div>';
+  }).join('');
+  return '<section><h3 class="ptitle">Bu gün alınacaqlar</h3><div class="hint" style="margin-bottom:10px">Ödəniş günün sonunda alınır. “Ödənildi” ən köhnə ödənilməmiş günü bu gün ödənilmiş kimi qeyd edir.</div>' +
+    (rows.length ? '<div class="duegrid">' + cards + '</div>' : '<div class="empty">Bu gün ödənilməli məbləğ yoxdur.</div>') + '</section>';
+}
+function reportData() {
+  const m = S.pmonth;
+  return S.scooters.map(s => {
+    const cs = S.contracts.filter(c => c.scooterId === s.id), act = cs.find(c => c.status === 'aktiv' && c.handed !== false);
+    const wait = cs.find(c => c.status === 'aktiv' && c.handed === false);
+    const earn = S.payments.filter(p => (p.kind === 'kirayə' || p.kind === 'cərimə') && (!m || (p.date || '').startsWith(m)) && cs.some(c => c.id === p.contractId)).reduce((a, p) => a + p.amount, 0);
+    let lateDays = 0, lateN = 0, debt = 0, dueNow = 0;
+    if (act) schedule(act).forEach(r => { if (r.late) { lateN++; lateDays += dayN(r.to) - dayN(r.from) + 1; debt += r.amount; } else if (r.dueToday) dueNow += r.amount; });
+    const k = act ? calc(act) : null;
+    const disc = act ? S.payments.filter(p => p.contractId === act.id && p.kind === 'güzəşt').reduce((a, p) => a + (+p.amount || 0), 0) : 0;
+    return { s, act, wait, earn, lateDays, lateN, debt, dueNow, total: debt + dueNow, perDay: act ? effRate(act) / (PLEN[act.unit] || 1) : 0, accrued: k ? k.due : 0, paid: k ? k.paid : 0, bal: k ? k.debt : 0, disc };
+  });
+}
+function verdict(x, name) {
+  if (x.wait && !x.act) return ['mute', 'Müqavilə var, lakin skuter hələ təhvil verilməyib. Kirayə hesablanmır.', 0];
+  if (!x.act) return ['mute', 'Skuter hazırda kirayədə deyil. Ödənilməli məbləğ yoxdur.', 0];
+  if (x.total <= 0) return ['ok', 'Hər şey qaydasındadır: gecikmə və borc yoxdur, bu gün də alınacaq məbləğ yoxdur.' + (x.bal < 0 ? ' Əvvəlcədən ' + money(-x.bal) + ' ödənilib.' : ''), 0];
+  const parts = [];
+  if (x.debt > 0) parts.push(x.lateDays + ' gün gecikmə üzrə ' + money(x.debt) + ' borc');
+  if (x.dueNow > 0) parts.push('bu gün düşən ' + money(x.dueNow));
+  return [x.debt > 0 ? 'bad' : 'warn', (name ? 'İcarəçi ' : '') + 'indi ödəməlidir: ' + parts.join(' + ') + '.', x.total];
+}
+function lineRows(x, tot) {
+  const L = (t, e, v, c) => '<div class="ln"><div class="lt"><b>' + t + '</b><small>' + e + '</small></div><div class="lv ' + (c || '') + '">' + v + '</div></div>';
+  return [
+    tot ? '' : L('Gündəlik ödəniş', 'Tarifin günə bölünmüş məbləği', x.act ? money(x.perDay) : '—'),
+    tot ? L('Gündəlik gəlir (cəmi)', 'Kirayədə olan bütün skuterlərin gündəlik ödənişi', money(x.perDay)) : '',
+    L('Hesablanıb', 'Kirayə başlayandan bu günə qədər düşən məbləğ (güzəştlər çıxılıb)', money(x.accrued)),
+    L('Ödənilib', 'İndiyə qədər alınan kirayə ödənişləri', money(x.paid), 'okc'),
+    L('Qalıq', 'Hesablanıb − ödənilib' + (x.bal < 0 ? ' (mənfidirsə, avans ödənilib)' : ''), money(Math.abs(x.bal)) + (x.bal < 0 ? ' avans' : ''), x.bal > 0 ? 'badc' : ''),
+    x.disc > 0 ? L('Güzəşt', 'Verilmiş güzəştlərin cəmi', '−' + money(x.disc), 'okc') : '',
+    L('Gecikmə', 'Ödəniş vaxtı keçib, amma hələ alınmayıb', x.lateDays ? x.lateDays + ' gün' : 'yoxdur', x.lateDays ? 'badc' : ''),
+    L('Gecikmiş borc', 'Gecikmiş günlərin məbləği', money(x.debt), x.debt > 0 ? 'badc' : ''),
+    L('Bu gün düşən', 'Günün sonunda alınacaq ödəniş', money(x.dueNow)),
+    L('Qazanc', 'Alınan kirayə + cərimə (' + (S.pmonth ? S.pmonth.slice(5) + '.' + S.pmonth.slice(0, 4) : 'bütün dövr') + ')', money(x.earn), 'okc')
+  ].join('');
+}
+function scooterCards(data) {
+  const sum = k => data.reduce((a, x) => a + x[k], 0);
+  const cell = (lab, val, cls) => '<div class="c ' + (cls || '') + '" data-l="' + lab + '">' + val + '</div>';
+  const row = (x, i) => {
+    const late = x.lateDays ? x.lateDays + ' gün' : '—';
+    const who = x.act ? esc(x.act.renter) : x.wait ? esc(x.wait.renter) + ' (təhvil gözlənilir)' : 'boş';
+    return '<div class="plr' + (x.debt > 0 ? ' late' : '') + '"><div class="nm" data-l="Skuter"><span class="no">' + (i + 1) + '</span><div><b>' + esc(x.s.name) + '</b><small>' + who + '</small></div></div>' +
+      cell('Hesablanıb', x.act ? money(x.accrued) : '—') + cell('Ödənilib', x.act ? money(x.paid) : '—', x.act ? 'okc' : '') +
+      cell('Qalıq', x.act ? (x.bal < 0 ? money(-x.bal) + ' avans' : money(x.bal)) : '—', x.bal > 0 ? 'badc' : '') +
+      cell('Gecikmə', late, x.lateDays ? 'badc' : '') + cell('Gecikmiş borc', x.act ? money(x.debt) : '—', x.debt > 0 ? 'badc' : '') +
+      cell('Bu gün düşən', x.act ? money(x.dueNow) : '—') + cell('İndi ödənilməli', x.act ? money(x.total) : '—', 'fin' + (x.total > 0 ? ' badc' : '')) + '</div>';
+  };
+  const T = { accrued: sum('accrued'), paid: sum('paid'), bal: sum('bal'), lateDays: sum('lateDays'), debt: sum('debt'), dueNow: sum('dueNow'), total: sum('total') };
+  const totRow = '<div class="plr total"><div class="nm" data-l="Skuter"><span class="no">Σ</span><div><b>CƏMİ</b><small>' + data.filter(x => x.act).length + ' / ' + data.length + ' skuter kirayədə</small></div></div>' +
+    cell('Hesablanıb', money(T.accrued)) + cell('Ödənilib', money(T.paid), 'okc') + cell('Qalıq', T.bal < 0 ? money(-T.bal) + ' avans' : money(T.bal), T.bal > 0 ? 'badc' : '') +
+    cell('Gecikmə', T.lateDays ? T.lateDays + ' gün' : '—', T.lateDays ? 'badc' : '') + cell('Gecikmiş borc', money(T.debt), T.debt > 0 ? 'badc' : '') + cell('Bu gün düşən', money(T.dueNow)) + cell('İndi ödənilməli', money(T.total), 'fin' + (T.total > 0 ? ' badc' : '')) + '</div>';
+  const head = '<div class="plh"><div>Skuter / icarəçi</div><div class="c">Hesablanıb</div><div class="c">Ödənilib</div><div class="c">Qalıq</div><div class="c">Gecikmə</div><div class="c">Gecikmiş borc</div><div class="c">Bu gün düşən</div><div class="c">İndi ödənilməli</div></div>';
+  const earn = '<div class="hint" style="margin-top:8px">Qazanc (' + (S.pmonth ? S.pmonth.slice(5) + '.' + S.pmonth.slice(0, 4) : 'bütün dövr') + ', kirayə + cərimə): ' + data.map(x => '<b>' + esc(x.s.name) + '</b> ' + money(x.earn)).join(' · ') + ' · <b>Cəmi ' + money(sum('earn')) + '</b></div>';
+  const legend = '<div class="hint" style="margin-top:8px"><b>Hesablanıb</b> — kirayə başlayandan bu günə düşən məbləğ (güzəşt çıxılıb). <b>Qalıq</b> — hesablanıb − ödənilib. <b>Gecikmə</b> — vaxtı keçmiş ödənilməmiş günlər. <b>İndi ödənilməli</b> — gecikmiş borc + bu gün düşən məbləğ.</div>';
+  return '<section><h3 class="ptitle">Skuterlər üzrə hesab</h3>' + (data.length ? '<div class="plist">' + head + data.map(row).join('') + totRow + '</div>' + earn + legend : '<div class="empty">Skuter yoxdur.</div>') + '</section>';
+}
+function discForm(c, r) {
+  const back = () => setTimeout(() => showSched(c.id), 0);
+  openForm('Güzəşt: ' + rng(r),
+    '<div class="muted small">Bu dövrün tarifi: <b>' + money(r.base) + '</b>. Güzəşt məbləğini yazın (bütün məbləği yazsanız, dövr pulsuz olur). Silmək üçün 0 yazın.</div>' +
+    fld('amount', 'Güzəşt (₼)', 'number', r.dp ? r.dp.amount : '', 'required min="0" step="0.01" max="' + r.base + '"') +
+    fld('note', 'Səbəb / qeyd', 'text', r.dp ? r.dp.note : '', 'placeholder="məs. skuter xarab idi"'),
+    async v => {
+      const amt = Math.min(+v.amount || 0, r.base);
+      if (r.dp) { if (amt > 0) await db.doc('payments/' + r.dp.id).update({ amount: amt, note: v.note.trim() }); else await db.doc('payments/' + r.dp.id).delete(); }
+      else if (amt > 0) await db.collection('payments').add({ contractId: c.id, amount: amt, date: today(), kind: 'güzəşt', method: '—', period: r.k, note: v.note.trim() });
+      back();
+    });
+  $('#mcancel').onclick = () => { closeForm(); back(); };
+}
+/* ---------- doluluq təqvimi və gün-gün qazanc ---------- */
+const MN = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun', 'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'];
+const WDS = ['B.e', 'Ç.a', 'Çər', 'C.a', 'Cümə', 'Şən', 'Baz'];
+const shiftMonth = (ym, d) => { const [y, m] = ym.split('-').map(Number), dt = new Date(Date.UTC(y, m - 1 + d, 1)); return dt.getUTCFullYear() + '-' + pad(dt.getUTCMonth() + 1); };
+function showDays(id) { S.dsc = id; S.dmode = 'year'; S.dyear = today().slice(0, 4); S.dmonth = today().slice(0, 7); $('#modal').hidden = false; drawDays(); }
+function dayFnFor(s) {
+  const cs = S.contracts.filter(c => c.scooterId === s.id && c.handed !== false);
+  const pays = S.payments.filter(p => (p.kind === 'kirayə' || p.kind === 'cərimə') && cs.some(c => c.id === p.contractId));
+  return iso => {
+    const n = dayN(iso), c = cs.find(c => iso >= c.start && (c.status === 'baglanib' ? (!c.closedAt || iso <= c.closedAt) : (!c.end || iso <= c.end)));
+    const got = pays.filter(p => p.date === iso).reduce((a, p) => a + p.amount, 0);
+    if (!c) return { c: null, amt: 0, got };
+    const L = PLEN[c.unit] || 1, k = Math.floor((n - dayN(c.start)) / L);
+    const dp = S.payments.find(p => p.contractId === c.id && p.kind === 'güzəşt' && p.period === k);
+    return { c, amt: Math.max(0, effRate(c) - (dp ? +dp.amount || 0 : 0)) / L, got };
+  };
+}
+function dayAgg(fns, iso) {
+  const rs = fns.map(f => f(iso)), on = rs.filter(r => r.c);
+  return { n: on.length, len: fns.length, amt: on.reduce((a, r) => a + r.amt, 0), got: rs.reduce((a, r) => a + r.got, 0), names: on.map(r => r.c.renter) };
+}
+function monthStats(fns, y, m, t) {
+  const last = new Date(Date.UTC(y, m, 0)).getUTCDate(), days = [];
+  let full = 0, idle = 0, amt = 0, got = 0;
+  for (let d = 1; d <= last; d++) {
+    const iso = y + '-' + pad(m) + '-' + pad(d);
+    if (iso > t) { days.push({ iso, d, fut: true }); continue; }
+    const a = dayAgg(fns, iso);
+    days.push({ iso, d, ...a }); full += a.n; idle += a.len - a.n; amt += a.amt; got += a.got;
+  }
+  return { days, full, idle, amt, got, pct: full + idle ? Math.round(full / (full + idle) * 100) : 0 };
+}
+function drawDays() {
+  const sel = S.dsc === 'all' ? null : S.scooters.find(x => x.id === S.dsc);
+  if (S.dsc !== 'all' && !sel) { closeForm(); return; }
+  const list = sel ? [sel] : S.scooters, fns = list.map(dayFnFor), t = today();
+  const mode = S.dmode || 'year', U = sel ? 'gün' : 'skuter-gün';
+  const y = +S.dyear, ym = S.dmonth, nowY = +t.slice(0, 4);
+  const opts = '<option value="all"' + (sel ? '' : ' selected') + '>Bütün skuterlər</option>' + S.scooters.map(s => '<option value="' + s.id + '"' + (sel && sel.id === s.id ? ' selected' : '') + '>' + esc(s.name) + '</option>').join('');
+  const nextDis = mode === 'year' ? y >= nowY : ym >= t.slice(0, 7);
+  const bar = '<div class="row between"><div class="row"><div class="f"><label for="dsel">Skuter</label><select id="dsel" style="width:auto">' + opts + '</select></div>' +
+    '<div class="seg" role="group"><button data-dmode="year" aria-pressed="' + (mode === 'year') + '">İllik təqvim</button><button data-dmode="month" aria-pressed="' + (mode === 'month') + '">Aylıq cədvəl</button></div></div>' +
+    '<div class="row"><button class="sm" data-dm="-1">←</button><b>' + (mode === 'year' ? y : MN[+ym.slice(5) - 1] + ' ' + ym.slice(0, 4)) + '</b><button class="sm" data-dm="1"' + (nextDis ? ' disabled' : '') + '>→</button></div></div>';
+  let content = '';
+  if (mode === 'year') {
+    const ms = [], cards = [];
+    for (let m = 1; m <= 12; m++) {
+      const st = monthStats(fns, y, m, t); ms.push(st);
+      const off = (new Date(Date.UTC(y, m - 1, 1)).getUTCDay() + 6) % 7;
+      const cells = WDS.map(w => '<div class="wd">' + w + '</div>').join('') + '<div style="grid-column:span ' + off + '"' + (off ? '' : ' hidden') + '></div>' +
+        st.days.map(d => { const cls = d.fut ? 'fut' : d.n === 0 ? 'idle' : d.n === d.len ? 'full' : 'part'; const tip = dfmt(d.iso) + (d.fut ? '' : d.n === 0 ? ': boş' : sel ? ': kirayədə · ' + d.names[0] + ' · ' + money(d.amt) : ': ' + d.n + '/' + d.len + ' skuter · ' + money(d.amt)); return '<div class="d ' + cls + '" title="' + esc(tip) + '">' + d.d + '</div>'; }).join('');
+      cards.push('<div class="mon"><div class="row between" style="flex-wrap:nowrap"><b>' + MN[m - 1] + '</b><span class="small muted">' + st.pct + '%</span></div><div class="cal">' + cells + '</div><div class="ms"><span class="okc">Dolu ' + st.full + '</span> · Boş ' + st.idle + ' · <b>' + money(st.amt) + '</b></div></div>');
+    }
+    const T = ms.reduce((a, s) => ({ full: a.full + s.full, idle: a.idle + s.idle, amt: a.amt + s.amt, got: a.got + s.got }), { full: 0, idle: 0, amt: 0, got: 0 });
+    const pct = T.full + T.idle ? Math.round(T.full / (T.full + T.idle) * 100) : 0;
+    const rows = ms.map((s, i) => '<tr><td>' + MN[i] + '</td><td class="r">' + s.full + '</td><td class="r">' + s.idle + '</td><td class="r">' + s.pct + '%</td><td class="r"><b>' + money(s.amt) + '</b></td><td class="r">' + money(s.got) + '</td></tr>').join('');
+    content = '<div class="mons">' + cards.join('') + '</div>' +
+      '<div class="legend"><span><i class="d full"></i> Dolu (kirayədə)</span>' + (sel ? '' : '<span><i class="d part"></i> Qismən dolu</span>') + '<span><i class="d idle"></i> Boş</span><span><i class="d fut"></i> Hələ gəlməyib</span></div>' +
+      '<div class="card" style="gap:12px;border:2px solid var(--pa)"><h3>' + y + ' — illik nəticə' + (sel ? ' · ' + esc(sel.name) : ' · bütün skuterlər') + '</h3>' +
+      '<div class="sstrip"><div class="ok"><small>Dolu ' + U + '</small><b>' + T.full + '</b></div><div><small>Boş ' + U + '</small><b>' + T.idle + '</b></div><div><small>Doluluq</small><b>' + pct + '%</b></div><div class="ok"><small>İllik qazanc</small><b>' + money(T.amt) + '</b></div><div><small>Alınan ödəniş</small><b>' + money(T.got) + '</b></div></div>' +
+      '<div class="tablebox"><table style="min-width:520px"><thead><tr><th>Ay</th><th class="r">Dolu</th><th class="r">Boş</th><th class="r">Doluluq</th><th class="r">Qazanc</th><th class="r">Alınıb</th></tr></thead><tbody>' + rows + '</tbody><tfoot><tr style="background:var(--surface2);font-weight:700"><td>İL ÜZRƏ CƏMİ</td><td class="r">' + T.full + '</td><td class="r">' + T.idle + '</td><td class="r">' + pct + '%</td><td class="r">' + money(T.amt) + '</td><td class="r">' + money(T.got) + '</td></tr></tfoot></table></div>' +
+      '<div class="hint"><b>Qazanc</b> — tarifin günə bölünmüş məbləği (güzəşt çıxılıb). <b>Alınıb</b> — həmin tarixdə faktiki qəbul edilən ödəniş. Gün xanasının üzərinə gələndə ətraflı məlumat görünür.</div></div>';
+  } else {
+    const [yy, mm] = ym.split('-').map(Number), st = monthStats(fns, yy, mm, t);
+    const body = st.days.filter(d => !d.fut).map(d => d.n === 0
+      ? '<tr class="idle"><td>' + dfmt(d.iso) + '</td><td>' + wdOf(d.iso) + '</td><td><span class="pill mute">Boş</span></td><td>—</td><td class="r">0 ₼</td><td class="r">' + (d.got ? money(d.got) : '—') + '</td></tr>'
+      : '<tr><td>' + dfmt(d.iso) + '</td><td>' + wdOf(d.iso) + '</td><td><span class="pill acc">' + (sel ? 'Kirayədə' : d.n + ' / ' + d.len + ' kirayədə') + '</span></td><td>' + d.names.map(esc).join(', ') + '</td><td class="r"><b>' + money(d.amt) + '</b></td><td class="r">' + (d.got ? money(d.got) : '—') + '</td></tr>').join('');
+    content = '<div class="sstrip"><div class="ok"><small>Dolu ' + U + '</small><b>' + st.full + '</b></div><div><small>Boş ' + U + '</small><b>' + st.idle + '</b></div><div class="ok"><small>Qazanc (hesablanan)</small><b>' + money(st.amt) + '</b></div><div><small>Alınan ödəniş</small><b>' + money(st.got) + '</b></div><div><small>Doluluq</small><b>' + st.pct + '%</b></div></div>' +
+      '<div class="tablebox" style="max-height:52vh;overflow:auto"><table class="dtab" style="min-width:560px"><thead><tr><th>Tarix</th><th>Gün</th><th>Vəziyyət</th><th>İcarəçi</th><th class="r">Gün üçün qazanc</th><th class="r">Həmin gün alınıb</th></tr></thead><tbody>' + (body || '<tr><td colspan="6" class="muted">Bu ayda hələ gün yoxdur.</td></tr>') + '</tbody><tfoot><tr style="background:var(--surface2);font-weight:700"><td colspan="2">Cəmi</td><td>' + st.full + ' dolu</td><td>' + st.idle + ' boş</td><td class="r">' + money(st.amt) + '</td><td class="r">' + money(st.got) + '</td></tr></tfoot></table></div>';
+  }
+  const oldBox = $('#dbox'), keep = oldBox ? oldBox.scrollTop : 0;
+  $('#modal').innerHTML = '<div style="width:min(1100px,100%);margin-top:2vh"><div class="card" id="dbox" style="gap:14px"><div class="row between" style="flex-wrap:nowrap"><div><h3>Doluluq və qazanc' + (sel ? ' — ' + esc(sel.name) : ' — bütün skuterlər') + '</h3><div class="muted small">Hər gün skuterin dolu (kirayədə) və ya boş olması və həmin günün qazancı</div></div><button id="dclose2">Bağla</button></div>' + bar + content + '</div></div>';
+  $('#dclose2').onclick = closeForm;
+  $('#dsel').onchange = e => { S.dsc = e.target.value; drawDays(); };
+}
+$('#modal').addEventListener('click', e => {
+  if (!S.dsc) return;
+  const b = e.target.closest('[data-dm],[data-dmode]'); if (!b || b.disabled) return;
+  if (b.dataset.dmode) S.dmode = b.dataset.dmode;
+  else if ((S.dmode || 'year') === 'year') S.dyear = String(+S.dyear + +b.dataset.dm);
+  else S.dmonth = shiftMonth(S.dmonth, +b.dataset.dm);
+  drawDays();
+});
+function showSched(id) { S.sched = id; S.sfilter = 'hamisi'; S.sscroll = true; S.paydate = today(); $('#modal').hidden = false; drawSched(); }
+const WD = ['Bazar', 'Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə', 'Şənbə'];
+const wdOf = iso => WD[new Date(iso + 'T00:00:00Z').getUTCDay()];
+function drawSched() {
+  const c = S.contracts.find(x => x.id === S.sched);
+  if (!c) { closeForm(); return; }
+  const oldList = $('#slist'), keepTop = oldList ? oldList.scrollTop : 0;
+  const rows = schedule(c), f = S.sfilter || 'hamisi';
+  const cls = r => r.pay ? 'ok' : r.free ? 'ok' : r.late ? 'bad' : r.dueToday ? 'warn' : 'mute';
+  const grp = r => r.pay ? 'odenilmis' : (r.late || r.dueToday) ? 'indi' : r.free ? 'odenilmis' : 'gelecek';
+  const sum = fn => rows.filter(fn).reduce((a, r) => a + r.amount, 0);
+  const paidSum = rows.filter(r => r.pay).reduce((a, r) => a + (+r.pay.amount || 0), 0);
+  const lateSum = sum(r => r.late), todaySum = sum(r => r.dueToday), restSum = sum(r => !r.pay && !r.free);
+  const cnt = k => k === 'hamisi' ? rows.length : rows.filter(r => grp(r) === k).length;
+  const donePct = rows.length ? Math.round(rows.filter(r => r.pay || r.free).length / rows.length * 100) : 0;
+  const shown = rows.filter(r => f === 'hamisi' || grp(r) === f);
+  const list = shown.map(r => {
+    const one = r.from === r.to;
+    const st = r.pay ? '<span class="pill ok">Ödənilib</span>' : r.free ? '<span class="pill ok">Pulsuz</span>' : r.late ? '<span class="pill bad">Gecikib</span>' : r.dueToday ? '<span class="pill warn">Bu gün</span>' : '<span class="pill mute">Gözləyir</span>';
+    const sub = r.pay ? 'ödənilib ' + dfmt(r.pay.date) + (r.pay.method ? ' · ' + esc(r.pay.method) : '') : r.free ? 'güzəşt: dövr pulsuzdur' : r.late ? (dayN(today()) - dayN(r.to)) + ' gün gecikib' : r.dueToday ? 'gün sonunda alınır' : 'gözlənilir';
+    const act = r.pay ? '<button class="sm danger" data-sa="unpay" data-k="' + r.k + '">' + (armedS[r.k] ? 'Əminsiniz?' : 'Ləğv et') + '</button>' : (r.free ? '' : '<button class="sm primary" data-sa="pay" data-k="' + r.k + '">Ödənildi</button>');
+    const gz = r.pay ? '' : '<button class="sm" data-sa="disc" data-k="' + r.k + '">' + (r.dp ? 'Güzəşti dəyiş' : 'Güzəşt') + '</button>';
+    const amt = r.dp ? '<s class="muted small">' + money(r.base) + '</s> ' + money(r.amount) : money(r.amount);
+    return '<div class="srow s-' + cls(r) + (r.dueToday ? ' today' : '') + '" data-k="' + r.k + '"><div class="sn">' + (r.k + 1) + '</div>' +
+      '<div class="sd"><b>' + (one ? dfmt(r.from) : rng(r)) + '</b><small>' + (one ? wdOf(r.from) : (dayN(r.to) - dayN(r.from) + 1) + ' gün') + '</small></div>' +
+      '<div class="sa"><b>' + amt + '</b>' + (r.dp ? '<small class="credit">güzəşt −' + money(+r.dp.amount) + (r.dp.note ? ' · ' + esc(r.dp.note) : '') + '</small>' : '') + '</div>' +
+      '<div class="ss">' + st + '<small>' + sub + '</small></div><div class="sb">' + act + gz + '</div></div>';
+  }).join('');
+  const seg = [['hamisi', 'Hamısı'], ['indi', 'İndi ödənilməli'], ['odenilmis', 'Ödənilmiş'], ['gelecek', 'Gələcək']].map(x => '<button data-sa="f" data-v="' + x[0] + '" aria-pressed="' + (f === x[0]) + '">' + x[1] + ' (' + cnt(x[0]) + ')</button>').join('');
+  $('#modal').innerHTML = '<div style="width:min(820px,100%);margin-top:3vh"><div class="card sched" style="gap:14px"><div class="row between" style="flex-wrap:nowrap"><div><h3>Ödəniş cədvəli</h3><div class="muted small">' + esc(c.renter) + ' · ' + esc(scooterName(c.scooterId)) + ' · ' + money(effRate(c)) + ' / ' + UNIT[c.unit] + (discLabel(c) ? ' (tarif ' + money(c.rate) + ', endirim ' + discLabel(c) + ')' : '') + ' · ' + dfmt(c.start) + (c.end ? ' → ' + dfmt(c.end) : '') + '</div></div><button id="sclose">Bağla</button></div>' +
+    '<div class="sstrip"><div class="bad"><small>Gecikmiş borc</small><b>' + money(lateSum) + '</b></div><div class="warn"><small>Bu gün</small><b>' + money(todaySum) + '</b></div><div class="ok"><small>Ödənilib</small><b>' + money(paidSum) + '</b></div><div><small>Qalan (ümumi)</small><b>' + money(restSum) + '</b></div></div>' +
+    '<div class="sprog"><div class="bar"><i style="width:' + donePct + '%"></i></div><span class="small muted">' + rows.filter(r => r.pay || r.free).length + ' / ' + rows.length + ' dövr tamamlanıb (' + donePct + '%)</span></div>' +
+    '<div class="row between"><div class="seg" role="group" aria-label="Filtr">' + seg + '</div><div class="f" style="flex-direction:row;align-items:center;gap:8px;flex-wrap:wrap"><label for="pd">Ödəniş tarixi</label><input id="pd" type="date" value="' + esc(S.paydate || today()) + '" max="' + today() + '" style="width:auto"><label for="mm">Üsul</label><select id="mm" style="width:auto"><option' + (S.method === 'nağd' ? ' selected' : '') + '>nağd</option><option' + (S.method === 'kart' ? ' selected' : '') + '>kart</option><option' + (S.method === 'köçürmə' ? ' selected' : '') + '>köçürmə</option></select></div></div>' +
+    '<div class="slist" id="slist">' + (list || '<div class="empty">Bu bölmədə dövr yoxdur.</div>') + '</div>' +
+    '<div class="hint">Yaşıl: ödənilib · Qırmızı: gecikib · Sarı: bu gün alınmalıdır · Boz: hələ vaxtı gəlməyib.</div></div></div>';
+  $('#sclose').onclick = closeForm;
+  $('#mm').onchange = e => { S.method = e.target.value; };
+  $('#pd').onchange = e => { S.paydate = e.target.value || today(); };
+  if (!S.sscroll && keepTop) $('#slist').scrollTop = keepTop;
+  if (S.sscroll) { S.sscroll = false; const t = document.querySelector('#slist .s-bad, #slist .today') || document.querySelector('#slist .s-mute'); if (t && t.scrollIntoView) { const box = $('#slist'); box.scrollTop = Math.max(0, t.offsetTop - box.offsetTop - 8); } }
+}
+$('#modal').addEventListener('click', async e => {
+  const b = e.target.closest('[data-sa]'); if (!b) return;
+  const c = S.contracts.find(x => x.id === S.sched); if (!c) return;
+  const k = +b.dataset.k, r = schedule(c).find(x => x.k === k);
+  try {
+    if (b.dataset.sa === 'f') { S.sfilter = b.dataset.v; drawSched(); return; }
+    if (b.dataset.sa === 'disc' && r && !r.pay) { discForm(c, r); return; }
+    if (b.dataset.sa === 'pay' && r && !r.pay) await addPeriodPay(c, r, S.paydate && S.paydate <= today() ? S.paydate : today());
+    else if (b.dataset.sa === 'unpay' && r && r.pay) {
+      if (!armedS[k]) { armedS[k] = 1; drawSched(); setTimeout(() => { delete armedS[k]; if (S.sched) drawSched(); }, 4000); return; }
+      delete armedS[k]; await db.doc('payments/' + r.pay.id).delete();
+    }
+  } catch (er) { alert2('Xəta: ' + (er.message || er.code)); }
+});
+
+/* ---------- render & hadisələr ---------- */
+function render() {
+  document.querySelectorAll('#nav a').forEach(a => { if (a.dataset.t === S.tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  if (!db) { $('#app').innerHTML = '<div class="empty">Verilənlər bazası əlçatan deyil. Səhifəyə hesabınızla daxil olun.</div>'; return; }
+  if (!(S.ready.scooters && S.ready.contracts && S.ready.payments)) return;
+  if (!$('#modal').hidden) { /* formu pozmamaq üçün render-i yalnız fon üçün yeniləyirik */ }
+  const v = { umumi: viewHome, skuterler: viewScooters, izleme: viewTracking, muqavileler: viewContracts, musteriler: viewCustomers, odenisler: viewPayments, ayarlar: viewSettings }[S.tab] || viewHome;
+  $('#app').innerHTML = v();
+  if (S.sched && !$('#modal').hidden) drawSched();
+  if (S.dsc && !$('#modal').hidden) drawDays();
+}
+function route() { const h = location.hash.slice(1); S.tab = ['umumi', 'skuterler', 'izleme', 'muqavileler', 'musteriler', 'odenisler', 'ayarlar'].includes(h) ? h : 'umumi'; render(); }
+window.addEventListener('hashchange', route);
+const armed = {};
+$('#app').addEventListener('click', async e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const id = b.dataset.id, a = b.dataset.act;
+  const sc = S.scooters.find(x => x.id === id), co = S.contracts.find(x => x.id === id);
+  try {
+    if (a === 'adds') scooterForm();
+    else if (a === 'edits') scooterForm(sc);
+    else if (a === 'loc') locForm(sc);
+    else if (a === 'newc') contractForm(null, id);
+    else if (a === 'doc') showDoc(snapOf(sc), null);
+    else if (a === 'docc') showDoc(co.snap || snapOf(S.scooters.find(x => x.id === co.scooterId) || {}), co);
+    else if (a === 'docr') showDoc(co.snap || snapOf(S.scooters.find(x => x.id === co.scooterId) || {}), co, 'return');
+    else if (a === 'mh' || a === 'mr' || a === 'mi' || a === 'mv') mediaForm(co, { mh: 'handover', mr: 'return', mi: 'id', mv: 'renter' }[a]);
+    else if (a === 'days') showDays(id);
+    else if (a === 'addz') zoneForm();
+    else if (a === 'editz') zoneForm(S.zones.find(q => q.id === id));
+    else if (a === 'delz') {
+      if (!armed['delz' + id]) { armed['delz' + id] = 1; b.textContent = 'Əminsiniz?'; setTimeout(() => { delete armed['delz' + id]; if (b.isConnected) b.textContent = 'Sil'; }, 4000); return; }
+      delete armed['delz' + id]; await saveZones(S.zones.filter(q => q.id !== id));
+    }
+    else if (a === 'tmy') myPos();
+    else if (a === 'ton') trackOn(S.tsel || (S.scooters[0] || {}).id);
+    else if (a === 'toff') trackOff();
+    else if (a === 'sign') signForm(co);
+    else if (a === 'send') sendForm(co);
+    else if (a === 'sendr') sendForm(co, 'return');
+    else if (a === 'addcu') customerForm();
+    else if (a === 'editcu') customerForm(S.customers.find(x => x.id === id));
+    else if (a === 'cnewc') { const x = S.customers.find(y => y.id === id); contractForm({ customerId: x.id, renter: x.name, phone: x.phone, fin: x.fin }); }
+    else if (a === 'cimport') { b.disabled = true; await importCustomers(); }
+    else if (a === 'delcu') {
+      if (!armed['delcu' + id]) { armed['delcu' + id] = 1; b.textContent = 'Əminsiniz?'; setTimeout(() => { delete armed['delcu' + id]; if (b.isConnected) b.textContent = 'Sil'; }, 4000); return; }
+      delete armed['delcu' + id];
+      for (const c of S.contracts.filter(c => c.customerId === id)) await db.doc('contracts/' + c.id).update({ customerId: '' });
+      await db.doc('customers/' + id).delete();
+    }
+    else if (a === 'give') {
+      if (!reqs(co).every(r => r[2])) { alert2('Əvvəlcə bütün şərtlər yerinə yetirilməlidir.'); return; }
+      await db.doc('contracts/' + id).update({ handed: true, handedAt: today() });
+    }
+    else if (a === 'sets') settingsForm();
+    else if (a === 'siteset') siteForm();
+    else if (a === 'sched') showSched(id);
+    else if (a === 'ppay') await payOldest(co);
+    else if (a === 'addc') contractForm();
+    else if (a === 'editc') contractForm(co);
+    else if (a === 'cf') { S.cfilter = b.dataset.v; render(); }
+    else if (a === 'pay') payForm(id);
+    else if (a === 'addp') payForm();
+    else if (a === 'close' || a === 'delp') {
+      if (!armed[a + id]) { armed[a + id] = 1; b.textContent = 'Əminsiniz?'; setTimeout(() => { delete armed[a + id]; if (b.isConnected) b.textContent = a === 'delp' ? 'Sil' : 'Müqaviləni bağla'; }, 4000); return; }
+      delete armed[a + id];
+      if (a === 'close') {
+        await db.doc('contracts/' + id).update({ status: 'baglanib', closedAt: today() });
+        showDoc(co.snap || snapOf(S.scooters.find(x => x.id === co.scooterId) || {}), { ...co, status: 'baglanib', closedAt: today() }, 'return');
+      } else await db.doc('payments/' + id).delete();
+    }
+    else if (a === 'reopen') await db.doc('contracts/' + id).update({ status: 'aktiv', closedAt: '' });
+  } catch (er) { alert2('Xəta: ' + (er.message || er.code)); }
+});
+$('#app').addEventListener('input', e => {
+  if (e.target.id !== 'cq') return;
+  S.cq = e.target.value; const pos = e.target.selectionStart; render();
+  const n = $('#cq'); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (er) {} }
+});
+$('#app').addEventListener('change', e => { if (e.target.id === 'tsel') S.tsel = e.target.value; });
+$('#app').addEventListener('change', e => { if (e.target.id === 'pm') { S.pmonth = e.target.value; render(); } });
+
+(async function init() {
+  route();
+  try { db = await claude.use('db'); assets = await claude.use('assets'); dl = await claude.use('downloads'); } catch (e) { db = db || null; }
+  if (!db) { render(); return; }
+  setTimeout(() => { if (!(S.ready.scooters && S.ready.contracts && S.ready.payments)) $('#app').innerHTML = '<div class="empty">Məlumatlar yüklənmədi. Səhifəni yenidən açın.</div>'; }, 10000);
+  db.doc('settings/zones').onSnapshot(d => { S.zones = (d.exists && (d.data().list || [])) || []; if (S.ready.scooters && S.ready.contracts && S.ready.payments) render(); }, () => {});
+  db.doc('settings/site').onSnapshot(d => { S.site = (d.exists && d.data()) || {}; if (S.ready.scooters && S.ready.contracts && S.ready.payments) render(); }, () => {});
+  db.doc('settings/owner').onSnapshot(d => { S.settings = (d.exists && d.data()) || {}; if (S.ready.scooters && S.ready.contracts && S.ready.payments) render(); }, () => {});
+  ['scooters', 'contracts', 'payments', 'customers'].forEach(n => db.collection(n).onSnapshot(snap => {
+    S[n] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (n === 'scooters') S.scooters.sort((a, b) => (a.no && b.no ? String(a.no).localeCompare(String(b.no), 'az', { numeric: true }) : 0) || a.name.localeCompare(b.name, 'az', { numeric: true }));
+    if (n === 'customers') S.customers.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'az'));
+    S.ready[n] = true; render();
+  }, er => { $('#app').innerHTML = '<div class="empty">Məlumat oxuna bilmədi: ' + esc(er.message || er.code) + '</div>'; }));
+})();
+</script>
+
+</body></html>
