@@ -3,7 +3,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex">
 <title>Skuter İcarə Paneli</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
 /* Layout: dark navy sidebar (bottom tab bar on phones) + light work area; scooter cards carry a status stripe, money shown as a 3-cell strip. */
 :root{
@@ -236,8 +236,69 @@ button.pbtn:hover{background:#0c5f59;filter:none}
   nav a[aria-current="page"]{border-top-color:var(--accent)}
   main{padding:20px max(16px,env(safe-area-inset-right,0px)) 110px max(16px,env(safe-area-inset-left,0px))}
 }
+/* 1gə üslubu: bənövşəyi rəng, yumşaq lavanda fon, yuvarlaq kartlar və düymələr */
+:root{
+  --bg:#f5f0ff; --surface:#ffffff; --surface2:#efe8fd; --ink:#1c1235; --muted:#6b6485; --line:#e6dcf7;
+  --accent:#6d2bd6; --accent-ink:#ffffff; --accent-soft:#ece0ff;
+  --side:#ffffff; --side-ink:#6b6485; --side-on:#4a1fa8;
+  --ok:#0f8a5f; --ok-soft:#dcf5ea; --warn:#a15c00; --warn-soft:#fdeccb; --bad:#d23a3a; --bad-soft:#fde0e0;
+  --display:'Manrope','Plus Jakarta Sans','Segoe UI',system-ui,sans-serif; --body:'Manrope','Plus Jakarta Sans','Segoe UI',system-ui,sans-serif;
+  --shadow:0 8px 28px rgba(109,43,214,.09);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#130b25; --surface:#1d1434; --surface2:#2a1d4a; --ink:#f1ebff; --muted:#a99fc7; --line:#33265a;
+  --accent:#a77bff; --accent-ink:#1a0a3a; --accent-soft:#32215e; --side:#1d1434; --side-ink:#a99fc7; --side-on:#d9c8ff;
+  --ok:#5fd29a; --ok-soft:#14392b; --warn:#f0b955; --warn-soft:#3f3110; --bad:#ff8f8f; --bad-soft:#4a1d25; --shadow:0 8px 28px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{
+  --bg:#130b25; --surface:#1d1434; --surface2:#2a1d4a; --ink:#f1ebff; --muted:#a99fc7; --line:#33265a;
+  --accent:#a77bff; --accent-ink:#1a0a3a; --accent-soft:#32215e; --side:#1d1434; --side-ink:#a99fc7; --side-on:#d9c8ff;
+  --ok:#5fd29a; --ok-soft:#14392b; --warn:#f0b955; --warn-soft:#3f3110; --bad:#ff8f8f; --bad-soft:#4a1d25; --shadow:0 8px 28px rgba(0,0,0,.35)}
+body{font-weight:500}
+h2,h3{font-weight:800}
+.side{border-right:1px solid var(--line);box-shadow:0 0 30px rgba(109,43,214,.06)}
+.brand .logo{background:linear-gradient(135deg,#8b4dff,#5a1fc4);color:#fff;border-radius:14px}
+.brand b{color:var(--side-on);font-weight:800}
+nav a{border-left:0;border-radius:99px;font-weight:700}
+nav a:hover{background:var(--accent-soft);color:var(--accent)}
+nav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent);border-left-color:transparent}
+.tile{border:1px solid var(--line);border-top:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}
+.tile .v{color:var(--ink);font-weight:800}
+.tile:nth-child(1) .v{color:var(--accent)}
+.card{border-radius:22px;border:1px solid var(--line);box-shadow:var(--shadow)}
+.card::before{height:5px}
+.tablebox,.empty,.alert{border-radius:18px}
+.alert{box-shadow:var(--shadow)}
+.pill{font-weight:800}
+button,.btn{border-radius:99px;font-weight:800;padding:9px 17px;border-color:var(--line)}
+button.sm{padding:6px 13px}
+button.primary{background:linear-gradient(135deg,#8b4dff,#5a1fc4);border-color:transparent;color:#fff}
+button.primary:hover{background:linear-gradient(135deg,#9a62ff,#6a2fd6);filter:none}
+.seg{border-radius:99px}.seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+input,select,textarea{border-radius:14px;background:var(--surface)}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+#modal{background:rgba(28,18,53,.62)}
+#modal form{border-radius:24px}
+th{background:var(--surface2)}
+details summary{color:var(--accent)}
+/* Ödənişlər bölməsi də bənövşəyi */
+.pay{--pa:#6d2bd6;--pa-soft:#ece0ff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pay{--pa:#a77bff;--pa-soft:#32215e}}
+:root[data-theme="dark"] .pay{--pa:#a77bff;--pa-soft:#32215e}
+button.pbtn{background:linear-gradient(135deg,#8b4dff,#5a1fc4);border-color:transparent;color:#fff}
+button.pbtn:hover{background:linear-gradient(135deg,#9a62ff,#6a2fd6)}
+.pay-hero{background:linear-gradient(135deg,#8b4dff 0%,#4c1a9e 100%);border-radius:26px}
+.sc{border-radius:22px;box-shadow:var(--shadow)}
+.sc .bar i{background:linear-gradient(90deg,#a77bff,#6d2bd6)}
+.sc.total{background:linear-gradient(135deg,#8b4dff,#4c1a9e)}
+.scb.total .scb-h{background:linear-gradient(135deg,#8b4dff,#4c1a9e)}
+.k-kira{background:#6d2bd6}
+.due{border-radius:20px;box-shadow:var(--shadow)}
+@media(max-width:820px){
+  .side{border-right:0;border-top:1px solid var(--line);border-radius:26px 26px 0 0;box-shadow:0 -8px 30px rgba(109,43,214,.14)}
+  nav a{border-radius:16px}
+  nav a[aria-current="page"]{border-top-color:transparent;background:var(--accent-soft);color:var(--accent)}
+}
 </style>
-
 </head><body>
 <div class="shell">
   <aside class="side">

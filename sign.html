@@ -6,14 +6,15 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
 <title>Skuter icarə: imza və sənədlər</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap">
 <style>
-:root{--bg:#f2f4f8;--surface:#fff;--ink:#111a2e;--muted:#5b667d;--line:#dbe0ea;--accent:#d94a0d;--ok:#12803c;--bad:#c0262d}
-@media (prefers-color-scheme:dark){:root{--bg:#0b1020;--surface:#141b30;--ink:#e8ecf6;--muted:#97a3bf;--line:#27314d;--accent:#ff7a3d;--ok:#4cc57a;--bad:#ff7a80}}
+:root{--bg:#f5f0ff;--surface:#fff;--ink:#1c1235;--muted:#6b6485;--line:#e6dcf7;--accent:#6d2bd6;--ok:#12803c;--bad:#c0262d}
+@media (prefers-color-scheme:dark){:root{--bg:#130b25;--surface:#1d1434;--ink:#f1ebff;--muted:#a99fc7;--line:#33265a;--accent:#a77bff;--ok:#4cc57a;--bad:#ff7a80}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px 16px 40px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Manrope,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px 16px 40px}
 main{max-width:720px;margin:0 auto;display:grid;gap:16px}
 h1{font-size:22px;margin:0}h2{font-size:17px;margin:0 0 4px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:18px}
 .muted{color:var(--muted);font-size:14px}
 #doc{max-height:55vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff}
 #doc .paper{padding:14px 12px;font-size:14px;max-width:none}
@@ -21,8 +22,8 @@ h1{font-size:22px;margin:0}h2{font-size:17px;margin:0 0 4px}
 .step{display:grid;gap:8px}
 .step+.step{border-top:1px solid var(--line);padding-top:16px;margin-top:4px}
 .tag{display:inline-block;font-size:12px;font-weight:700;border-radius:99px;padding:2px 9px;background:var(--line);color:var(--muted)}
-.tag.req{background:#fde3d6;color:#9a3205}
-@media (prefers-color-scheme:dark){.tag.req{background:#4a2414;color:#ffb48f}}
+.tag.req{background:#ece0ff;color:#4a1fa8}
+@media (prefers-color-scheme:dark){.tag.req{background:#32215e;color:#d9c8ff}}
 .pick{display:block;border:2px dashed var(--line);border-radius:12px;padding:14px;text-align:center;font-weight:600;cursor:pointer}
 .pick input{position:absolute;opacity:0;width:1px;height:1px}
 .pick:focus-within{outline:3px solid var(--accent)}
@@ -33,7 +34,7 @@ label.chk{display:flex;gap:10px;align-items:flex-start}
 label.chk input{width:22px;height:22px;margin-top:2px;flex:none}
 input[type=text]{width:100%;font:inherit;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 canvas{width:100%;height:180px;background:#fff;border:1px solid var(--line);border-radius:10px;touch-action:none;display:block}
-button.main{font:inherit;font-weight:700;width:100%;padding:15px;border:0;border-radius:12px;background:var(--accent);color:#fff;cursor:pointer}
+button.main{font:inherit;font-weight:800;width:100%;padding:15px;border:0;border-radius:99px;background:linear-gradient(135deg,#8b4dff,#5a1fc4);color:#fff;cursor:pointer}
 button.main:disabled{opacity:.5}
 button.link{font:inherit;border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:4px 0}
 .err{color:var(--bad);font-weight:600;min-height:1.2em}
