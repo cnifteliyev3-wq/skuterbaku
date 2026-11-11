@@ -325,6 +325,7 @@ button.pbtn:hover{background:linear-gradient(135deg,#9a62ff,#6a2fd6)}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <script src="shim.js?v=11"></script>
+<script src="idocr.js?v=1"></script>
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -864,14 +865,20 @@ function customerForm(x) {
     if (!files.length) { msg('Əvvəlcə vəsiqənin şəklini seçin.'); return; }
     rd.disabled = true; msg('Oxunur… (bir az gözləyin)');
     try {
-      const sample = await claude.use('sample');
+      const sample = await claude.use('sample').catch(() => null);
       const lim = sample ? await sample.limits().catch(() => null) : null;
-      if (!sample || !lim || !lim.images) { msg('Avtomatik oxuma bu hesabda əlçatan deyil, məlumatı əl ilə yazın.'); return; }
-      const d = await sample.json(ID_PROMPT, { images: files.slice(0, lim.images.maxCount || 2), cache: false });
-      const set = (id, val) => { const el = $('#' + id); if (el && typeof val === 'string' && val.trim()) el.value = val.trim(); };
-      set('name', d.name); set('fin', d.fin); set('idSeries', d.series); set('address', d.address);
-      if (typeof d.birth === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d.birth)) $('#birth').value = d.birth;
-      msg('Məlumatlar yazıldı. Şəkillə tutuşdurub yoxlayın, səhv varsa düzəldin.');
+      let d;
+      if (sample && lim && lim.images) d = await sample.json(ID_PROMPT, { images: files.slice(0, lim.images.maxCount || 2), cache: false });
+      else {
+        /* brauzerdə oxuma: şəkil heç yerə göndərilmir */
+        if (!window.skIdOcr) throw new Error('ocr');
+        d = (await window.skIdOcr.read(files.slice(0, 2), p => msg('Oxunur… ' + Math.round(p * 100) + '%'))).fields;
+      }
+      const set = (id, val) => { const el = $('#' + id); if (el && typeof val === 'string' && val.trim()) { el.value = val.trim(); return true; } return false; };
+      const got = [];
+      if (set('name', d.name)) got.push('ad'); if (set('fin', d.fin)) got.push('FİN'); if (set('idSeries', d.series)) got.push('seriya'); if (set('address', d.address)) got.push('ünvan');
+      if (typeof d.birth === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d.birth)) { $('#birth').value = d.birth; got.push('doğum tarixi'); }
+      msg(got.length ? 'Yazıldı: ' + got.join(', ') + '. Şəkillə tutuşdurub yoxlayın, səhv varsa düzəldin.' : 'Heç nə oxunmadı. Şəkli daha aydın və işıqlı çəkin (vəsiqənin ön və arxa üzü ayrıca).');
     } catch (e) {
       msg(e && e.code === 'not_granted' ? 'Oxumaq üçün icazə verilmədi. Məlumatı əl ilə yazın.' : e && e.code === 'rate_limited' ? 'Çox sorğu göndərildi, bir az sonra yenidən yoxlayın.' : e && e.code === 'image_rejected' ? 'Şəkil oxunmadı. Başqa şəkil seçin.' : 'Oxunmadı. Şəkli daha aydın çəkin və ya məlumatı əl ilə yazın.');
     } finally { rd.disabled = false; }
