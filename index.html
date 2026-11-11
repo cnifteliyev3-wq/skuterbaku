@@ -87,7 +87,26 @@ footer{padding:28px 0 40px;color:var(--muted);font-size:14px;border-top:1px soli
 footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
 .sk{background:linear-gradient(90deg,var(--line),var(--accent-soft),var(--line));background-size:200% 100%;animation:sh 1.2s infinite;border-radius:20px;height:380px}
 @keyframes sh{to{background-position:-200% 0}}
-@media(max-width:720px){nav.m a.hide{display:none}.hero{padding-top:36px}header.top .btn.wa span{display:none}}
+.herogrid{display:grid;gap:32px;align-items:center;grid-template-columns:1.15fr .85fr}
+.eyebrow{display:inline-block;background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border-radius:999px;margin-bottom:16px}
+.art svg{width:100%;height:auto;display:block;filter:drop-shadow(0 18px 30px rgba(90,31,196,.25))}
+.feats{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
+.feat{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px}
+.feat .ic{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--accent-soft);color:var(--accent);margin-bottom:12px}
+.feat h3{margin:0 0 6px;font-size:17px}.feat p{margin:0;color:var(--muted);font-size:14.5px}
+.faq{display:grid;gap:10px;max-width:760px}
+.faq details{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:0 18px}
+.faq summary{cursor:pointer;font-weight:700;padding:16px 0;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--accent);font-size:22px;line-height:1}
+.faq details[open] summary::after{content:"–"}
+.faq p{margin:0 0 16px;color:var(--muted)}
+.bar{display:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media(max-width:860px){.herogrid{grid-template-columns:1fr}.art{max-width:340px;margin:0 auto;order:-1}}
+@media(max-width:720px){nav.m a.hide{display:none}.hero{padding-top:28px}header.top .btn.wa span{display:none}
+  .bar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;gap:10px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--surface);border-top:1px solid var(--line)}
+  .bar .btn{flex:1}.bar[hidden]{display:none}body{padding-bottom:74px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -96,24 +115,51 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
   <div class="wrap">
     <a class="brand" href="#"><span class="logo" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="2.6"/><circle cx="19" cy="18" r="2.6"/><path d="M8.6 18H14l3-9h3M14 18l-2-9"/></svg></span>Skuter Baku</a>
     <nav class="m" aria-label="Menyu">
-      <a href="#skuterler">Skuterlər</a><a class="hide" href="#nece">Necə işləyir</a><a class="hide" href="#sertler">Şərtlər</a><a href="#elaqe">Əlaqə</a>
+      <a href="#skuterler">Skuterlər</a><a class="hide" href="#niye">Üstünlüklər</a><a class="hide" href="#nece">Necə işləyir</a><a class="hide" href="#faq">Suallar</a><a href="#elaqe">Əlaqə</a>
     </nav>
     <a class="btn wa sm" id="hwa" href="#elaqe" hidden>WhatsApp<span>-da yaz</span></a>
   </div>
 </header>
 
 <main>
-<div class="hero"><div class="wrap">
-  <h1 id="tag">Bakıda <em>elektrik skuter</em> icarəsi</h1>
-  <p id="intro">Sürətli, rahat və sərfəli. Skuteri seçin, WhatsApp ilə sifariş edin, müqaviləni telefondan imzalayın.</p>
-  <div class="cta"><a class="btn p" href="#skuterler">Skuterlərə bax</a><a class="btn wa" id="hero-wa" href="#elaqe" hidden>WhatsApp ilə yaz</a></div>
-  <div class="chips"><span class="chip">Onlayn müqavilə</span><span class="chip">Elektrik · səssiz</span><span class="chip">Gündəlik və aylıq icarə</span></div>
+<div class="hero"><div class="wrap herogrid">
+  <div>
+    <span class="eyebrow">Bakı · Elektrik skuter icarəsi</span>
+    <h1 id="tag">Şəhəri <em>sürətlə</em> və rahat gəzin</h1>
+    <p id="intro">Elektrik skuteri gün, həftə və ya ay üçün icarəyə götürün. Seçin, bizə yazın, müqaviləni telefondan imzalayın və yola çıxın.</p>
+    <div class="cta"><a class="btn p" href="#skuterler">Skuterlərə bax</a><a class="btn wa" id="hero-wa" href="#elaqe" hidden>WhatsApp ilə yaz</a></div>
+    <div class="chips"><span class="chip">Onlayn müqavilə</span><span class="chip">Təhvil şəkillə qeyd olunur</span><span class="chip">Gün · həftə · ay</span></div>
+  </div>
+  <div class="art" aria-hidden="true">
+    <svg viewBox="0 0 420 320" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="210" cy="160" r="150" fill="var(--accent-soft)"/>
+      <circle cx="210" cy="160" r="105" fill="var(--surface)" opacity=".55"/>
+      <g stroke="var(--accent)" stroke-width="10">
+        <circle cx="105" cy="236" r="30" fill="var(--surface)"/><circle cx="318" cy="236" r="30" fill="var(--surface)"/>
+        <path d="M105 236h92l60-132h44"/><path d="M257 104l61 132"/><path d="M285 104h42" stroke-width="12"/>
+      </g>
+      <rect x="150" y="214" width="92" height="24" rx="10" fill="url(#g)" stroke="none"/>
+      <defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#8b4dff"/><stop offset="1" stop-color="#5a1fc4"/></linearGradient></defs>
+      <path d="M60 282h300" stroke="var(--line)" stroke-width="6"/>
+    </svg>
+  </div>
 </div></div>
 
 <section id="skuterler"><div class="wrap">
   <h2>Skuterlərimiz</h2>
   <p class="sub">Qiymətlər manatla. Boş skuter üçün birbaşa sifariş verə bilərsiniz.</p>
   <div class="grid" id="list"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>
+</div></section>
+
+<section id="niye"><div class="wrap">
+  <h2>Niyə Skuter Baku</h2>
+  <p class="sub">İcarəni sadə, aydın və təhlükəsiz etdik.</p>
+  <div class="feats">
+    <div class="feat"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 14l2 2 4-4"/></svg></span><h3>Onlayn müqavilə</h3><p>Sənədi telefondan oxuyub imzalayırsınız. Kağız və növbə yoxdur.</p></div>
+    <div class="feat"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span><h3>Şəffaf təhvil</h3><p>Skuterin vəziyyəti təhvil zamanı şəkil və videoyla qeyd olunur, sonradan mübahisə qalmır.</p></div>
+    <div class="feat"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><h3>Çevik müddət</h3><p>Bir gün, bir həftə və ya bir ay: ehtiyacınıza uyğun seçin.</p></div>
+    <div class="feat"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg></span><h3>Sürətli cavab</h3><p>WhatsApp və ya zəng ilə yazın, sifarişi eyni gün razılaşdıraq.</p></div>
+  </div>
 </div></section>
 
 <section id="nece"><div class="wrap">
@@ -124,6 +170,18 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
     <div class="step"><i>2</i><h3>Bizə yazın</h3><p>WhatsApp və ya zəng ilə tarixi və müddəti razılaşdırın.</p></div>
     <div class="step"><i>3</i><h3>Müqaviləni imzalayın</h3><p>Sizə göndərilən linkdən sənədi oxuyun, şəxsiyyət vəsiqənizi yükləyin və telefonla imzalayın.</p></div>
     <div class="step"><i>4</i><h3>Sürün</h3><p>Skuteri götürün və şəhərdə rahat gəzin. Qaytararkən də eyni qaydada imzalanır.</p></div>
+  </div>
+</div></section>
+
+<section id="faq"><div class="wrap">
+  <h2>Tez-tez verilən suallar</h2>
+  <p class="sub">Ən çox soruşulanlar.</p>
+  <div class="faq">
+    <details><summary>İcarə üçün hansı sənəd lazımdır?</summary><p>Şəxsiyyət vəsiqəsi. Müqavilə linkində vəsiqənizin şəklini yükləyir və özünüz haqqında qısa video çəkirsiniz.</p></details>
+    <details><summary>Müqaviləni necə imzalayıram?</summary><p>Sifarişi razılaşdıranda sizə link göndəririk. Linkdə sənədi oxuyub telefon ekranında imzalayırsınız. Link birdəfəlikdir və yalnız sizin üçündür.</p></details>
+    <details><summary>Skuteri necə götürüb qaytarıram?</summary><p>Götürmə və qaytarma yerini sifarişdə razılaşırıq. Hər ikisində skuterin vəziyyəti şəkillə qeyd olunur və qaytarma da onlayn imzalanır.</p></details>
+    <details><summary>Qiymət nədən asılıdır?</summary><p>Hər skuterin qiyməti kartında yazılıb və gün, həftə və ya ay üçündür. Uzun müddətli icarə üçün bizə yazıb razılaşa bilərsiniz.</p></details>
+    <details><summary>Skuteri xarab etsəm nə olur?</summary><p>Zədə və itki halları müqavilədə aydın yazılır. İmzalamazdan əvvəl sənədi diqqətlə oxuyun, sualınız olsa bizə yazın.</p></details>
   </div>
 </div></section>
 
@@ -140,6 +198,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
 </div></section>
 </main>
 
+<div class="bar" id="bar" hidden><a class="btn" id="bar-call" href="#elaqe">Zəng et</a><a class="btn wa" id="bar-wa" href="#elaqe">WhatsApp</a></div>
 <footer><div class="wrap"><span>© <span id="yr"></span> Skuter Baku</span><a href="panel.html" rel="nofollow">İdarəetmə paneli</a></div></footer>
 
 <script>
@@ -163,6 +222,15 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
     var d = digits(site.whatsapp || site.phone);
     if (d){ if (d.length === 9) d = '994' + d; else if (d.length === 10 && d[0] === '0') d = '994' + d.slice(1); waNum = d; }
     ['#hwa','#hero-wa'].forEach(function(s){ var a=$(s); if(waNum){ a.href = waLink('Salam! Skuter icarəsi ilə maraqlanıram.'); a.target='_blank'; a.rel='noopener'; a.hidden=false; } });
+    var ph = (site.phone||'').replace(/[^\d+]/g,'');
+    if (ph || waNum){
+      $('#bar').hidden = false;
+      if (ph) $('#bar-call').href = 'tel:' + ph; else $('#bar-call').hidden = true;
+      if (waNum){ var bw=$('#bar-wa'); bw.href = waLink('Salam! Skuter icarəsi ilə maraqlanıram.'); bw.target='_blank'; bw.rel='noopener'; } else $('#bar-wa').hidden = true;
+    }
+    var ld = {'@context':'https://schema.org','@type':'LocalBusiness','name':'Skuter Baku','url':'https://skuterbaku.az/','description':'Bakıda elektrik skuter icarəsi'};
+    if (site.phone) ld.telephone = site.phone; if (site.address) ld.address = {'@type':'PostalAddress',streetAddress:site.address,addressLocality:'Bakı',addressCountry:'AZ'}; if (site.hours) ld.openingHours = site.hours;
+    var sc = document.createElement('script'); sc.type = 'application/ld+json'; sc.textContent = JSON.stringify(ld).replace(/</g,'\\u003c'); document.head.appendChild(sc);
     var terms = (site.terms||'').split(/\n+/).map(function(x){return x.trim()}).filter(Boolean);
     if (terms.length){ $('#terms').innerHTML = terms.map(function(t){return '<li>'+esc(t)+'</li>'}).join(''); $('#sertler').hidden = false; }
     var c = [];
