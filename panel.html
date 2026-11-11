@@ -972,8 +972,11 @@ function settingsForm() {
     fld('name', 'Ad, soyad / şirkət', 'text', L.name, 'required') +
     '<div class="two">' + fld('idno', 'FİN / VÖEN', 'text', L.idno) + fld('phone', 'Telefon', 'tel', L.phone) + '</div>' +
     fld('address', 'Ünvan', 'text', L.address) + fld('city', 'Müqavilə şəhəri', 'text', L.city || 'Bakı') +
-    '<div class="two">' + fld('scooterValue', 'Skuterin dəyəri (₼)', 'number', L.scooterValue, 'min="0" step="0.01"') + fld('batteryValue', 'Batareyanın dəyəri (₼)', 'number', L.batteryValue, 'min="0" step="0.01"') + '</div>',
-    async v => { await db.doc('settings/owner').set({ name: v.name.trim(), idno: v.idno.trim(), phone: v.phone.trim(), address: v.address.trim(), city: v.city.trim(), scooterValue: +v.scooterValue || 0, batteryValue: +v.batteryValue || 0 }); });
+    '<div class="two">' + fld('scooterValue', 'Skuterin dəyəri (₼)', 'number', L.scooterValue, 'min="0" step="0.01"') + fld('batteryValue', 'Batareyanın dəyəri (₼)', 'number', L.batteryValue, 'min="0" step="0.01"') + '</div>' +
+    fld('penaltyPct', 'Ödəniş gecikdikdə cərimə (gecikmiş məbləğin gündə %-i, yoxdursa 0)', 'number', L.penaltyPct || 0, 'min="0" max="100" step="0.01"') +
+    sel('socialConsent', 'Müqaviləyə “sosial şəbəkədə paylaşma razılığı” bəndi (7.3) daxil edilsin?', [['1', 'Bəli, daxil edilsin'], ['0', 'Xeyr, daxil edilməsin']], L.socialConsent === false ? '0' : '1') +
+    '<div class="hint">Diqqət: bu bəndin məhkəmədə qüvvəsi şübhəlidir və təhqir, şəxsi məlumatlar və şərəf-ləyaqət qanunvericiliyi baxımından risk yarada bilər. Tətbiq etməzdən əvvəl hüquqşünasla məsləhətləşin.</div>',
+    async v => { await db.doc('settings/owner').set({ name: v.name.trim(), idno: v.idno.trim(), phone: v.phone.trim(), address: v.address.trim(), city: v.city.trim(), scooterValue: +v.scooterValue || 0, batteryValue: +v.batteryValue || 0, penaltyPct: +v.penaltyPct || 0, socialConsent: v.socialConsent !== '0' }); });
 }
 
 /* ---------- müqavilə sənədi ---------- */
@@ -1008,31 +1011,72 @@ function docHtml(sn, c, part) {
   const ret = '<table><tr><th>Əşya</th><th>Müqavilədəki nömrə</th><th>Nömrə uyğundur</th><th>Qaytarılan vəziyyət</th><th>Qeyd</th></tr>' +
     items.map(i => '<tr><td>' + i[0] + '</td><td>' + (i[1] === '1 ədəd' ? '—' : numCell(i[1])) + '</td><td>☐ Bəli &nbsp; ☐ Xeyr</td><td>☐ Yaxşı &nbsp; ☐ Zədəli</td><td>' + bl(60) + '</td></tr>').join('') + '</table>';
   const sig = '<div class="sig"><div><b>İcarədar:</b><br>' + (L.name ? esc(L.name) : bl(180)) + '<br>İmza: ' + bl(120) + '</div><div><b>İcarəçi:</b><br>' + (c && c.renter ? esc(c.renter) : bl(180)) + '<br>İmza: ' + bl(120) + '</div></div>';
+  const P = t => '<p>' + t + '</p>', H = t => '<h3>' + t + '</h3>';
+  const pen = +L.penaltyPct || 0, social = L.socialConsent !== false;
+  const sv = L.scooterValue ? String(L.scooterValue) : '', bv = L.batteryValue ? String(L.batteryValue) : '';
+  const per = c ? '<b>' + unit + '</b>' : bl(60);
   const main = '<h1>Skuter icarə müqaviləsi</h1>' +
     '<div class="meta"><span>№ ' + (noText ? '<b>' + esc(noText) + '</b>' : bl(90)) + '</span><span>' + esc(L.city || 'Bakı') + ' şəhəri, ' + (c ? '<b>' + dfmt(c.start) + '</b>' : bl(110)) + '</span></div>' +
-    '<p><b>İcarədar:</b> ' + v(L.name, 200) + ', FİN/VÖEN: ' + v(L.idno, 100) + ', ünvan: ' + v(L.address, 220) + ', tel.: ' + v(L.phone, 110) + '.</p>' +
-    '<p><b>İcarəçi:</b> ' + v(c && c.renter, 200) + ', vəsiqə seriyası / FİN: ' + v(c && c.fin, 120) + ', ünvan: ' + bl(220) + ', tel.: ' + v(c && c.phone, 110) + '.</p>' +
-    '<p>Tərəflər aşağıdakılar barədə bu müqaviləni bağladılar.</p>' +
-    '<h3>1. Müqavilənin predmeti</h3>' +
-    '<p>1.1. İcarədar icarəçiyə müvəqqəti istifadə üçün aşağıdakı əşyaları verir, icarəçi isə icarə haqqını ödəməyi və əşyaları müddətində qaytarmağı öhdəsinə götürür:</p>' + t1 +
-    '<p>1.2. Skuter yerləşməni izləmə (GPS) sistemi ilə təchiz oluna bilər. İcarəçi bununla razıdır.</p>' +
-    '<h3>2. İcarə müddəti və haqqı</h3>' +
-    '<p>2.1. İcarə müddəti: ' + v(c && dfmt(c.start), 90) + ' tarixindən ' + v(c && c.end && dfmt(c.end), 90) + ' tarixinədək.</p>' +
-    '<p>2.2. İcarə haqqı: hər ' + (c ? '<b>' + unit + '</b>' : bl(60)) + ' üçün ' + v(c && c.rate ? String(effRate(c)) : '', 70) + ' ₼' + (c && discLabel(c) ? ' (' + discLabel(c).replace('−', '') + ' endirim nəzərə alınıb; əsas tarif ' + c.rate + ' ₼)' : '') + '.</p>' +
-    (c && !c.deposit ? '<p>2.3. Depozit tələb olunmur. Əşyalara dəyən zərər icarəçi tərəfindən ödənilir.</p>' : '<p>2.3. Girov (depozit, yoxdursa «yoxdur» yazılır): ' + v(c && c.deposit ? String(c.deposit) : '', 70) + ' ₼. Əşyalar zədəsiz və tam qaytarıldıqda depozit geri verilir. Zərər olarsa, zərər depozitdən tutulur, çatmayan hissəni icarəçi əlavə ödəyir.</p>') +
-    '<p>2.4. İcarə haqqı hər ' + (c ? '<b>' + unit + '</b>' : 'gün') + ' sonunda ödənilir. Ödəniş gecikdikdə icarədar əşyaları geri tələb etmək hüququna malikdir.</p>' +
-    '<h3>3. İcarəçinin öhdəlikləri</h3>' +
-    '<p>3.1. Əşyalardan yalnız özü istifadə edir; onları üçüncü şəxsə vermir, icarəyə və ya girova qoymur.</p>' +
-    '<p>3.2. Yol hərəkəti qaydalarına riayət edir; spirtli içki və ya narkotik maddə təsiri altında skuteri idarə etmir.</p>' +
-    '<p>3.3. Batareyaları yalnız verilmiş adaptor ilə doldurur, onları sökmür və dəyişdirmir.</p>' +
-    '<p>3.4. İstifadə zamanı yaranan cərimələr və üçüncü şəxslərə dəyən zərər icarəçiyə aiddir.</p>' +
-    '<p>3.5. Qəza, oğurluq və ya nasazlıq halında icarədara dərhal xəbər verir.</p>' +
-    '<h3>4. Məsuliyyət</h3>' +
-    '<p>4.1. Əşyalar itirildikdə və ya təmiri mümkün olmayacaq dərəcədə zədələndikdə icarəçi aşağıdakı dəyəri ödəyir: skuter ' + v(L.scooterValue ? String(L.scooterValue) : '', 70) + ' ₼, hər batareya ' + v(L.batteryValue ? String(L.batteryValue) : '', 70) + ' ₼. Qismən zədə halında təmir xərci ödənilir.</p>' +
-    '<p>4.2. Əşyalar vaxtında qaytarılmazsa, gecikmiş hər gün üçün icarə haqqı tarifi üzrə ödəniş edilir.</p>' +
-    '<h3>5. Yekun müddəalar</h3>' +
-    '<p>5.1. Müqavilə iki nüsxədə tərtib edilib, hər tərəfdə bir nüsxə qalır və imzalandığı gündən qüvvəyə minir. Təhvil Əlavə 1-ə əsasən aparılır; qaytarma ayrıca qaytarma aktı ilə rəsmiləşdirilir.</p>' +
-    '<p>5.2. Mübahisələr danışıqlarla, razılıq olmadıqda qüvvədə olan qanunvericiliyə uyğun məhkəmə qaydasında həll edilir.</p>' + sig;
+    P('<b>İcarədar:</b> ' + v(L.name, 200) + ', FİN/VÖEN: ' + v(L.idno, 100) + ', ünvan: ' + v(L.address, 220) + ', tel.: ' + v(L.phone, 110) + ' (bundan sonra «İcarədar»).') +
+    P('<b>İcarəçi:</b> ' + v(c && c.renter, 200) + ', vəsiqə seriyası / FİN: ' + v(c && c.fin, 120) + ', ünvan: ' + bl(220) + ', tel.: ' + v(c && c.phone, 110) + ' (bundan sonra «İcarəçi»).') +
+    P('Tərəflər Azərbaycan Respublikasının Mülki Məcəlləsinə və digər qüvvədə olan qanunvericiliyə uyğun olaraq aşağıdakılar barədə bu müqaviləni bağladılar.') +
+
+    H('1. Müqavilənin predmeti') +
+    P('1.1. İcarədar icarəçiyə haqq müqabilində müvəqqəti istifadə üçün aşağıdakı əşyaları verir, icarəçi isə icarə haqqını ödəməyi və əşyaları müqavilənin şərtlərinə uyğun qaytarmağı öhdəsinə götürür:') + t1 +
+    P('1.2. Əşyalar üzərində mülkiyyət hüququ İcarədara məxsusdur. İcarəçi əşyaları satmaq, girov qoymaq, üçüncü şəxsə vermək, alt icarəyə vermək və ya başqa üsulla özgəninkiləşdirmək hüququna malik deyil.') +
+    P('1.3. Əşyaların təhvil zamanı vəziyyəti Əlavə 1 (təhvil-təslim aktı) ilə, həmçinin təhvil zamanı çəkilən şəkil və videolarla müəyyən edilir.') +
+    P('1.4. Skuter yerləşməni izləmə (GPS) sistemi ilə təchiz oluna bilər. İcarəçi bundan xəbərdardır və razıdır; yerləşmə məlumatı yalnız icarə müddətində və əşyanın mühafizəsi məqsədi ilə istifadə olunur. İcarəçi izləmə cihazını söndürməməyi, sökməməyi və ya zədələməməyi öhdəsinə götürür.') +
+
+    H('2. İcarə müddəti, haqqı və ödəniş qaydası') +
+    P('2.1. İcarə müddəti: ' + v(c && dfmt(c.start), 90) + ' tarixindən ' + v(c && c.end && dfmt(c.end), 90) + ' tarixinədək. Müddət bitdikdə İcarəçi əşyaları qaytarmalıdır; qaytarılana qədər icarə haqqı hesablanmağa davam edir.') +
+    P('2.2. İcarə haqqı: hər ' + per + ' üçün ' + v(c && c.rate ? String(effRate(c)) : '', 70) + ' ₼' + (c && discLabel(c) ? ' (' + discLabel(c).replace('−', '') + ' endirim nəzərə alınıb; əsas tarif ' + c.rate + ' ₼)' : '') + '.') +
+    (c && !c.deposit ? P('2.3. Depozit tələb olunmur. Əşyalara dəyən zərər İcarəçi tərəfindən bu müqavilənin 5-ci bölməsinə uyğun ödənilir.') : P('2.3. Girov (depozit): ' + v(c && c.deposit ? String(c.deposit) : '', 70) + ' ₼. Əşyalar zədəsiz, tam və vaxtında qaytarıldıqda və bütün ödənişlər edildikdə depozit geri qaytarılır. Zərər və ya borc olarsa, onların məbləği depozitdən tutulur, çatmayan hissəni İcarəçi əlavə ödəyir.')) +
+    P('2.4. <b>İcarə haqqı hər günün sonunda mütləq ödənilməlidir.</b> Tarif həftəlik və ya aylıq olduqda belə, tarifin hər günə düşən hissəsi həmin günün sonunda ödənilir; tərəflərin yazılı razılığı ilə fərqli qayda müəyyən edilməyibsə, bu qayda dəyişmir. Ödənişlər nağd və ya bank köçürməsi ilə edilir, İcarədarın uçot qeydləri ilə təsdiqlənir.') +
+    P('2.5. Ödənişin vaxtında edilməməsi müqavilənin əsaslı pozuntusudur. Belə halda İcarədar xəbərdarlıq edib əşyaların dərhal qaytarılmasını tələb etmək, müqaviləni birtərəfli ləğv etmək və qanunvericilikdə nəzərdə tutulan digər hüquqi vasitələrdən istifadə etmək hüququna malikdir.' + (pen > 0 ? ' Bundan əlavə, İcarəçi gecikmiş məbləğin hər gecikmə günü üçün <b>' + pen + ' %</b>-i miqdarında cərimə (penya) ödəyir; cərimənin ödənilməsi əsas borcun ödənilməsindən azad etmir.' : '')) +
+    P('2.6. İcarəçi əşyaları vaxtından əvvəl qaytara bilər; bu halda icarə haqqı faktiki istifadə olunan günlər üzrə hesablanır və hesablaşma qaytarma aktı ilə rəsmiləşdirilir.') +
+
+    H('3. Əşyaların təhvili və qaytarılması') +
+    P('3.1. Təhvil Əlavə 1-ə əsasən aparılır. Təhvil zamanı aktda və ya şəkil/videoda qeyd olunmuş mövcud nöqsanlar (qüsurlar) İcarəçinin məsuliyyətinə daxil deyil.') +
+    P('3.2. İcarəçi əşyaları təhvil alındığı tam dəstdə (skuter, batareyalar, adaptor) və təbii aşınma nəzərə alınmaqla təhvil alındığı vəziyyətdə qaytarmalıdır.') +
+    P('3.3. Qaytarma zamanı əşyalar təhvil-təslim şəkilləri ilə müqayisə edilərək yoxlanılır, şəkil və video çəkilir, nəticə qaytarma aktında qeyd olunur. İcarəçi yoxlamada iştirak etmək və etirazını aktda yazılı bildirmək hüququna malikdir.') +
+
+    H('4. İcarəçinin öhdəlikləri və qadağalar') +
+    P('4.1. İcarəçi təsdiq edir ki, 18 yaşını tamamlayıb, tam fəaliyyət qabiliyyətlidir və təqdim etdiyi şəxsiyyət sənədi və məlumatlar həqiqidir. Əşyalardan yalnız özü istifadə edir; skuter yalnız bir nəfərlik olub ikinci şəxsi daşımaq qadağandır.') +
+    P('4.2. İcarəçi yol hərəkəti qaydalarına və «Yol hərəkəti haqqında» Qanuna riayət edir, spirtli içki, narkotik və ya psixotrop maddələrin təsiri altında skuteri idarə etmir, skuterdən yarışlarda və ya təyinatına zidd məqsədlə istifadə etmir.') +
+    P('4.3. <b>Yağışlı, qarlı və ya yaş hava şəraitində skuterin idarə olunması qadağandır. Su ilə örtülü və ya sulu ərazilərdən (gölməçə, su basmış yol, çay, dəniz, sel suyu və s.) keçmək qadağandır.</b> Skuterin su ilə yuyulması və ya suya salınması da qadağandır.') +
+    P('4.4. Batareyalar yalnız verilmiş adaptor ilə doldurulur. İcarəçi əşyaları sökmür, təmir etmir, dəyişdirmir və üzərində texniki müdaxilə etmir.') +
+    P('4.5. İcarəçi skuteri nəzarətsiz buraxmır, istifadə olunmayanda bağlı və təhlükəsiz yerdə saxlayır.') +
+    P('4.6. Qəza, oğurluq, itki, nasazlıq və ya digər hadisə baş verdikdə İcarəçi bu barədə İcarədara dərhal məlumat verir, oğurluq və qəza hallarında isə həmçinin aidiyyəti hüquq-mühafizə orqanlarına müraciət edib müvafiq arayışı İcarədara təqdim edir.') +
+    P('4.7. İstifadə zamanı yaranan inzibati cərimələr (yol hərəkəti qaydalarının pozulmasına görə və s.) İcarəçiyə aiddir.') +
+
+    H('5. Məsuliyyət') +
+    P('5.1. İcarə müddətində əşyaların məhv olması, itməsi, oğurlanması və ya zədələnməsi riski İcarəçiyə keçir. Təhvil zamanı qeyd olunmuş mövcud nöqsanlar və normal istifadədən yaranan təbii aşınma istisna olmaqla, əşyalarda aşkar edilən bütün nasazlıq və zədələrə görə məsuliyyət İcarəçiyə aiddir.') +
+    P('5.2. Qəza və ya hər hansı digər hadisə baş verdikdə, hadisənin səbəbindən və təqsirkarından asılı olmayaraq, bütün maddi məsuliyyəti İcarəçi daşıyır. İcarəçi əşyalara dəyən zərəri, üçüncü şəxslərə və onların əmlakına dəyən zərəri, təmir xərclərini və İcarədarın əldən çıxmış faydasını (əşyanın təmirdə olduğu müddətdə icarə haqqını) tam həcmdə ödəyir.') +
+    P('5.3. 4.3-cü bəndin (yağış və sulu ərazilər üzrə qadağa) pozulması nəticəsində əşyalara dəyən bütün zərər İcarəçi tərəfindən tam həcmdə ödənilir.') +
+    P('5.4. Əşyalar itirildikdə, oğurlandıqda və ya təmiri mümkün olmayacaq dərəcədə zədələndikdə İcarəçi əşyaların dəyərini ödəyir: skuter ' + v(sv, 70) + ' ₼, hər batareya ' + v(bv, 70) + ' ₼ (adaptor üçün isə faktiki dəyər). Bu qayda oğurluq halında da eynilə tətbiq olunur. Məbləğ İcarədarın yazılı tələbində göstərilən müddətdə (tələbdən sonra 5 gündən gec olmayaraq) ödənilir.') +
+    P('5.5. Qismən zədə halında zərərin məbləği təmir xidmətinin hesab-fakturası və ya müstəqil ekspertiza nəticəsi ilə müəyyən edilir; İcarəçi məbləğə etiraz etdikdə bunu yazılı bildirir.') +
+    P('5.6. Əşyalar vaxtında qaytarılmazsa, gecikmiş hər gün üçün icarə haqqı tarifi üzrə ödəniş edilir; bu, İcarədarın digər zərərlərin ödənilməsini tələb etmək hüququnu məhdudlaşdırmır.') +
+    P('5.7. İcarəçi əşyaları qaytarmaqdan imtina etdikdə və ya əşyalar qanunsuz saxlanıldıqda İcarədar hüquq-mühafizə orqanlarına və məhkəməyə müraciət etmək hüququna malikdir.') +
+
+    H('6. Müqavilənin ləğvi') +
+    P('6.1. İcarədar aşağıdakı hallarda müqaviləni birtərəfli qaydada ləğv edə və əşyaların dərhal qaytarılmasını tələb edə bilər: ödənişin gecikdirilməsi, 4-cü bölmədəki qadağaların pozulması, əşyaların təyinatına zidd istifadəsi və ya üçüncü şəxsə verilməsi, əşyalara ciddi zərər vurulması.') +
+    P('6.2. Ləğv barədə bildiriş 9.2-ci bənddə göstərilən qaydada göndərilir və göndərildiyi andan qüvvəyə minir. Ləğvdən sonra İcarəçi əşyaları dərhal qaytarmalı və bütün borcları ödəməlidir.') +
+
+    H('7. Şəxsi məlumatlar və media') +
+    P('7.1. İcarəçi «Fərdi məlumatlar haqqında» Qanuna uyğun olaraq öz ad, soyad, FİN, vəsiqə şəkli, telefon, imza, şəkil və videosunun, həmçinin yerləşmə məlumatının müqavilənin icrası, şəxsiyyətin təsdiqi və İcarədarın hüquqlarının müdafiəsi məqsədi ilə toplanmasına, saxlanmasına və istifadəsinə razılıq verir. Bu məlumatlar üçüncü şəxslərə yalnız qanunla nəzərdə tutulan hallarda (məhkəmə, hüquq-mühafizə orqanları) ötürülür.') +
+    P('7.2. Təhvil və qaytarma zamanı əşyaların vəziyyətinin sübutu üçün şəkil və video çəkilir; onlar mübahisələrdə sübut kimi istifadə oluna bilər.') +
+    (social ? P('7.3. <b>İcarəçi ödənişləri gecikdirdiyi və ya ödəmədiyi, habelə əşyaları qaytarmadığı halda, bu müqavilə çərçivəsində çəkilmiş video və şəkillərinin İcarədar tərəfindən sosial şəbəkələrdə paylaşılmasına razılıq verir və bunu imzası ilə təsdiq edir.</b> Paylaşım yalnız faktiki borcun və ya əşyaların qaytarılmamasının bildirilməsi məqsədi daşıyır, təhqiredici və ya həqiqətə uyğun olmayan məlumat, həmçinin üçüncü şəxslərin məlumatları ehtiva etmir. Borc tam ödənildikdə və ya əşyalar qaytarıldıqda İcarədar paylaşımı silir. İcarəçi bu razılığı qanunvericiliklə müəyyən edilmiş qaydada geri götürə bilər; bu, onun ödəniş və qaytarma öhdəliklərini aradan qaldırmır.') : '') +
+
+    H('8. Elektron imza') +
+    P('8.1. Tərəflər razılaşırlar ki, müqavilə və aktlar elektron formada (göndərilən link vasitəsilə, ekranda çəkilən imza ilə) imzalana bilər. Elektron imzalanmış müqavilə bu müqavilə üçün əl imzası ilə imzalanmış kimi eyni hüquqi qüvvəyə malikdir. İmzalanma vaxtı, cihaz və şəbəkə məlumatları (IP ünvan, brauzer) qeydə alınır və sübut kimi istifadə oluna bilər.') +
+
+    H('9. Yekun müddəalar') +
+    P('9.1. Müqavilə imzalandığı gündən qüvvəyə minir, əşyaların qaytarılması və bütün hesablaşmaların başa çatması ilə başa çatır. Elektron imzalanan müqavilənin surəti tərəflərə təqdim olunur; kağız üzərində imzalandıqda isə iki nüsxədə tərtib edilir və hər tərəfdə bir nüsxə qalır.') +
+    P('9.2. Bu müqavilə üzrə bildirişlər tərəflərin müqavilədə göstərdiyi telefon nömrəsinə zəng, SMS, WhatsApp və ya Telegram vasitəsilə göndərilə bilər və göndərildiyi andan çatdırılmış sayılır. İcarəçi əlaqə məlumatlarının dəyişməsi barədə İcarədara dərhal məlumat verir.') +
+    P('9.3. Mübahisələr əvvəlcə danışıqlar yolu ilə həll edilir; razılıq əldə olunmadıqda qüvvədə olan Azərbaycan Respublikası qanunvericiliyinə uyğun məhkəmə qaydasında baxılır.') +
+    P('9.4. Müqavilənin hər hansı müddəasının etibarsız hesab edilməsi digər müddəaların qüvvəsinə təsir etmir. Müqavilədə nəzərdə tutulmayan məsələlər Azərbaycan Respublikasının qanunvericiliyi ilə tənzimlənir.') +
+    H('İcarəçinin təsdiqi') +
+    P('İcarəçi imzası ilə təsdiq edir ki: bu müqaviləni əvvəldən axıra qədər oxuyub, şərtlərini başa düşüb və <b>özünün şərtlərini qəbul edir</b>; müqaviləni öz azad iradəsi ilə imzalayır; ödəniş, məsuliyyət, hava və sulu ərazilər üzrə qadağalar və itki/oğurluq halında əşyanın dəyərinin ödənilməsi bəndləri ilə tanışdır və razıdır' + (social ? '; ödənişləri gecikdirdiyi və ya ödəmədiyi təqdirdə videosunun sosial şəbəkələrdə paylaşılmasına (7.3-cü bənd) razılıq verir' : '') + '.') + sig;
   const who = '<p><b>İcarədar:</b> ' + v(L.name, 200) + ', tel.: ' + v(L.phone, 110) + '. <b>İcarəçi:</b> ' + v(c && c.renter, 200) + ', FİN: ' + v(c && c.fin, 120) + ', tel.: ' + v(c && c.phone, 110) + '. Skuter: <b>' + esc(sn.name || '') + '</b>.</p>';
   const mno = '<p>Müqavilə № ' + (noText ? '<b>' + esc(noText) + '</b>' : bl(90)) + '. ';
   const act1 = (cls, pre) => '<div class="' + cls + '"><h1>' + pre + 'Təhvil-təslim aktı (icarəyə verilərkən)</h1>' + (part ? who : '') +
