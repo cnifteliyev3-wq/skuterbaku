@@ -101,6 +101,42 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
 .faq summary::after{content:"+";color:var(--accent);font-size:22px;line-height:1}
 .faq details[open] summary::after{content:"–"}
 .faq p{margin:0 0 16px;color:var(--muted)}
+.art{border-radius:28px;box-shadow:0 30px 60px rgba(90,31,196,.35);overflow:hidden;animation:float 6s ease-in-out infinite}
+.art svg{filter:none}
+@keyframes float{50%{transform:translateY(-8px)}}
+@keyframes slide{to{transform:translateX(-520px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes bob{50%{transform:translateY(-3px)}}
+@keyframes dash{to{stroke-dashoffset:-48}}
+@keyframes zoomline{0%{transform:translateX(0);opacity:.0}30%{opacity:.5}100%{transform:translateX(-60px);opacity:0}}
+@keyframes glow{50%{opacity:.5;transform:scale(1.08)}}
+.layer.l1{animation:slide 38s linear infinite}
+.layer.l2{animation:slide 16s linear infinite}
+.road{animation:dash .7s linear infinite}
+.wheel{animation:spin .6s linear infinite;transform-box:view-box}
+.body{animation:bob .5s ease-in-out infinite}
+.sp{animation:zoomline 1s linear infinite}.sp.s2{animation-delay:.3s}.sp.s3{animation-delay:.6s}
+.sun{transform-origin:400px 96px;animation:glow 4s ease-in-out infinite}
+.towers{animation:glow 5s ease-in-out infinite;transform-origin:center bottom;transform-box:fill-box}
+.rv{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+.card{transition:transform .25s ease,box-shadow .25s ease}
+.card:hover{transform:translateY(-6px);box-shadow:0 22px 44px rgba(90,31,196,.22)}
+.ph img{transition:transform .6s ease,opacity .5s;opacity:0}.ph img.ok{opacity:1}
+.card:hover .ph img{transform:scale(1.07)}
+.ph.zoomable{cursor:zoom-in}
+.ph .none{background:linear-gradient(135deg,#8b4dff,#5a1fc4);color:#fff;opacity:1}
+.ph .none b{position:absolute;left:16px;bottom:14px;font-size:18px;letter-spacing:-.01em}
+.badge:not(.rented):not(.off)::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;margin-right:7px;animation:glow 1.6s ease-in-out infinite}
+header.top{transition:box-shadow .2s,min-height .2s}header.top.sc{box-shadow:0 6px 24px rgba(40,10,90,.14)}
+.lb{position:fixed;inset:0;z-index:60;background:rgba(10,4,24,.92);display:none;align-items:center;justify-content:center;padding:20px}
+.lb.on{display:flex;animation:fade .2s}
+.lb img{max-width:min(100%,1100px);max-height:86vh;border-radius:14px;box-shadow:0 20px 70px rgba(0,0,0,.6)}
+.lb button{position:absolute;background:rgba(255,255,255,.14);border:0;color:#fff;width:48px;height:48px;border-radius:50%;font-size:22px;cursor:pointer}
+.lb .x{top:16px;right:16px}.lb .pv{left:16px;top:50%}.lb .nx{right:16px;top:50%}
+.lb .ct{position:absolute;bottom:18px;color:#fff;font-weight:700;font-size:14px;opacity:.8}
+@keyframes fade{from{opacity:0}}
+@media(prefers-reduced-motion:reduce){.layer,.road,.wheel,.body,.sp,.sun,.towers,.art{animation:none!important}.rv{opacity:1;transform:none}}
 .bar{display:none}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 @media(max-width:860px){.herogrid{grid-template-columns:1fr}.art{max-width:340px;margin:0 auto;order:-1}}
@@ -117,7 +153,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
     <nav class="m" aria-label="Menyu">
       <a href="#skuterler">Skuterlər</a><a class="hide" href="#niye">Üstünlüklər</a><a class="hide" href="#nece">Necə işləyir</a><a class="hide" href="#faq">Suallar</a><a href="#elaqe">Əlaqə</a>
     </nav>
-    <a class="btn wa sm" id="hwa" href="#elaqe" hidden>WhatsApp<span>-da yaz</span></a>
+    <a class="btn wa sm" id="hwa" href="#elaqe" hidden>WhatsApp<span> ilə yaz</span></a>
   </div>
 </header>
 
@@ -131,16 +167,44 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
     <div class="chips"><span class="chip">Onlayn müqavilə</span><span class="chip">Təhvil şəkillə qeyd olunur</span><span class="chip">Gün · həftə · ay</span></div>
   </div>
   <div class="art" aria-hidden="true">
-    <svg viewBox="0 0 420 320" fill="none" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="210" cy="160" r="150" fill="var(--accent-soft)"/>
-      <circle cx="210" cy="160" r="105" fill="var(--surface)" opacity=".55"/>
-      <g stroke="var(--accent)" stroke-width="10">
-        <circle cx="105" cy="236" r="30" fill="var(--surface)"/><circle cx="318" cy="236" r="30" fill="var(--surface)"/>
-        <path d="M105 236h92l60-132h44"/><path d="M257 104l61 132"/><path d="M285 104h42" stroke-width="12"/>
+    <svg viewBox="0 0 520 380" role="img" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9b63ff"/><stop offset=".62" stop-color="#5a1fc4"/><stop offset="1" stop-color="#2b1062"/></linearGradient>
+        <linearGradient id="fl" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff7a3d"/><stop offset="1" stop-color="#ffd36b"/></linearGradient>
+        <linearGradient id="deck" x1="0" x2="1"><stop stop-color="#c9a8ff"/><stop offset="1" stop-color="#8b4dff"/></linearGradient>
+        <clipPath id="clip"><rect width="520" height="380" rx="28"/></clipPath>
+        <g id="far" fill="#fff" opacity=".13"><rect x="6" y="210" width="38" height="110"/><rect x="52" y="180" width="30" height="140"/><rect x="92" y="226" width="46" height="94"/><rect x="146" y="196" width="28" height="124"/><rect x="184" y="236" width="52" height="84"/><rect x="246" y="190" width="34" height="130"/><rect x="290" y="222" width="42" height="98"/><rect x="342" y="170" width="26" height="150"/><rect x="378" y="214" width="48" height="106"/><rect x="436" y="200" width="32" height="120"/><rect x="476" y="232" width="40" height="88"/></g>
+        <g id="near" fill="#1a0a40" opacity=".42"><rect x="0" y="250" width="54" height="70"/><rect x="62" y="232" width="40" height="88"/><rect x="112" y="262" width="62" height="58"/><rect x="184" y="240" width="36" height="80"/><rect x="230" y="258" width="58" height="62"/><rect x="298" y="228" width="44" height="92"/><rect x="352" y="256" width="60" height="64"/><rect x="422" y="238" width="38" height="82"/><rect x="468" y="262" width="52" height="58"/></g>
+      </defs>
+      <g clip-path="url(#clip)">
+        <rect width="520" height="380" fill="url(#sky)"/>
+        <circle cx="400" cy="96" r="44" fill="#ffe9b8" opacity=".95" class="sun"/>
+        <circle cx="400" cy="96" r="66" fill="#ffe9b8" opacity=".14" class="sun"/>
+        <g class="layer l1"><use href="#far" x="0"/><use href="#far" x="520"/></g>
+        <g transform="translate(146 150)" class="towers">
+          <path d="M0 170 C0 110 18 54 30 14 C42 54 60 110 60 170Z" fill="url(#fl)" opacity=".92"/>
+          <path d="M70 170 C70 96 92 40 108 0 C124 40 146 96 146 170Z" fill="url(#fl)"/>
+          <path d="M156 170 C156 112 174 60 186 22 C198 60 216 112 216 170Z" fill="url(#fl)" opacity=".92"/>
+        </g>
+        <g class="layer l2"><use href="#near" x="0"/><use href="#near" x="520"/></g>
+        <rect y="318" width="520" height="62" fill="#1d0b45"/>
+        <path d="M-60 349H600" stroke="#8b6bd6" stroke-width="4" stroke-dasharray="28 20" class="road"/>
+        <g class="rider">
+          <g stroke="#fff" opacity=".35" stroke-width="3"><path d="M96 282h40" class="sp s1"/><path d="M76 298h52" class="sp s2"/><path d="M104 312h34" class="sp s3"/></g>
+          <g class="body">
+            <path d="M160 300h140" stroke="url(#deck)" stroke-width="14"/>
+            <path d="M296 300 L318 196" stroke="#e9dcff" stroke-width="8"/>
+            <path d="M308 196h30" stroke="#fff" stroke-width="9"/>
+            <path d="M220 292 L236 236 L250 200" stroke="#ffd36b" stroke-width="13"/>
+            <path d="M250 206 L304 202" stroke="#ffd36b" stroke-width="9"/>
+            <circle cx="256" cy="178" r="15" fill="#ffd9b5" stroke="none"/>
+            <path d="M246 170c4-12 22-14 28-2" stroke="#2b1062" stroke-width="8"/>
+            <path d="M236 240 L222 300" stroke="#2a1568" stroke-width="12"/>
+            <g class="wheel" style="transform-origin:174px 304px"><circle cx="174" cy="304" r="22" fill="#14082f" stroke="#fff" stroke-width="5"/><path d="M174 284v40M154 304h40" stroke="#c9a8ff" stroke-width="3"/></g>
+            <g class="wheel" style="transform-origin:304px 304px"><circle cx="304" cy="304" r="22" fill="#14082f" stroke="#fff" stroke-width="5"/><path d="M304 284v40M284 304h40" stroke="#c9a8ff" stroke-width="3"/></g>
+          </g>
+        </g>
       </g>
-      <rect x="150" y="214" width="92" height="24" rx="10" fill="url(#g)" stroke="none"/>
-      <defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#8b4dff"/><stop offset="1" stop-color="#5a1fc4"/></linearGradient></defs>
-      <path d="M60 282h300" stroke="var(--line)" stroke-width="6"/>
     </svg>
   </div>
 </div></div>
@@ -253,8 +317,8 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
     var price = +s.rate ? '<div class="price"><b>'+(Math.round(s.rate*100)/100)+' ₼</b><span>/ '+(UNIT[s.unit]||'gün')+'</span></div>' : '<div class="price"><span>Qiymət üçün yazın</span></div>';
     var order = s.avail==='free' ? '<a class="btn wa" target="_blank" rel="noopener" href="'+esc(waLink('Salam! "'+s.name+'" skuterini icarəyə götürmək istəyirəm.'))+'">Sifariş et</a>'
       : '<a class="btn" target="_blank" rel="noopener" href="'+esc(waLink('Salam! "'+s.name+'" skuteri nə vaxt boş olacaq?'))+'">'+(s.avail==='rented'?'Nə vaxt boş olacaq?':'Soruş')+'</a>';
-    return '<article class="card" data-id="'+esc(s.id)+'"><div class="ph">'+
-      (ph.length ? '<img src="'+esc(ph[0])+'" alt="'+esc(s.name)+'" loading="lazy">' : '<div class="none"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="2.6"/><circle cx="19" cy="18" r="2.6"/><path d="M8.6 18H14l3-9h3M14 18l-2-9"/></svg></div>')+
+    return '<article class="card rv" data-id="'+esc(s.id)+'"><div class="ph'+(ph.length?' zoomable':'')+'">'+
+      (ph.length ? '<img src="'+esc(ph[0])+'" alt="'+esc(s.name)+'" loading="lazy" onload="this.classList.add(\'ok\')">' : '<div class="none"><b>'+esc(s.name)+'</b><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="2.6"/><circle cx="19" cy="18" r="2.6"/><path d="M8.6 18H14l3-9h3M14 18l-2-9"/></svg></div>')+
       '<span class="badge '+av[1]+'">'+av[0]+'</span></div>'+
       (ph.length>1 ? '<div class="thumbs">'+ph.map(function(u,i){return '<button type="button" data-i="'+i+'" aria-label="Şəkil '+(i+1)+'"'+(i===0?' aria-current="true"':'')+'><img src="'+esc(u)+'" alt="" loading="lazy"></button>'}).join('')+'</div>' : '')+
       '<div class="body"><h3>'+esc(s.name)+'</h3>'+(s.desc?'<p>'+esc(s.desc)+'</p>':'')+(chips.length?'<div class="specs">'+chips.map(function(c){return '<span>'+c+'</span>'}).join('')+'</div>':'')+price+order+'</div></article>';
@@ -264,12 +328,44 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
   function render(list){
     data = list;
     $('#list').innerHTML = list.length ? list.map(card).join('') : '<div class="empty" style="grid-column:1/-1">Skuterlər tezliklə əlavə olunacaq. Hazırda əlaqə vasitəsilə sifariş verə bilərsiniz.</div>';
+    reveal();
   }
+
+  /* görünmə effekti */
+  var io = ('IntersectionObserver' in window) ? new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); }, {threshold:.12}) : null;
+  function reveal(){ document.querySelectorAll('.rv:not(.in)').forEach(function(el, i){ if(io){ el.style.transitionDelay = Math.min(i%4,3)*70+'ms'; io.observe(el); } else el.classList.add('in'); }); }
+  document.querySelectorAll('section h2,section .sub,.feat,.step,.ct,.faq details,.terms').forEach(function(el){ el.classList.add('rv'); });
+  reveal();
+  window.addEventListener('scroll', function(){ document.querySelector('header.top').classList.toggle('sc', window.scrollY > 8); }, {passive:true});
+
+  /* qalereya */
+  var lb = document.createElement('div'); lb.className = 'lb'; lb.setAttribute('role','dialog'); lb.setAttribute('aria-label','Şəkil qalereyası');
+  lb.innerHTML = '<button class="x" aria-label="Bağla">✕</button><button class="pv" aria-label="Əvvəlki">‹</button><img alt=""><button class="nx" aria-label="Sonrakı">›</button><div class="ct"></div>';
+  document.body.appendChild(lb);
+  var lbPh = [], lbI = 0;
+  function lbShow(){ lb.querySelector('img').src = lbPh[lbI]; lb.querySelector('.ct').textContent = (lbI+1)+' / '+lbPh.length; lb.querySelector('.pv').style.display = lb.querySelector('.nx').style.display = lbPh.length>1 ? '' : 'none'; }
+  function lbOpen(ph,i){ lbPh = ph; lbI = i; lbShow(); lb.classList.add('on'); document.body.style.overflow='hidden'; lb.querySelector('.x').focus(); }
+  function lbClose(){ lb.classList.remove('on'); document.body.style.overflow=''; }
+  lb.addEventListener('click', function(e){
+    if (e.target.closest('.x') || e.target === lb) return lbClose();
+    if (e.target.closest('.pv')){ lbI = (lbI-1+lbPh.length)%lbPh.length; lbShow(); }
+    if (e.target.closest('.nx')){ lbI = (lbI+1)%lbPh.length; lbShow(); }
+  });
+  document.addEventListener('keydown', function(e){
+    if (!lb.classList.contains('on')) return;
+    if (e.key==='Escape') lbClose();
+    if (e.key==='ArrowLeft'){ lbI=(lbI-1+lbPh.length)%lbPh.length; lbShow(); }
+    if (e.key==='ArrowRight'){ lbI=(lbI+1)%lbPh.length; lbShow(); }
+  });
+
   $('#list').addEventListener('click', function(e){
-    var b = e.target.closest('.thumbs button'); if(!b) return;
-    var c = b.closest('.card'), s = data.filter(function(x){return x.id===c.dataset.id})[0]; if(!s) return;
-    var ph = (s.photos||[]).filter(https), i = +b.dataset.i;
-    c.querySelector('.ph img').src = ph[i];
+    var b = e.target.closest('.thumbs button');
+    var c = e.target.closest('.card'); if(!c) return;
+    var s = data.filter(function(x){return x.id===c.dataset.id})[0]; if(!s) return;
+    var ph = (s.photos||[]).filter(https);
+    if (!b){ if (e.target.closest('.ph.zoomable') && ph.length){ var cur = c.querySelector('.thumbs button[aria-current="true"]'); lbOpen(ph, cur ? +cur.dataset.i : 0); } return; }
+    var i = +b.dataset.i;
+    var im = c.querySelector('.ph img'); im.classList.remove('ok'); im.src = ph[i];
     c.querySelectorAll('.thumbs button').forEach(function(x){ x.setAttribute('aria-current', x===b ? 'true' : 'false'); });
   });
 
