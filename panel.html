@@ -321,7 +321,7 @@ button.pbtn:hover{background:linear-gradient(135deg,#9a62ff,#6a2fd6)}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
-<script src="shim.js?v=6"></script>
+<script src="shim.js?v=7"></script>
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -924,10 +924,19 @@ function siteForm() {
     fld('address', 'Ünvan / götürmə yeri', 'text', W.address, 'placeholder="Nizami küç. 12, Bakı"') +
     fld('mapUrl', 'Xəritə linki (https://…)', 'url', W.mapUrl) +
     fld('hours', 'İş saatı', 'text', W.hours, 'placeholder="Hər gün 09:00 – 21:00"') +
+    (window.skPublic ? '<h3 style="margin:8px 0 0;font-size:15px">Giriş şəkli / videosu (sayta girəndə ilk görünən)</h3>' +
+      '<div class="f"><label for="heroVid">Video (mp4, qısa 10-20 saniyə, 50 MB-a qədər)</label><input id="heroVid" name="heroVid" type="file" accept="video/mp4,video/webm"></div>' +
+      '<div class="f"><label for="heroImg">Şəkil (video yoxdursa və ya yüklənənə qədər göstərilir)</label><input id="heroImg" name="heroImg" type="file" accept="image/*"></div>' +
+      ((W.heroVideo || W.heroImage) ? '<label class="pmrow"><input type="checkbox" name="heroRm" value="1"> <span>Mövcud giriş video/şəklini sil (animasiyaya qayıt)</span></label>' : '') : '') +
     '<div class="f"><label for="terms">Şərtlər (hər sətir ayrıca bənd)</label><textarea id="terms" name="terms" rows="5" placeholder="Şəxsiyyət vəsiqəsi tələb olunur&#10;Depozit: 50 ₼">' + esc(W.terms) + '</textarea></div>',
-    async v => {
+    async (v, form) => {
       const h = x => (x || '').trim().replace(/^@/, '');
-      await db.doc('settings/site').set({ tagline: v.tagline.trim(), intro: v.intro.trim(), phone: v.phone.trim(), whatsapp: v.whatsapp.trim(), instagram: h(v.instagram), telegram: h(v.telegram), address: v.address.trim(), mapUrl: safe(v.mapUrl.trim()) ? v.mapUrl.trim() : '', hours: v.hours.trim(), terms: v.terms.trim() });
+      let heroVideo = W.heroVideo || '', heroImage = W.heroImage || '';
+      if (v.heroRm) { heroVideo = ''; heroImage = ''; }
+      const fv = form.elements.heroVid && form.elements.heroVid.files[0], fi = form.elements.heroImg && form.elements.heroImg.files[0];
+      if (fv && fv.size) { if (fv.size > 50 * 1048576) throw new Error('Video 50 MB-dan böyükdür'); $('#msave').textContent = 'Video yüklənir…'; heroVideo = await window.skPublic.upload(fv); }
+      if (fi && fi.size) { $('#msave').textContent = 'Şəkil yüklənir…'; heroImage = await window.skPublic.upload(fi); }
+      await db.doc('settings/site').set({ heroVideo, heroImage, tagline: v.tagline.trim(), intro: v.intro.trim(), phone: v.phone.trim(), whatsapp: v.whatsapp.trim(), instagram: h(v.instagram), telegram: h(v.telegram), address: v.address.trim(), mapUrl: safe(v.mapUrl.trim()) ? v.mapUrl.trim() : '', hours: v.hours.trim(), terms: v.terms.trim() });
     });
 }
 function settingsForm() {

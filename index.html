@@ -107,6 +107,8 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
 .ptab td:first-child{font-weight:700}.ptab td small{color:var(--muted);font-weight:500}
 .ptab td b{font-size:19px;letter-spacing:-.01em}.ptab .soft{color:var(--muted);font-size:12.5px}
 .depn{color:var(--muted);font-size:13.5px}.depn b{color:var(--ink)}
+.art.real{animation:none;background:var(--accent-soft)}
+.art.real video,.art.real img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
 .art{border-radius:28px;box-shadow:0 30px 60px rgba(90,31,196,.35);overflow:hidden;animation:float 6s ease-in-out infinite}
 .art svg{filter:none}
 @keyframes float{50%{transform:translateY(-8px)}}
@@ -292,6 +294,12 @@ header.top{transition:box-shadow .2s,min-height .2s}header.top.sc{box-shadow:0 6
     var d = digits(site.whatsapp || site.phone);
     if (d){ if (d.length === 9) d = '994' + d; else if (d.length === 10 && d[0] === '0') d = '994' + d.slice(1); waNum = d; }
     ['#hwa','#hero-wa'].forEach(function(s){ var a=$(s); if(waNum){ a.href = waLink('Salam! Skuter icarəsi ilə maraqlanıram.'); a.target='_blank'; a.rel='noopener'; a.hidden=false; } });
+    if (https(site.heroVideo) || https(site.heroImage)){
+      var art = document.querySelector('.art'); art.classList.add('real'); art.removeAttribute('aria-hidden');
+      art.innerHTML = https(site.heroVideo)
+        ? '<video src="'+esc(site.heroVideo)+'" autoplay muted loop playsinline preload="metadata"'+(https(site.heroImage)?' poster="'+esc(site.heroImage)+'"':'')+' aria-label="Skuter Baku"></video>'
+        : '<img src="'+esc(site.heroImage)+'" alt="Skuter Baku">';
+    }
     var ph = (site.phone||'').replace(/[^\d+]/g,'');
     if (ph || waNum){
       $('#bar').hidden = false;
