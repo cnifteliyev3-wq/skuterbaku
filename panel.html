@@ -324,7 +324,7 @@ button.pbtn:hover{background:linear-gradient(135deg,#9a62ff,#6a2fd6)}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
-<script src="shim.js?v=9"></script>
+<script src="shim.js?v=10"></script>
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -960,9 +960,22 @@ function viewUsers() {
   const isAdm = S.access && S.access.role === 'admin';
   return '<div class="row between"><h2 style="margin:0">' + (isAdm ? 'İstifadəçilər' : 'Hesabım') + '</h2></div>' +
     '<div class="card" style="margin-top:12px"><h3>Mənim hesabım</h3><dl class="kv" style="grid-template-columns:150px 1fr"><dt>Giriş (e-poçt)</dt><dd>' + nz(me) + '</dd><dt>Rol</dt><dd>' + (isAdm ? 'admin' : 'işçi') + '</dd></dl>' +
-    '<div class="actions"><button class="sm primary" data-act="mypw">Şifrəni dəyiş</button></div>' +
+    '<dl class="kv" style="grid-template-columns:150px 1fr"><dt>Telegram təsdiqi</dt><dd>' + (S.tg ? (S.tg.linked ? '<span class="pill ok">Qoşulub</span> girişdə Telegrama kod gəlir' : '<span class="pill mute">Qoşulmayıb</span>') : '<span class="muted">…</span>') + '</dd></dl>' +
+    '<div class="actions"><button class="sm primary" data-act="mypw">Şifrəni dəyiş</button>' + (S.tg && !S.tg.linked ? '<button class="sm primary" data-act="tglink">Telegram qoş</button>' : '') + (S.tg && S.tg.linked ? '<button class="sm" data-act="tgunlink">Telegramı ayır</button>' : '') + '</div>' +
     '<div class="hint">Şifrəni unutsanız, giriş səhifəsində “Şifrəni unutdum” düyməsi ilə e-poçtunuza yeniləmə linki göndərilir.</div></div>' +
     (isAdm ? staffCard() : '');
+}
+async function loadTg() { try { S.tg = await window.skTg.status(); if (S.tab === 'istifadeciler') render(); } catch (e) { S.tg = null; } }
+async function tgLinkForm() {
+  let r;
+  try { r = await window.skTg.linkStart(); } catch (e) { alert2('Telegram qoşulmadı: ' + (e.message || e)); return; }
+  openForm('Telegram qoş',
+    '<ol class="small" style="margin:0;padding-left:18px;display:grid;gap:6px"><li>Telegramda <b>@' + esc(r.bot || 'bot') + '</b> botunu açın və <b>Start</b> basın.</li><li>Bota bu kodu yazıb göndərin: <b style="font-size:20px;letter-spacing:2px">' + esc(r.code) + '</b></li><li>Sonra aşağıda “Yoxla” düyməsini basın.</li></ol><div class="hint">Kod 10 dəqiqə etibarlıdır.</div>',
+    async () => {
+      const c = await window.skTg.linkCheck();
+      if (!c.ok) throw new Error('Hələ mesaj tapılmadı. Kodu bota göndərdiyinizə əmin olub bir az gözləyin, yenidən “Yoxla” basın.');
+      await loadTg();
+    }, 'Yoxla');
 }
 function pwForm(target) {
   const own = !target;
@@ -1461,6 +1474,11 @@ $('#app').addEventListener('click', async e => {
     else if (a === 'staffadd') staffForm();
     else if (a === 'staffedit') staffForm((S.staff || []).find(x => x.user_id === id));
     else if (a === 'mypw') pwForm(null);
+    else if (a === 'tglink') await tgLinkForm();
+    else if (a === 'tgunlink') {
+      if (!armed.tgu) { armed.tgu = 1; b.textContent = 'Əminsiniz?'; setTimeout(() => { delete armed.tgu; if (b.isConnected) b.textContent = 'Telegramı ayır'; }, 4000); return; }
+      delete armed.tgu; await window.skTg.unlink(); await loadTg();
+    }
     else if (a === 'staffpw') pwForm((S.staff || []).find(x => x.user_id === id));
     else if (a === 'staffrm') {
       if (!armed['staffrm' + id]) { armed['staffrm' + id] = 1; b.textContent = 'Əminsiniz?'; setTimeout(() => { delete armed['staffrm' + id]; if (b.isConnected) b.textContent = 'Sil'; }, 4000); return; }
@@ -1498,7 +1516,7 @@ $('#app').addEventListener('change', e => { if (e.target.id === 'pm') { S.pmonth
   if (!db) { render(); return; }
   setTimeout(() => { if (!(S.ready.scooters && S.ready.contracts && S.ready.payments)) $('#app').innerHTML = '<div class="empty">Məlumatlar yüklənmədi. Səhifəni yenidən açın.</div>'; }, 10000);
   db.doc('settings/zones').onSnapshot(d => { S.zones = (d.exists && (d.data().list || [])) || []; if (S.ready.scooters && S.ready.contracts && S.ready.payments) render(); }, () => {});
-  loadAccess(); loadStaff();
+  loadAccess(); loadStaff(); loadTg();
   db.doc('settings/site').onSnapshot(d => { S.site = (d.exists && d.data()) || {}; if (S.ready.scooters && S.ready.contracts && S.ready.payments) render(); }, () => {});
   db.doc('settings/owner').onSnapshot(d => { S.settings = (d.exists && d.data()) || {}; if (S.ready.scooters && S.ready.contracts && S.ready.payments) render(); }, () => {});
   ['scooters', 'contracts', 'payments', 'customers'].forEach(n => db.collection(n).onSnapshot(snap => {

@@ -36,6 +36,9 @@
       return false;
     }
     window.skAuth.email = session.user.email || '';
+    /* Telegram bağlıdırsa: kod təsdiqi olmadan panelə buraxılmır */
+    var ts = await sb.rpc('tg_status');
+    if (!ts.error && ts.data && ts.data.linked && !ts.data.verified) { tgStep(); return false; }
     gate.remove();
     var lb = document.createElement('button');
     lb.id = 'logoutBtn'; lb.className = 'sm'; lb.textContent = 'Çıxış';
@@ -44,6 +47,44 @@
     (side || document.body).appendChild(lb);
     resolveAuth();
     return true;
+  }
+  async function tgFn(body) {
+    var s = (await sb.auth.getSession()).data.session;
+    var r = await fetch(cfg.url + '/functions/v1/tg-auth', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: cfg.key, Authorization: 'Bearer ' + (s ? s.access_token : '') }, body: JSON.stringify(body) });
+    var j = await r.json().catch(function () { return {}; });
+    if (!r.ok || j.error) throw new Error(j.error || j.message || ('Xəta ' + r.status));
+    return j;
+  }
+  window.skTg = {
+    status: async function () { await authed; var r = await sb.rpc('tg_status'); return r.data || {}; },
+    linkStart: async function () { await authed; return tgFn({ action: 'link_start' }); },
+    linkCheck: async function () { await authed; return tgFn({ action: 'link_check' }); },
+    unlink: async function () { await authed; var r = await sb.rpc('tg_unlink'); if (r.error) throw new Error(r.error.message); }
+  };
+  /* giriş: Telegram kodu mərhələsi */
+  function tgStep() {
+    var f = document.getElementById('gform');
+    f.innerHTML = '<h2>Telegram təsdiqi</h2><p class="muted" id="tgnote">Telegramınıza 6 rəqəmli kod göndərilir…</p>' +
+      '<div class="f"><label for="tgc">Kod</label><input id="tgc" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required></div>' +
+      '<div class="err" id="gerr" role="alert"></div><button class="primary" id="gbtn">Təsdiqlə</button>' +
+      '<button type="button" id="tgre">Kodu yenidən göndər</button><button type="button" id="tgout">Çıxış</button>';
+    var note = document.getElementById('tgnote');
+    async function send() {
+      msg('');
+      try { await tgFn({ action: 'login_send' }); note.textContent = 'Telegramdakı botdan gələn 6 rəqəmli kodu yazın.'; }
+      catch (er) { note.textContent = 'Kod göndərilmədi.'; msg(er.message); }
+    }
+    document.getElementById('tgre').onclick = send;
+    document.getElementById('tgout').onclick = async function () { await sb.auth.signOut(); location.reload(); };
+    f.onsubmit = async function (e) {
+      e.preventDefault(); msg('');
+      var b = document.getElementById('gbtn'); b.disabled = true;
+      try {
+        await tgFn({ action: 'login_verify', code: document.getElementById('tgc').value });
+        location.reload();
+      } catch (er) { msg(er.message); b.disabled = false; }
+    };
+    send();
   }
   document.getElementById('gform').onsubmit = async function (e) {
     e.preventDefault(); msg(''); document.getElementById('gbtn').disabled = true;
