@@ -50,7 +50,7 @@
   }
   async function tgFn(body) {
     var s = (await sb.auth.getSession()).data.session;
-    var r = await fetch(cfg.url + '/functions/v1/tg-auth', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: cfg.key, Authorization: 'Bearer ' + (s ? s.access_token : '') }, body: JSON.stringify(body) });
+    var r = await fetch(cfg.url + '/functions/v1/quick-service', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: cfg.key, Authorization: 'Bearer ' + (s ? s.access_token : '') }, body: JSON.stringify(body) });
     var j = await r.json().catch(function () { return {}; });
     if (!r.ok || j.error) throw new Error(j.error || j.message || ('Xəta ' + r.status));
     return j;
