@@ -101,6 +101,12 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
 .faq summary::after{content:"+";color:var(--accent);font-size:22px;line-height:1}
 .faq details[open] summary::after{content:"–"}
 .faq p{margin:0 0 16px;color:var(--muted)}
+.ptab{width:100%;border-collapse:collapse;margin-top:auto;font-size:14px}
+.ptab th{color:var(--muted);font-weight:700;font-size:12px;text-align:left;padding:2px 0 6px}
+.ptab td{padding:8px 0;border-top:1px solid var(--line)}
+.ptab td:first-child{font-weight:700}.ptab td small{color:var(--muted);font-weight:500}
+.ptab td b{font-size:19px;letter-spacing:-.01em}.ptab .soft{color:var(--muted);font-size:12.5px}
+.depn{color:var(--muted);font-size:13.5px}.depn b{color:var(--ink)}
 .art{border-radius:28px;box-shadow:0 30px 60px rgba(90,31,196,.35);overflow:hidden;animation:float 6s ease-in-out infinite}
 .art svg{filter:none}
 @keyframes float{50%{transform:translateY(-8px)}}
@@ -314,7 +320,16 @@ header.top{transition:box-shadow .2s,min-height .2s}header.top.sc{box-shadow:0 6
     if (sp.range) chips.push('Məsafə: '+esc(sp.range)+' km');
     if (sp.speed) chips.push('Sürət: '+esc(sp.speed)+' km/s');
     if (sp.battery) chips.push(esc(sp.battery));
-    var price = +s.rate ? '<div class="price"><b>'+(Math.round(s.rate*100)/100)+' ₼</b><span>/ '+(UNIT[s.unit]||'gün')+'</span></div>' : '<div class="price"><span>Qiymət üçün yazın</span></div>';
+    var pr = s.prices||{};
+    var pv = function(v){ return (v===''||v==null||isNaN(+v)) ? null : Math.round(+v*100)/100; };
+    var P = {d:pv(pr.day), m:pv(pr.month), dn:pv(pr.dayNo), mn:pv(pr.monthNo), dep:pv(pr.deposit)};
+    var cell = function(v){ return v==null ? '<span class="soft">razılaşma ilə</span>' : '<b>'+v+' ₼</b>'; };
+    var price = (P.d!=null||P.m!=null||P.dn!=null||P.mn!=null)
+      ? '<table class="ptab"><thead><tr><th></th><th>Depozitli</th><th>Depozitsiz</th></tr></thead><tbody>'+
+        '<tr><td>Günlük</td><td>'+cell(P.d)+'</td><td>'+cell(P.dn)+'</td></tr>'+
+        '<tr><td>Aylıq<small> (hər gün)</small></td><td>'+cell(P.m)+'</td><td>'+cell(P.mn)+'</td></tr></tbody></table>'+
+        '<div class="depn">'+(P.dep!=null ? 'Depozit: <b>'+P.dep+' ₼</b>' : 'Depozit məbləği razılaşma ilə')+'</div>'
+      : (+s.rate ? '<div class="price"><b>'+(Math.round(s.rate*100)/100)+' ₼</b><span>/ '+(UNIT[s.unit]||'gün')+'</span></div>' : '<div class="price"><span>Qiymət üçün yazın</span></div>');
     var order = s.avail==='free' ? '<a class="btn wa" target="_blank" rel="noopener" href="'+esc(waLink('Salam! "'+s.name+'" skuterini icarəyə götürmək istəyirəm.'))+'">Sifariş et</a>'
       : '<a class="btn" target="_blank" rel="noopener" href="'+esc(waLink('Salam! "'+s.name+'" skuteri nə vaxt boş olacaq?'))+'">'+(s.avail==='rented'?'Nə vaxt boş olacaq?':'Soruş')+'</a>';
     return '<article class="card rv" data-id="'+esc(s.id)+'"><div class="ph'+(ph.length?' zoomable':'')+'">'+

@@ -321,7 +321,7 @@ button.pbtn:hover{background:linear-gradient(135deg,#9a62ff,#6a2fd6)}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
-<script src="shim.js?v=5"></script>
+<script src="shim.js?v=6"></script>
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -425,10 +425,16 @@ function scooterForm(s) {
     '<div class="f"><label for="desc">Qısa təsvir (saytda görünür)</label><textarea id="desc" name="desc" rows="3" placeholder="məs. Şəhər daxili gəzinti üçün yüngül və rahat skuter">' + esc(s.desc) + '</textarea></div>' +
     '<div class="two">' + fld('sp_range', 'Bir şarjla məsafə (km)', 'text', (s.specs || {}).range, 'placeholder="40"') + fld('sp_speed', 'Maksimum sürət (km/s)', 'text', (s.specs || {}).speed, 'placeholder="25"') + '</div>' +
     fld('sp_battery', 'Batareya', 'text', (s.specs || {}).battery, 'placeholder="48V 20Ah"') +
+    '<h3 style="margin:8px 0 0;font-size:15px">Saytda göstərilən qiymətlər (₼ / gün)</h3>' +
+    '<div class="two">' + fld('pr_day', 'Günlük, depozitli', 'number', (s.prices || {}).day, 'min="0" step="0.01"') + fld('pr_month', 'Aylıq, depozitli (hər gün üçün)', 'number', (s.prices || {}).month, 'min="0" step="0.01"') + '</div>' +
+    '<div class="two">' + fld('pr_dayno', 'Günlük, depozitsiz', 'number', (s.prices || {}).dayNo, 'min="0" step="0.01"') + fld('pr_monthno', 'Aylıq, depozitsiz (hər gün üçün)', 'number', (s.prices || {}).monthNo, 'min="0" step="0.01"') + '</div>' +
+    fld('pr_dep', 'Depozit məbləği (₼)', 'number', (s.prices || {}).deposit, 'min="0" step="0.01"') +
+    '<div class="hint">Boş buraxılan qiymət saytda “razılaşma ilə” görünür. Bu qiymətlər yalnız saytda göstərilir; müqavilədəki tarif yuxarıdakı “kirayə qiyməti”dir.</div>' +
     ((s.photos || []).length ? '<div class="f"><label>Mövcud şəkillər (ilki əsas şəkildir; silmək üçün işarələyin)</label><div class="row" style="flex-wrap:wrap;gap:10px">' + s.photos.map((u, i) => '<label style="display:grid;gap:4px;justify-items:center;font-size:12px"><img src="' + esc(u) + '" alt="" style="width:84px;height:64px;object-fit:cover;border-radius:8px"><span><input type="checkbox" class="rmph" value="' + i + '"> sil</span></label>').join('') + '</div></div>' : '') +
     (window.skPublic ? '<div class="f"><label for="phimg">Yeni şəkillər (bir neçə seçmək olar)</label><input id="phimg" name="phimg" type="file" accept="image/*" multiple></div><div class="hint">Şəkillər avtomatik kiçildilir. İlk şəkil saytda əsas şəkil kimi görünəcək.</div>' : ''),
     async (v, form) => {
       const data = { name: v.name.trim(), no: v.no.trim(), plate: v.plate.trim(), bat1: v.bat1.trim(), bat2: v.bat2.trim(), adapter: v.adapter.trim(), gpsId: v.gpsId.trim(), gpsLink: safe(v.gpsLink.trim()) ? v.gpsLink.trim() : '', rate: +v.rate || 0, unit: v.unit, status: v.state, note: v.note.trim(),
+        prices: { day: v.pr_day === '' ? '' : +v.pr_day, month: v.pr_month === '' ? '' : +v.pr_month, dayNo: v.pr_dayno === '' ? '' : +v.pr_dayno, monthNo: v.pr_monthno === '' ? '' : +v.pr_monthno, deposit: v.pr_dep === '' ? '' : +v.pr_dep },
         public: !!v.public, desc: (v.desc || '').trim(), specs: { range: (v.sp_range || '').trim(), speed: (v.sp_speed || '').trim(), battery: (v.sp_battery || '').trim() } };
       const rm = new Set([...form.querySelectorAll('.rmph:checked')].map(x => +x.value));
       const photos = (s.photos || []).filter((u, i) => !rm.has(i));
