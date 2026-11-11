@@ -34,6 +34,56 @@ Deno.serve(async (req) => {
     const token = Deno.env.get('TELEGRAM_BOT_TOKEN');
     if (!token) return json({ error: 'Telegram bot hele qosulmayib (TELEGRAM_BOT_TOKEN yoxdur)' }, 500);
     const authH = req.headers.get('Authorization') ?? '';
+    const tgSend = async (chat: number, text: string) => {
+      const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: chat, text, disable_web_page_preview: true }),
+      });
+      return await r.json();
+    };
+    const svc = createClient(url, service);
+    // butun adminlere (Telegram bagli olanlara) bildiris
+    const notifyAdmins = async (text: string) => {
+      const { data: adm } = await svc.from('staff').select('user_id').eq('role', 'admin');
+      const ids = (adm ?? []).map((x: { user_id: string }) => x.user_id);
+      if (!ids.length) return 0;
+      const { data: links } = await svc.from('tg_link').select('chat_id').in('user_id', ids);
+      let n = 0;
+      for (const l of links ?? []) { const r = await tgSend(l.chat_id, text); if (r?.ok) n++; }
+      return n;
+    };
+
+    // DB-den gelen bildirisler: gizli acar ile qorunur (istifadeci sessiyasi lazim deyil)
+    const nk = Deno.env.get('NOTIFY_KEY');
+    if (nk && req.headers.get('x-notify-key') === nk) {
+      const nb = await req.json().catch(() => ({}));
+      if (nb.action === 'notify') {
+        const n = await notifyAdmins(String(nb.text ?? '').slice(0, 3500));
+        return json({ ok: true, sent: n });
+      }
+      if (nb.action === 'daily') {
+        const { data: cs } = await svc.from('docs').select('data').eq('coll', 'contracts');
+        const { data: sc } = await svc.from('docs').select('id,data').eq('coll', 'scooters');
+        const name = (id: string) => (sc ?? []).find((s: { id: string }) => s.id === id)?.data?.name ?? 'skuter';
+        const today = new Date(Date.now() + 4 * 3600e3).toISOString().slice(0, 10);
+        const dn = (d: string) => Math.floor(Date.parse(d) / 864e5);
+        const act = (cs ?? []).map((x: { data: Record<string, any> }) => x.data).filter((c) => c.status === 'aktiv');
+        const lines: string[] = [];
+        for (const c of act) {
+          if (!c.end) continue;
+          const left = dn(c.end) - dn(today);
+          if (left < 0) lines.push(`⛔ ${c.renter} · ${name(c.scooterId)} — müddət ${-left} gün əvvəl bitib`);
+          else if (left <= 3) lines.push(`⏳ ${c.renter} · ${name(c.scooterId)} — ${left === 0 ? 'bu gün bitir' : left + ' gün qalıb'}`);
+        }
+        const repair = (sc ?? []).filter((s: { data: Record<string, any> }) => s.data.status === 'temir' || s.data.status === 'itib')
+          .map((s: { data: Record<string, any> }) => `🛠 ${s.data.name} — ${s.data.status === 'itib' ? 'itkin' : 'təmirdə'}`);
+        const txt = `🌅 Gündəlik xülasə (${today})\nAktiv müqavilə: ${act.length}\n` + ([...lines, ...repair].join('\n') || 'Diqqət tələb edən yoxdur.');
+        const n = await notifyAdmins(txt);
+        return json({ ok: true, sent: n });
+      }
+      return json({ error: 'Namelum emel' }, 400);
+    }
+
     const caller = createClient(url, anon, { global: { headers: { Authorization: authH } } });
     const { data: u } = await caller.auth.getUser();
     if (!u?.user) return json({ error: 'Giris teleb olunur' }, 401);
@@ -115,6 +165,7 @@ Deno.serve(async (req) => {
       if (!sid) return json({ error: 'Sessiya taninmadi' }, 400);
       await admin.from('tg_session').upsert({ user_id: uid, session_id: sid });
       await admin.from('tg_pending').delete().eq('user_id', uid).eq('kind', 'login');
+      await notifyAdmins(`🔑 ${u.user.email ?? 'istifadəçi'} panelə daxil oldu.`);
       return json({ ok: true });
     }
 
