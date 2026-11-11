@@ -207,6 +207,13 @@
       });
       if (r.error) fail(r.error);
       return new URL('sign.html', location.href).href.split('#')[0].split('?')[0] + '#' + token;
+    },
+    /* İmzalanmış sənədin arxiv nüsxəsi (imza anında dondurulmuş mətn) */
+    signedDoc: async function (contractId, kind) {
+      await authed;
+      var r = await sb.from('sign_links').select('html,title,renter,done_at').eq('contract_id', contractId).eq('kind', kind).eq('status', 'done').order('done_at', { ascending: false }).limit(1);
+      if (r.error) fail(r.error);
+      return (r.data && r.data[0]) || null;
     }
   };
 

@@ -324,7 +324,7 @@ button.pbtn:hover{background:linear-gradient(135deg,#9a62ff,#6a2fd6)}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
-<script src="shim.js?v=8"></script>
+<script src="shim.js?v=9"></script>
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -334,7 +334,7 @@ const dayN = s => { const [y, m, d] = s.split('-').map(Number); return Math.floo
 const money = n => (Math.round(n * 100) / 100).toLocaleString('en', { maximumFractionDigits: 2 }) + ' ₼';
 const dfmt = s => { if (!s) return '—'; const [y, m, d] = s.split('-'); return d + '.' + m + '.' + y; };
 const UNIT = { day: 'gün', week: 'həftə', month: 'ay' };
-const S = { scooters: [], contracts: [], payments: [], customers: [], cq: '', ready: {}, tab: 'umumi', cfilter: 'aktiv', pmonth: '' };
+const S = { scooters: [], contracts: [], payments: [], customers: [], cq: '', cs: '', ready: {}, tab: 'umumi', cfilter: 'aktiv', pmonth: '' };
 let db = null, assets = null, dl = null;
 S.settings = {};
 const safe = u => /^https:\/\//i.test(u || '');
@@ -561,6 +561,45 @@ function signForm(c) {
       await db.doc('contracts/' + c.id).update(data);
     }, 'İmzalandı');
 }
+/* imzalı müqavilənin skanları (köhnə tək fayl + yeni siyahı) */
+const scansOf = c => [...(c.scanUrl ? [{ url: c.scanUrl, name: c.scanName }] : []), ...(c.scans || [])];
+function scanForm(c) {
+  openForm('Skan / imzalı müqavilə yüklə',
+    '<div class="muted small">' + esc(c.renter || '') + ' — kağız imzalı müqavilənin PDF və ya şəkli. Bir neçə fayl seçmək olar; əvvəlkilər silinmir.</div>' +
+    (assets ? '<div class="f"><label for="files">Fayllar (PDF, şəkil)</label><input id="files" name="files" type="file" accept="image/*,application/pdf" multiple required></div>' : '<div class="hint">Fayl yükləmə bu hesabda mövcud deyil.</div>'),
+    async (v, form) => {
+      const cur = (c.scans || []).slice();
+      for (const f of [...form.elements.files.files]) {
+        $('#msave').textContent = 'Yüklənir: ' + f.name.slice(0, 20);
+        const r = await assets.upload(f);
+        cur.push({ id: r.id, url: r.url, name: f.name, at: today() });
+      }
+      await db.doc('contracts/' + c.id).update({ scans: cur });
+    }, 'Yüklə');
+}
+/* onlayn imzalanmış müqavilə: imza anında dondurulmuş mətn + imza məlumatı */
+async function showSigned(c) {
+  const m = $('#modal');
+  m.innerHTML = '<div class="docwrap"><div class="paper">Yüklənir…</div></div>'; m.hidden = false;
+  let row = null;
+  try { row = await window.skLinks.signedDoc(c.id, 'handover'); } catch (e) { row = null; }
+  const sg = c.signature || {};
+  const stamp = '<div style="margin-top:14px;border:1px solid #999;border-radius:8px;padding:10px;font-size:13px"><b>Elektron imza məlumatı</b><br>İmzalayan: ' + esc(sg.name || c.renter || '') +
+    '<br>Vaxt: ' + esc(String(sg.at || '').replace('T', ' ').replace('Z', ' UTC')) + (sg.ip ? '<br>IP: ' + esc(sg.ip) : '') +
+    (safe(sg.url) ? '<br><img src="' + esc(sg.url) + '" alt="İmza" style="max-width:240px;background:#fff;border:1px solid #ccc;border-radius:6px;margin-top:6px">' : '') + '</div>';
+  const body = row && row.html ? row.html + stamp : '<p>İmzalanmış sənədin arxiv nüsxəsi tapılmadı (köhnə müqavilə ola bilər). Cari mətn aşağıdadır.</p>' + docHtml(c.snap || snapOf(S.scooters.find(x => x.id === c.scooterId) || {}), c) + stamp;
+  const hasStyle = /<style/i.test(body);
+  m.innerHTML = (hasStyle ? '' : '<style>' + DOC_CSS + '</style>') + '<div class="docwrap"><div class="row between" style="margin-bottom:10px"><b style="color:#fff">İmzalanmış müqavilə — ' + esc(c.renter || '') + '</b><div class="row"><button class="primary" id="dlbtn">Yüklə</button><button id="dclose">Bağla</button></div></div>' + (hasStyle ? '' : '<div class="paper">') + body + (hasStyle ? '' : '</div>') + '<div class="err" id="dlerr" style="background:#fff;padding:6px 10px;margin-top:8px;border-radius:8px"></div></div>';
+  $('#dclose').onclick = closeForm;
+  $('#dlbtn').onclick = async () => {
+    const err = $('#dlerr'); err.textContent = '';
+    if (!dl) { err.textContent = 'Yükləmə bu hesabda əlçatan deyil.'; return; }
+    const file = '<!doctype html><html lang="az"><head><meta charset="utf-8"><title>Imzali muqavile</title><style>' + DOC_CSS + '@page{size:A4;margin:16mm}body{margin:0;background:#fff}.docwrap{width:auto;margin:0}</style></head><body>' + body + '</body></html>';
+    const name = 'Imzali-muqavile-' + ((c.renter || 'icareci').replace(/[^A-Za-z0-9]+/g, '-') || 'icareci') + '-' + (c.signedAt || c.start || today()) + '.html';
+    try { await dl.save({ filename: name, data: file }); err.style.color = 'var(--ok)'; err.textContent = 'Fayl yadda saxlanıldı. Onu açıb Ctrl+P ilə PDF kimi çap edin.'; }
+    catch (e) { err.style.color = ''; err.textContent = e.code === 'declined' ? 'Yükləmə ləğv edildi.' : 'Yüklənmədi: ' + (e.message || e.code); }
+  };
+}
 const mediaGrid = list => '<div class="mgrid">' + list.map(m => safe(m.url) ? '<a class="mth" href="' + esc(m.url) + '" target="_blank" rel="noopener" title="' + esc(m.name) + '">' + (m.type === 'video' ? '<span>▶ ' + esc(m.name) + '</span>' : '<img src="' + esc(m.url) + '" alt="' + esc(m.name) + '" loading="lazy">') + '</a>' : '').join('') + '</div>';
 function mediaForm(c, ph) {
   const cur = mediaOf(c, ph);
@@ -628,8 +667,11 @@ function viewScooters() {
 }
 
 function viewContracts() {
-  const f = S.cfilter;
-  const list = S.contracts.filter(c => f === 'hamisi' || (f === 'aktiv' ? c.status === 'aktiv' : c.status === 'baglanib')).sort((a, b) => (b.start || '').localeCompare(a.start || ''));
+  const f = S.cfilter, q = lc(S.cs);
+  const hasSigned = c => !!(c.signedAt || c.scanUrl || (c.scans || []).length);
+  const list = S.contracts.filter(c => q
+    ? [c.renter, c.phone, c.fin, scooterName(c.scooterId), c.note].some(v => lc(v).includes(q))
+    : f === 'hamisi' || (f === 'arxiv' ? hasSigned(c) : f === 'aktiv' ? c.status === 'aktiv' : c.status === 'baglanib')).sort((a, b) => (b.start || '').localeCompare(a.start || ''));
   const cards = list.map(c => {
     const k = calc(c), closed = c.status === 'baglanib';
     return '<div class="card st-' + (closed ? 'mute' : k.debt > 0 ? 'bad' : 'ok') + '"><div class="head"><div><h3>' + esc(c.renter) + '</h3><div class="muted small">' + esc(scooterName(c.scooterId)) + '</div></div><span class="pill ' + (closed ? 'mute' : 'acc') + '">' + (closed ? 'Bağlanıb' : c.handed === false ? 'Təhvil gözlənilir' : 'Aktiv') + '</span></div>' +
@@ -643,7 +685,7 @@ function viewContracts() {
       '</dl><div class="money"><div><small>Hesablanıb</small><b>' + money(k.due) + '</b></div><div><small>Ödənilib</small><b>' + money(k.paid) + '</b></div><div><small>' + (k.debt < 0 ? 'Əvvəlcədən' : 'Borc') + '</small><b class="' + (k.debt > 0 ? 'debt' : k.debt < 0 ? 'credit' : '') + '">' + money(Math.abs(k.debt)) + '</b></div></div><dl class="kv">' +
       '<dt>Depozit</dt><dd>' + (c.deposit ? money(k.dep) + ' / ' + money(c.deposit) : 'Yoxdur') + '</dd>' +
       '<dt>Batareyalar</dt><dd>' + esc((c.snap || {}).bat1 || '—') + ' / ' + esc((c.snap || {}).bat2 || '—') + '</dd>' +
-      '<dt>Skan</dt><dd>' + (c.scanUrl ? '<a href="' + esc(c.scanUrl) + '" target="_blank" rel="noopener">' + esc(c.scanName || 'Faylı aç') + '</a>' : '<span class="muted">yüklənməyib</span>') + '</dd></dl>' +
+      '<dt>Skan / arxiv</dt><dd>' + (scansOf(c).length ? scansOf(c).map(s => safe(s.url) ? '<div><a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.name || 'Faylı aç') + '</a></div>' : '').join('') : '<span class="muted">yüklənməyib</span>') + '</dd></dl>' +
       (c.note ? '<div class="small muted">' + esc(c.note) + '</div>' : '') +
       (c.signedAt ? '<div class="small"><span class="pill ok">İmzalanıb' + (c.signedOnline ? ' (onlayn)' : '') + ' · ' + dfmt(c.signedAt) + '</span></div>' : '') +
       (c.signature && safe(c.signature.url) ? '<details><summary>Onlayn imza: ' + esc(c.signature.name || '') + '</summary><div class="sub"><div><span>' + esc(String(c.signature.at || '').replace('T', ' ').replace('Z', ' UTC')) + (c.signature.ip ? ' · IP ' + esc(c.signature.ip) : '') + '</span></div></div><a href="' + esc(c.signature.url) + '" target="_blank" rel="noopener"><img src="' + esc(c.signature.url) + '" alt="İmza" style="max-width:240px;background:#fff;border:1px solid var(--line);border-radius:8px"></a></details>' : '') +
@@ -652,11 +694,12 @@ function viewContracts() {
       ['handover', 'id', 'renter', 'return'].map(ph => mediaOf(c, ph).length ? '<details><summary>' + PH[ph] + ' (' + mediaOf(c, ph).length + ')</summary>' + mediaGrid(mediaOf(c, ph)) + '</details>' : '').join('') +
       (k.pays.length ? '<details><summary>Ödənişlər (' + k.pays.length + ')</summary><div class="sub">' + k.pays.sort((a, b) => b.date.localeCompare(a.date)).map(p => '<div><span>' + dfmt(p.date) + ' · ' + esc(p.kind) + ' · ' + esc(p.method) + '</span><span class="num">' + money(p.amount) + '</span></div>').join('') + '</div></details>' : '') +
       '<div class="actions">' + (!closed ? '<button class="sm primary" data-act="pay" data-id="' + c.id + '">Ödəniş</button><button class="sm" data-act="close" data-id="' + c.id + '">Müqaviləni bağla</button>' : '<button class="sm" data-act="reopen" data-id="' + c.id + '">Yenidən aç</button>') +
-      '<button class="sm" data-act="sched" data-id="' + c.id + '">Ödəniş cədvəli</button><button class="sm primary" data-act="send" data-id="' + c.id + '">Link göndər</button><button class="sm" data-act="docc" data-id="' + c.id + '">Müqavilə / akt</button><button class="sm" data-act="docr" data-id="' + c.id + '">Qaytarma aktı</button><button class="sm primary" data-act="sendr" data-id="' + c.id + '">Qaytarma linki</button><button class="sm" data-act="mh" data-id="' + c.id + '">Təhvil foto/video</button><button class="sm" data-act="mr" data-id="' + c.id + '">Qaytarma foto/video</button><button class="sm" data-act="editc" data-id="' + c.id + '">Redaktə</button></div></div>';
+      '<button class="sm" data-act="sched" data-id="' + c.id + '">Ödəniş cədvəli</button><button class="sm primary" data-act="send" data-id="' + c.id + '">Link göndər</button>' + (c.signedOnline ? '<button class="sm primary" data-act="viewsigned" data-id="' + c.id + '">İmzalı müqaviləni aç</button>' : '') + '<button class="sm" data-act="scan" data-id="' + c.id + '">Skan yüklə</button><button class="sm" data-act="docc" data-id="' + c.id + '">Müqavilə / akt</button><button class="sm" data-act="docr" data-id="' + c.id + '">Qaytarma aktı</button><button class="sm primary" data-act="sendr" data-id="' + c.id + '">Qaytarma linki</button><button class="sm" data-act="mh" data-id="' + c.id + '">Təhvil foto/video</button><button class="sm" data-act="mr" data-id="' + c.id + '">Qaytarma foto/video</button><button class="sm" data-act="editc" data-id="' + c.id + '">Redaktə</button></div></div>';
   }).join('');
   return '<div class="row between"><h2 style="margin:0">Müqavilələr</h2><button class="primary" data-act="addc">+ Yeni müqavilə</button></div>' +
-    '<div class="seg" role="group" aria-label="Filtr">' + [['aktiv', 'Aktiv'], ['baglanib', 'Bağlanmış'], ['hamisi', 'Hamısı']].map(x => '<button data-act="cf" data-v="' + x[0] + '" aria-pressed="' + (f === x[0]) + '">' + x[1] + '</button>').join('') + '</div>' +
-    (cards ? '<div class="grid">' + cards + '</div>' : '<div class="empty">Bu filtrdə müqavilə yoxdur.</div>');
+    '<div class="seg" role="group" aria-label="Filtr">' + [['aktiv', 'Aktiv'], ['baglanib', 'Bağlanmış'], ['arxiv', 'Arxiv (imzalanmış)'], ['hamisi', 'Hamısı']].map(x => '<button data-act="cf" data-v="' + x[0] + '" aria-pressed="' + (f === x[0]) + '">' + x[1] + '</button>').join('') + '</div>' +
+    '<div class="f" style="max-width:360px"><label for="cs">Axtar (ad, telefon, FİN, skuter) — bütün müqavilələrdə</label><input id="cs" type="search" value="' + esc(S.cs) + '"></div>' +
+    (cards ? '<div class="grid">' + cards + '</div>' : '<div class="empty">' + (q ? 'Heç nə tapılmadı.' : 'Bu filtrdə müqavilə yoxdur.') + '</div>');
 }
 
 const KM = { 'kirayə': ['kira', '₼'], 'cərimə': ['cer', '!'], 'depozit': ['dep', '↓'], 'depozit qaytarılması': ['ret', '↑'], 'güzəşt': ['guz', '%'] };
@@ -1395,6 +1438,8 @@ $('#app').addEventListener('click', async e => {
     else if (a === 'ton') trackOn(S.tsel || (S.scooters[0] || {}).id);
     else if (a === 'toff') trackOff();
     else if (a === 'sign') signForm(co);
+    else if (a === 'scan') scanForm(co);
+    else if (a === 'viewsigned') showSigned(co);
     else if (a === 'send') sendForm(co);
     else if (a === 'sendr') sendForm(co, 'return');
     else if (a === 'addcu') customerForm();
@@ -1440,9 +1485,9 @@ $('#app').addEventListener('click', async e => {
   } catch (er) { alert2('Xəta: ' + (er.message || er.code)); }
 });
 $('#app').addEventListener('input', e => {
-  if (e.target.id !== 'cq') return;
-  S.cq = e.target.value; const pos = e.target.selectionStart; render();
-  const n = $('#cq'); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (er) {} }
+  const fid = e.target.id; if (fid !== 'cq' && fid !== 'cs') return;
+  S[fid] = e.target.value; const pos = e.target.selectionStart; render();
+  const n = $('#' + fid); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (er) {} }
 });
 $('#app').addEventListener('change', e => { if (e.target.id === 'tsel') S.tsel = e.target.value; });
 $('#app').addEventListener('change', e => { if (e.target.id === 'pm') { S.pmonth = e.target.value; render(); } });
