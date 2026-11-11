@@ -12,11 +12,14 @@
   gate.innerHTML = '<form id="gform"><h2>Skuter İcarə</h2><p class="muted">İdarəetmə panelinə giriş</p>' +
     '<div class="f"><label for="gem">E-poçt</label><input id="gem" type="email" autocomplete="username" required></div>' +
     '<div class="f"><label for="gpw">Şifrə</label><input id="gpw" type="password" autocomplete="current-password" required></div>' +
-    '<div class="err" id="gerr" role="alert"></div><button class="primary" id="gbtn">Daxil ol</button></form>';
+    '<div class="err" id="gerr" role="alert"></div><button class="primary" id="gbtn">Daxil ol</button>' +
+    '<button type="button" id="gforgot">Şifrəni unutdum</button></form>';
   var css = document.createElement('style');
   css.textContent = '#gate{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:16px}' +
     '#gform{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px;width:min(380px,100%);display:grid;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.15)}' +
     '#gform h2{margin:0}#gform p{margin:0}' +
+    '#gforgot{background:none;border:0;color:var(--accent);font-weight:700;cursor:pointer;padding:6px;justify-self:center;font:inherit;font-weight:700}' +
+    '#gerr.ok{color:var(--ok,#14804a)}' +
     '#logoutBtn{position:fixed;top:8px;right:8px;z-index:35;display:none}' +
     '@media(max-width:820px){#logoutBtn{display:block}}' +
     '.side #logoutBtn{position:static;display:block;margin-top:auto}';
@@ -32,6 +35,7 @@
       document.getElementById('gbtn').disabled = false;
       return false;
     }
+    window.skAuth.email = session.user.email || '';
     gate.remove();
     var lb = document.createElement('button');
     lb.id = 'logoutBtn'; lb.className = 'sm'; lb.textContent = 'Çıxış';
@@ -47,7 +51,44 @@
     if (r.error) { msg('E-poçt və ya şifrə səhvdir.'); document.getElementById('gbtn').disabled = false; return; }
     await enter(r.data.session);
   };
-  sb.auth.getSession().then(function (r) { if (r.data && r.data.session) enter(r.data.session); });
+  window.skAuth = {
+    email: '',
+    changePassword: async function (cur, np) {
+      var r = await sb.auth.signInWithPassword({ email: window.skAuth.email, password: cur });
+      if (r.error) throw new Error('Hazırkı şifrə səhvdir');
+      var u = await sb.auth.updateUser({ password: np });
+      if (u.error) throw new Error(u.error.message || 'Şifrə dəyişmədi');
+    }
+  };
+  /* şifrəni unutdum: e-poçta yeniləmə linki; link açılanda yeni şifrə forması */
+  var recov = /type=recovery/.test(location.hash + location.search);
+  document.getElementById('gforgot').onclick = async function () {
+    var em = document.getElementById('gem').value.trim();
+    var g = document.getElementById('gerr'); g.className = 'err';
+    if (!em) { msg('Əvvəlcə e-poçtunuzu yazın, sonra düyməni basın.'); return; }
+    var r = await sb.auth.resetPasswordForEmail(em, { redirectTo: location.origin + location.pathname });
+    if (r.error) { msg('Link göndərilmədi: ' + r.error.message); return; }
+    g.className = 'err ok'; msg('Əgər bu e-poçt qeydiyyatlıdırsa, yeniləmə linki göndərildi. Poçt qutunuzu (və spam qovluğunu) yoxlayın.');
+  };
+  function showRecovery() {
+    var f = document.getElementById('gform');
+    f.innerHTML = '<h2>Yeni şifrə</h2><p class="muted">Yeni şifrənizi yazın (ən azı 8 simvol)</p>' +
+      '<div class="f"><label for="gn1">Yeni şifrə</label><input id="gn1" type="password" minlength="8" autocomplete="new-password" required></div>' +
+      '<div class="f"><label for="gn2">Təkrar</label><input id="gn2" type="password" minlength="8" autocomplete="new-password" required></div>' +
+      '<div class="err" id="gerr" role="alert"></div><button class="primary" id="gbtn">Şifrəni yenilə</button>';
+    f.onsubmit = async function (e) {
+      e.preventDefault();
+      var a = document.getElementById('gn1').value, b = document.getElementById('gn2').value;
+      if (a !== b) { msg('Şifrələr eyni deyil.'); return; }
+      if (a.length < 8) { msg('Şifrə ən azı 8 simvol olmalıdır.'); return; }
+      var r = await sb.auth.updateUser({ password: a });
+      if (r.error) { msg(r.error.message || 'Şifrə yenilənmədi.'); return; }
+      await sb.auth.signOut(); location.href = location.pathname;
+    };
+  }
+  sb.auth.onAuthStateChange(function (ev) { if (ev === 'PASSWORD_RECOVERY') { recov = true; showRecovery(); } });
+  if (recov) showRecovery();
+  sb.auth.getSession().then(function (r) { if (r.data && r.data.session && !recov) enter(r.data.session); });
 
   /* ---------- fayllar: şəxsi qovluq, "sb://yol" kimi saxlanır, göstərəndə imzalı linkə çevrilir ---------- */
   var signed = new Map(), rev = new Map();

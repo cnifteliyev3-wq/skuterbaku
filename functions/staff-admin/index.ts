@@ -24,6 +24,19 @@ Deno.serve(async (req) => {
     if (!isAdmin) return json({ error: 'Yalniz admin isci elave ede biler' }, 403);
 
     const b = await req.json();
+
+    if (b.action === 'setpw') {
+      const pw = String(b.password ?? '');
+      const uid = String(b.user_id ?? '');
+      if (pw.length < 8) return json({ error: 'Sifre en azi 8 simvol olmalidir' }, 400);
+      const adm = createClient(url, service);
+      const { data: row } = await adm.from('staff').select('user_id').eq('user_id', uid).maybeSingle();
+      if (!row) return json({ error: 'Bu istifadeci isci siyahisinda deyil' }, 400);
+      const { error: ue } = await adm.auth.admin.updateUserById(uid, { password: pw });
+      if (ue) return json({ error: ue.message }, 400);
+      return json({ ok: true });
+    }
+
     const email = String(b.email ?? '').trim().toLowerCase();
     const password = String(b.password ?? '');
     const role = b.role === 'admin' ? 'admin' : 'worker';

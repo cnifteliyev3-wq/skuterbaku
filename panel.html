@@ -35,6 +35,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 nav{display:flex;flex-direction:column;gap:4px}
 nav a{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:9px;color:var(--side-ink);text-decoration:none;font-weight:600;font-size:14px;border-left:3px solid transparent}
 nav a[data-t="ayarlar"]{order:9}
+nav a[data-t="istifadeciler"]{order:8}
 nav a svg{width:19px;height:19px;flex:none}
 nav a:hover{background:rgba(255,255,255,.06);color:var(--side-on)}
 nav a[aria-current="page"]{background:rgba(255,255,255,.1);color:var(--side-on);border-left-color:var(--accent)}
@@ -312,6 +313,7 @@ button.pbtn:hover{background:linear-gradient(135deg,#9a62ff,#6a2fd6)}
       <a href="#muqavileler" data-t="muqavileler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg><span>Müqavilələr</span></a>
       <a href="#musteriler" data-t="musteriler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.8a3.5 3.5 0 0 1 0 6.4M18 14.4c2 .7 3.5 2.6 3.5 5.6"/></svg><span>Müştərilər</span></a>
       <a href="#ayarlar" data-t="ayarlar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Ayarlar</span></a>
+      <a href="#istifadeciler" data-t="istifadeciler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><span id="usrlbl">İstifadəçilər</span></a>
       <a href="#odenisler" data-t="odenisler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19M6.5 15h4"/></svg><span>Ödənişlər</span></a>
     </nav>
   </aside>
@@ -321,7 +323,7 @@ button.pbtn:hover{background:linear-gradient(135deg,#9a62ff,#6a2fd6)}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
-<script src="shim.js?v=7"></script>
+<script src="shim.js?v=8"></script>
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -874,7 +876,7 @@ function viewSettings() {
     '<dt>Ad, soyad / şirkət</dt><dd>' + nz(L.name) + '</dd><dt>FİN / VÖEN</dt><dd>' + nz(L.idno) + '</dd><dt>Ünvan</dt><dd>' + nz(L.address) + '</dd><dt>Telefon</dt><dd>' + nz(L.phone) + '</dd><dt>Şəhər</dt><dd>' + nz(L.city) + '</dd>' +
     '<dt>Skuterin dəyəri</dt><dd>' + (L.scooterValue ? money(L.scooterValue) : nz('')) + '</dd><dt>Batareyanın dəyəri</dt><dd>' + (L.batteryValue ? money(L.batteryValue) : nz('')) + '</dd></dl>' +
     '<div class="hint">Skuter və batareyanın dəyəri itirmə və ya zədə halında icarəçidən tələb olunan məbləğ kimi müqaviləyə yazılır.</div></div>' +
-    siteCard() + staffCard();
+    siteCard();
 }
 async function loadStaff() {
   try { S.staff = await window.skRpc('staff_list'); } catch (e) { S.staff = []; }
@@ -890,7 +892,7 @@ function staffCard() {
   if (!S.staff || !S.staff.length) return '';
   const lab = u => u.role === 'admin' ? 'admin (hər şey)' : (PERM_LIST.filter(p => (u.perms || []).includes(p[0])).map(p => p[1].split(' (')[0]).join(', ') || 'icazə verilməyib');
   return '<div class="card" style="margin-top:16px"><div class="row between"><h3>İşçilər (panelə giriş)</h3><button class="sm primary" data-act="staffadd">+ İşçi əlavə et</button></div>' +
-    '<div class="sub">' + S.staff.map(u => '<div><span>' + esc(u.email) + '<div class="muted small">' + esc(lab(u)) + '</div></span><span class="row" style="gap:6px"><button class="sm" data-act="staffedit" data-id="' + esc(u.user_id) + '">İcazələr</button><button class="sm danger" data-act="staffrm" data-id="' + esc(u.user_id) + '">Sil</button></span></div>').join('') + '</div>' +
+    '<div class="sub">' + S.staff.map(u => '<div><span>' + esc(u.email) + '<div class="muted small">' + esc(lab(u)) + '</div></span><span class="row" style="gap:6px"><button class="sm" data-act="staffedit" data-id="' + esc(u.user_id) + '">Redaktə</button><button class="sm" data-act="staffpw" data-id="' + esc(u.user_id) + '">Şifrə</button><button class="sm danger" data-act="staffrm" data-id="' + esc(u.user_id) + '">Sil</button></span></div>').join('') + '</div>' +
     '<div class="hint">İşçi yalnız icazə verdiyiniz bölmələri görür və dəyişə bilir, qalanları bazada bağlıdır. “Sil” işçinin panelə girişini dayandırır.</div></div>';
 }
 function staffForm(u) {
@@ -907,6 +909,30 @@ function staffForm(u) {
       else await window.skFn('staff-admin', { email: v.email, password: v.password, role: v.role, perms });
       await loadStaff();
     }, edit ? 'Yadda saxla' : 'Hesabı yarat');
+}
+/* ---------- istifadəçilər bölməsi ---------- */
+function viewUsers() {
+  const me = (window.skAuth && window.skAuth.email) || '';
+  const isAdm = S.access && S.access.role === 'admin';
+  return '<div class="row between"><h2 style="margin:0">' + (isAdm ? 'İstifadəçilər' : 'Hesabım') + '</h2></div>' +
+    '<div class="card" style="margin-top:12px"><h3>Mənim hesabım</h3><dl class="kv" style="grid-template-columns:150px 1fr"><dt>Giriş (e-poçt)</dt><dd>' + nz(me) + '</dd><dt>Rol</dt><dd>' + (isAdm ? 'admin' : 'işçi') + '</dd></dl>' +
+    '<div class="actions"><button class="sm primary" data-act="mypw">Şifrəni dəyiş</button></div>' +
+    '<div class="hint">Şifrəni unutsanız, giriş səhifəsində “Şifrəni unutdum” düyməsi ilə e-poçtunuza yeniləmə linki göndərilir.</div></div>' +
+    (isAdm ? staffCard() : '');
+}
+function pwForm(target) {
+  const own = !target;
+  openForm(own ? 'Şifrəni dəyiş' : 'Yeni şifrə: ' + target.email,
+    (own ? fld('cur', 'Hazırkı şifrə', 'password', '', 'required autocomplete="current-password"') : '') +
+    fld('np', 'Yeni şifrə (ən azı 8 simvol)', 'password', '', 'required minlength="8" autocomplete="new-password"') +
+    fld('np2', 'Yeni şifrəni təkrar yazın', 'password', '', 'required minlength="8" autocomplete="new-password"') +
+    (own ? '' : '<div class="hint">Yeni şifrəni istifadəçiyə özünüz çatdırın. Bu şifrəni mən görmürəm.</div>'),
+    async v => {
+      if (v.np !== v.np2) throw new Error('Yeni şifrələr eyni deyil');
+      if (v.np.length < 8) throw new Error('Şifrə ən azı 8 simvol olmalıdır');
+      if (own) await window.skAuth.changePassword(v.cur, v.np);
+      else await window.skFn('staff-admin', { action: 'setpw', user_id: target.user_id, password: v.np });
+    }, 'Yadda saxla');
 }
 function siteCard() {
   const W = S.site || {};
@@ -1287,16 +1313,17 @@ $('#modal').addEventListener('click', async e => {
 
 /* ---------- render & hadisələr ---------- */
 function render() {
+  const ul = $('#usrlbl'); if (ul) ul.textContent = S.access && S.access.role === 'admin' ? 'İstifadəçilər' : 'Hesabım';
   document.querySelectorAll('#nav a').forEach(a => { a.style.display = canTab(a.dataset.t) ? '' : 'none'; if (a.dataset.t === S.tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
   if (!db) { $('#app').innerHTML = '<div class="empty">Verilənlər bazası əlçatan deyil. Səhifəyə hesabınızla daxil olun.</div>'; return; }
   if (!(S.ready.scooters && S.ready.contracts && S.ready.payments)) return;
   if (!$('#modal').hidden) { /* formu pozmamaq üçün render-i yalnız fon üçün yeniləyirik */ }
-  const v = { umumi: viewHome, skuterler: viewScooters, izleme: viewTracking, muqavileler: viewContracts, musteriler: viewCustomers, odenisler: viewPayments, ayarlar: viewSettings }[S.tab] || viewHome;
+  const v = { umumi: viewHome, skuterler: viewScooters, izleme: viewTracking, muqavileler: viewContracts, musteriler: viewCustomers, odenisler: viewPayments, ayarlar: viewSettings, istifadeciler: viewUsers }[S.tab] || viewHome;
   $('#app').innerHTML = v();
   if (S.sched && !$('#modal').hidden) drawSched();
   if (S.dsc && !$('#modal').hidden) drawDays();
 }
-function route() { const h = location.hash.slice(1); S.tab = ['umumi', 'skuterler', 'izleme', 'muqavileler', 'musteriler', 'odenisler', 'ayarlar'].includes(h) && canTab(h) ? h : 'umumi'; render(); }
+function route() { const h = location.hash.slice(1); S.tab = ['umumi', 'skuterler', 'izleme', 'muqavileler', 'musteriler', 'odenisler', 'ayarlar', 'istifadeciler'].includes(h) && canTab(h) ? h : 'umumi'; render(); }
 window.addEventListener('hashchange', route);
 const armed = {};
 $('#app').addEventListener('click', async e => {
@@ -1343,6 +1370,8 @@ $('#app').addEventListener('click', async e => {
     else if (a === 'siteset') siteForm();
     else if (a === 'staffadd') staffForm();
     else if (a === 'staffedit') staffForm((S.staff || []).find(x => x.user_id === id));
+    else if (a === 'mypw') pwForm(null);
+    else if (a === 'staffpw') pwForm((S.staff || []).find(x => x.user_id === id));
     else if (a === 'staffrm') {
       if (!armed['staffrm' + id]) { armed['staffrm' + id] = 1; b.textContent = 'Əminsiniz?'; setTimeout(() => { delete armed['staffrm' + id]; if (b.isConnected) b.textContent = 'Sil'; }, 4000); return; }
       delete armed['staffrm' + id]; await window.skRpc('staff_remove', { p_user: id }); await loadStaff();
