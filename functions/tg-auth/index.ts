@@ -81,6 +81,27 @@ Deno.serve(async (req) => {
         const n = await notifyAdmins(txt);
         return json({ ok: true, sent: n });
       }
+      if (nb.action === 'rain') {
+        // Baki ucun yagis yoxlamasi (Open-Meteo, acar teleb olunmur). Veziyyet kecidinde bir defe bildiris gonderilir.
+        const w = await (await fetch('https://api.open-meteo.com/v1/forecast?latitude=40.4093&longitude=49.8671&current=precipitation,rain,showers,weather_code&minutely_15=precipitation&forecast_minutely_15=4&timezone=auto')).json();
+        const cur = w?.current ?? {};
+        const wet = (cur.precipitation ?? 0) > 0 || (cur.rain ?? 0) > 0 || (cur.showers ?? 0) > 0 || [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99].includes(cur.weather_code);
+        const soon = !wet && ((w?.minutely_15?.precipitation ?? []) as number[]).some((x) => x > 0.1);
+        const state = wet ? 'rain' : soon ? 'soon' : 'dry';
+        const { data: ps } = await svc.from('docs').select('data').eq('coll', 'settings').eq('id', 'rainState').maybeSingle();
+        const prev = ps?.data?.state ?? 'dry';
+        await svc.from('docs').upsert({ coll: 'settings', id: 'rainState', data: { state, at: new Date().toISOString() } });
+        if (state === 'dry' || state === prev || (state === 'soon' && prev === 'rain')) return json({ ok: true, state, sent: 0 });
+        const { data: cs } = await svc.from('docs').select('data').eq('coll', 'contracts');
+        const { data: sc } = await svc.from('docs').select('id,data').eq('coll', 'scooters');
+        const rented = (cs ?? []).map((x: { data: Record<string, any> }) => x.data).filter((c) => c.status === 'aktiv' && c.handed !== false);
+        if (!rented.length) return json({ ok: true, state, sent: 0, note: 'kirayede skuter yoxdur' });
+        const nm = (id: string) => (sc ?? []).find((s: { id: string }) => s.id === id)?.data?.name ?? 'skuter';
+        const list = rented.map((c) => `• ${nm(c.scooterId)} — ${c.renter}${c.phone ? ' (' + c.phone + ')' : ''}`).join('\n');
+        const head = state === 'rain' ? '🌧 Bakıda yağış yağır.' : '🌦 Bakıda 1 saat ərzində yağış gözlənilir.';
+        const n = await notifyAdmins(`${head}\nİndi kirayədə olan skuterlər:\n${list}\n\nŞərtlərə görə yağışda sürmək qadağandır. İcarəçilərə xəbərdarlıq edin.`);
+        return json({ ok: true, state, sent: n });
+      }
       return json({ error: 'Namelum emel' }, 400);
     }
 
