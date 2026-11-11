@@ -185,6 +185,7 @@
       img.src = u;
     });
   }
+  window.skRpc = async function (fn, args) { await authed; var r = await sb.rpc(fn, args || {}); if (r.error) fail(r.error); return r.data; };
   window.skPublic = {
     upload: async function (file) {
       await authed;

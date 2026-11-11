@@ -866,7 +866,23 @@ function viewSettings() {
     '<dt>Ad, soyad / şirkət</dt><dd>' + nz(L.name) + '</dd><dt>FİN / VÖEN</dt><dd>' + nz(L.idno) + '</dd><dt>Ünvan</dt><dd>' + nz(L.address) + '</dd><dt>Telefon</dt><dd>' + nz(L.phone) + '</dd><dt>Şəhər</dt><dd>' + nz(L.city) + '</dd>' +
     '<dt>Skuterin dəyəri</dt><dd>' + (L.scooterValue ? money(L.scooterValue) : nz('')) + '</dd><dt>Batareyanın dəyəri</dt><dd>' + (L.batteryValue ? money(L.batteryValue) : nz('')) + '</dd></dl>' +
     '<div class="hint">Skuter və batareyanın dəyəri itirmə və ya zədə halında icarəçidən tələb olunan məbləğ kimi müqaviləyə yazılır.</div></div>' +
-    siteCard();
+    siteCard() + staffCard();
+}
+async function loadStaff() {
+  try { S.staff = await window.skRpc('staff_list'); } catch (e) { S.staff = []; }
+  if (S.tab === 'ayarlar' && S.ready.scooters && S.ready.contracts && S.ready.payments) render();
+}
+function staffCard() {
+  if (!S.staff || !S.staff.length) return '';
+  return '<div class="card" style="margin-top:16px"><div class="row between"><h3>İşçilər (panelə giriş)</h3><button class="sm primary" data-act="staffadd">+ İşçi əlavə et</button></div>' +
+    '<div class="sub">' + S.staff.map(u => '<div><span>' + esc(u.email) + ' <span class="muted small">· ' + (u.role === 'admin' ? 'admin' : 'işçi') + '</span></span><span class="row" style="gap:6px"><button class="sm" data-act="staffrole" data-id="' + esc(u.user_id) + '" data-v="' + (u.role === 'admin' ? 'worker' : 'admin') + '" data-e="' + esc(u.email) + '">' + (u.role === 'admin' ? 'İşçi et' : 'Admin et') + '</button><button class="sm danger" data-act="staffrm" data-id="' + esc(u.user_id) + '">Sil</button></span></div>').join('') + '</div>' +
+    '<div class="hint">İşçi bütün məlumatlara (skuter, müqavilə, ödəniş) baxa və dəyişə bilər. Yalnız “admin” işçi əlavə edə və silə bilər. Əvvəl işçinin hesabı Supabase → Authentication → Users → Add user bölməsində yaradılmalıdır (şifrəni siz təyin edin və işçiyə verin).</div></div>';
+}
+function staffForm() {
+  openForm('İşçi əlavə et',
+    fld('email', 'İşçinin e-poçtu (Supabase-də hesabı olmalıdır)', 'email', '', 'required placeholder="isci@gmail.com"') +
+    sel('role', 'Rol', [['worker', 'İşçi (əlavə və silmə hüququ yoxdur)'], ['admin', 'Admin (işçi də əlavə edə bilər)']], 'worker'),
+    async v => { await window.skRpc('staff_add', { p_email: v.email, p_role: v.role }); await loadStaff(); }, 'Əlavə et');
 }
 function siteCard() {
   const W = S.site || {};
@@ -1292,6 +1308,12 @@ $('#app').addEventListener('click', async e => {
     }
     else if (a === 'sets') settingsForm();
     else if (a === 'siteset') siteForm();
+    else if (a === 'staffadd') staffForm();
+    else if (a === 'staffrole') { await window.skRpc('staff_add', { p_email: b.dataset.e, p_role: b.dataset.v }); await loadStaff(); }
+    else if (a === 'staffrm') {
+      if (!armed['staffrm' + id]) { armed['staffrm' + id] = 1; b.textContent = 'Əminsiniz?'; setTimeout(() => { delete armed['staffrm' + id]; if (b.isConnected) b.textContent = 'Sil'; }, 4000); return; }
+      delete armed['staffrm' + id]; await window.skRpc('staff_remove', { p_user: id }); await loadStaff();
+    }
     else if (a === 'sched') showSched(id);
     else if (a === 'ppay') await payOldest(co);
     else if (a === 'addc') contractForm();
@@ -1324,6 +1346,7 @@ $('#app').addEventListener('change', e => { if (e.target.id === 'pm') { S.pmonth
   if (!db) { render(); return; }
   setTimeout(() => { if (!(S.ready.scooters && S.ready.contracts && S.ready.payments)) $('#app').innerHTML = '<div class="empty">Məlumatlar yüklənmədi. Səhifəni yenidən açın.</div>'; }, 10000);
   db.doc('settings/zones').onSnapshot(d => { S.zones = (d.exists && (d.data().list || [])) || []; if (S.ready.scooters && S.ready.contracts && S.ready.payments) render(); }, () => {});
+  loadStaff();
   db.doc('settings/site').onSnapshot(d => { S.site = (d.exists && d.data()) || {}; if (S.ready.scooters && S.ready.contracts && S.ready.payments) render(); }, () => {});
   db.doc('settings/owner').onSnapshot(d => { S.settings = (d.exists && d.data()) || {}; if (S.ready.scooters && S.ready.contracts && S.ready.payments) render(); }, () => {});
   ['scooters', 'contracts', 'payments', 'customers'].forEach(n => db.collection(n).onSnapshot(snap => {
