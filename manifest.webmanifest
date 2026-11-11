@@ -1,0 +1,17 @@
+{
+  "name": "Skuter Baku: İdarəetmə paneli",
+  "short_name": "Skuter Panel",
+  "description": "Skuter Baku icarə idarəetmə paneli",
+  "start_url": "/panel.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#4d17b0",
+  "theme_color": "#4d17b0",
+  "lang": "az",
+  "icons": [
+    {"src": "img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "img/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
