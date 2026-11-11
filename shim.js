@@ -186,6 +186,14 @@
     });
   }
   window.skRpc = async function (fn, args) { await authed; var r = await sb.rpc(fn, args || {}); if (r.error) fail(r.error); return r.data; };
+  window.skFn = async function (name, body) {
+    await authed;
+    var s = (await sb.auth.getSession()).data.session;
+    var r = await fetch(cfg.url + '/functions/v1/' + name, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: cfg.key, Authorization: 'Bearer ' + (s ? s.access_token : '') }, body: JSON.stringify(body || {}) });
+    var j = await r.json().catch(function () { return {}; });
+    if (!r.ok) throw new Error(j.error || ('Xəta ' + r.status));
+    return j;
+  };
   window.skPublic = {
     upload: async function (file) {
       await authed;

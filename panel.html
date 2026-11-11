@@ -858,6 +858,7 @@ function viewCustomers() {
 
 /* ---------- ayarlar (icarədar məlumatı) ---------- */
 function viewSettings() {
+  if (!canPerm('ayarlar')) return '<h2>Ön sayt</h2>' + siteCard();
   const L = S.settings || {};
   const empty = !L.name;
   return '<div class="row between"><h2>Ayarlar</h2><button class="primary" data-act="sets">Məlumatları dəyiş</button></div>' +
@@ -872,17 +873,33 @@ async function loadStaff() {
   try { S.staff = await window.skRpc('staff_list'); } catch (e) { S.staff = []; }
   if (S.tab === 'ayarlar' && S.ready.scooters && S.ready.contracts && S.ready.payments) render();
 }
+const PERM_LIST = [['sayt', 'Ön sayt (skuter kartları, şəkillər, əlaqə məlumatı: əlavə et və sil)'], ['skuterler', 'Skuterlər (GPS, vəziyyət, yer)'], ['muqavileler', 'Müqavilələr (şəkil, video, imza daxil)'], ['musteriler', 'Müştərilər'], ['odenisler', 'Ödənişlər'], ['ayarlar', 'Ayarlar (icarədar məlumatı, ərazilər)']];
+const TABPERM = { skuterler: ['skuterler', 'sayt'], izleme: ['skuterler'], muqavileler: ['muqavileler'], musteriler: ['musteriler'], odenisler: ['odenisler'], ayarlar: ['ayarlar', 'sayt'] };
+const canTab = t => !S.access || S.access.role === 'admin' || !TABPERM[t] || TABPERM[t].some(p => (S.access.perms || []).includes(p));
+const canPerm = p => !S.access || S.access.role === 'admin' || (S.access.perms || []).includes(p);
+async function loadAccess() { try { S.access = await window.skRpc('my_access'); } catch (e) { S.access = null; } if (!canTab(S.tab)) { S.tab = 'umumi'; } render(); }
+const permBoxes = sel0 => '<div class="f"><label>İcazələr (hansı bölmələrə girə bilər)</label><div style="display:grid;gap:8px">' + PERM_LIST.map(p => '<label style="display:flex;gap:8px;align-items:flex-start;font-weight:500"><input type="checkbox" class="pm" value="' + p[0] + '"' + (sel0.includes(p[0]) ? ' checked' : '') + '> <span>' + esc(p[1]) + '</span></label>').join('') + '</div></div>';
 function staffCard() {
   if (!S.staff || !S.staff.length) return '';
+  const lab = u => u.role === 'admin' ? 'admin (hər şey)' : (PERM_LIST.filter(p => (u.perms || []).includes(p[0])).map(p => p[1].split(' (')[0]).join(', ') || 'icazə verilməyib');
   return '<div class="card" style="margin-top:16px"><div class="row between"><h3>İşçilər (panelə giriş)</h3><button class="sm primary" data-act="staffadd">+ İşçi əlavə et</button></div>' +
-    '<div class="sub">' + S.staff.map(u => '<div><span>' + esc(u.email) + ' <span class="muted small">· ' + (u.role === 'admin' ? 'admin' : 'işçi') + '</span></span><span class="row" style="gap:6px"><button class="sm" data-act="staffrole" data-id="' + esc(u.user_id) + '" data-v="' + (u.role === 'admin' ? 'worker' : 'admin') + '" data-e="' + esc(u.email) + '">' + (u.role === 'admin' ? 'İşçi et' : 'Admin et') + '</button><button class="sm danger" data-act="staffrm" data-id="' + esc(u.user_id) + '">Sil</button></span></div>').join('') + '</div>' +
-    '<div class="hint">İşçi bütün məlumatlara (skuter, müqavilə, ödəniş) baxa və dəyişə bilər. Yalnız “admin” işçi əlavə edə və silə bilər. Əvvəl işçinin hesabı Supabase → Authentication → Users → Add user bölməsində yaradılmalıdır (şifrəni siz təyin edin və işçiyə verin).</div></div>';
+    '<div class="sub">' + S.staff.map(u => '<div><span>' + esc(u.email) + '<div class="muted small">' + esc(lab(u)) + '</div></span><span class="row" style="gap:6px"><button class="sm" data-act="staffedit" data-id="' + esc(u.user_id) + '">İcazələr</button><button class="sm danger" data-act="staffrm" data-id="' + esc(u.user_id) + '">Sil</button></span></div>').join('') + '</div>' +
+    '<div class="hint">İşçi yalnız icazə verdiyiniz bölmələri görür və dəyişə bilir, qalanları bazada bağlıdır. “Sil” işçinin panelə girişini dayandırır.</div></div>';
 }
-function staffForm() {
-  openForm('İşçi əlavə et',
-    fld('email', 'İşçinin e-poçtu (Supabase-də hesabı olmalıdır)', 'email', '', 'required placeholder="isci@gmail.com"') +
-    sel('role', 'Rol', [['worker', 'İşçi (əlavə və silmə hüququ yoxdur)'], ['admin', 'Admin (işçi də əlavə edə bilər)']], 'worker'),
-    async v => { await window.skRpc('staff_add', { p_email: v.email, p_role: v.role }); await loadStaff(); }, 'Əlavə et');
+function staffForm(u) {
+  const edit = !!u;
+  openForm(edit ? 'İcazələri dəyiş: ' + u.email : 'Yeni işçi',
+    (edit ? '' : fld('email', 'İşçinin e-poçtu (login)', 'email', '', 'required autocomplete="off" placeholder="isci@gmail.com"') +
+      fld('password', 'Şifrə (ən azı 8 simvol, siz təyin edirsiniz)', 'password', '', 'required minlength="8" autocomplete="new-password"')) +
+    sel('role', 'Rol', [['worker', 'İşçi (yalnız seçilən bölmələr)'], ['admin', 'Admin (hər şey + işçi idarəsi)']], edit ? u.role : 'worker') +
+    permBoxes(edit ? (u.perms || []) : ['sayt']) +
+    '<div class="hint">Admin seçilsə, aşağıdakı icazələr nəzərə alınmır, hər şeyə çıxışı olur.</div>',
+    async (v, form) => {
+      const perms = [...form.querySelectorAll('.pm:checked')].map(x => x.value);
+      if (edit) await window.skRpc('staff_set', { p_user: u.user_id, p_role: v.role, p_perms: perms });
+      else await window.skFn('staff-admin', { email: v.email, password: v.password, role: v.role, perms });
+      await loadStaff();
+    }, edit ? 'Yadda saxla' : 'Hesabı yarat');
 }
 function siteCard() {
   const W = S.site || {};
@@ -1254,7 +1271,7 @@ $('#modal').addEventListener('click', async e => {
 
 /* ---------- render & hadisələr ---------- */
 function render() {
-  document.querySelectorAll('#nav a').forEach(a => { if (a.dataset.t === S.tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  document.querySelectorAll('#nav a').forEach(a => { a.style.display = canTab(a.dataset.t) ? '' : 'none'; if (a.dataset.t === S.tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
   if (!db) { $('#app').innerHTML = '<div class="empty">Verilənlər bazası əlçatan deyil. Səhifəyə hesabınızla daxil olun.</div>'; return; }
   if (!(S.ready.scooters && S.ready.contracts && S.ready.payments)) return;
   if (!$('#modal').hidden) { /* formu pozmamaq üçün render-i yalnız fon üçün yeniləyirik */ }
@@ -1263,7 +1280,7 @@ function render() {
   if (S.sched && !$('#modal').hidden) drawSched();
   if (S.dsc && !$('#modal').hidden) drawDays();
 }
-function route() { const h = location.hash.slice(1); S.tab = ['umumi', 'skuterler', 'izleme', 'muqavileler', 'musteriler', 'odenisler', 'ayarlar'].includes(h) ? h : 'umumi'; render(); }
+function route() { const h = location.hash.slice(1); S.tab = ['umumi', 'skuterler', 'izleme', 'muqavileler', 'musteriler', 'odenisler', 'ayarlar'].includes(h) && canTab(h) ? h : 'umumi'; render(); }
 window.addEventListener('hashchange', route);
 const armed = {};
 $('#app').addEventListener('click', async e => {
@@ -1309,7 +1326,7 @@ $('#app').addEventListener('click', async e => {
     else if (a === 'sets') settingsForm();
     else if (a === 'siteset') siteForm();
     else if (a === 'staffadd') staffForm();
-    else if (a === 'staffrole') { await window.skRpc('staff_add', { p_email: b.dataset.e, p_role: b.dataset.v }); await loadStaff(); }
+    else if (a === 'staffedit') staffForm((S.staff || []).find(x => x.user_id === id));
     else if (a === 'staffrm') {
       if (!armed['staffrm' + id]) { armed['staffrm' + id] = 1; b.textContent = 'Əminsiniz?'; setTimeout(() => { delete armed['staffrm' + id]; if (b.isConnected) b.textContent = 'Sil'; }, 4000); return; }
       delete armed['staffrm' + id]; await window.skRpc('staff_remove', { p_user: id }); await loadStaff();
@@ -1346,7 +1363,7 @@ $('#app').addEventListener('change', e => { if (e.target.id === 'pm') { S.pmonth
   if (!db) { render(); return; }
   setTimeout(() => { if (!(S.ready.scooters && S.ready.contracts && S.ready.payments)) $('#app').innerHTML = '<div class="empty">Məlumatlar yüklənmədi. Səhifəni yenidən açın.</div>'; }, 10000);
   db.doc('settings/zones').onSnapshot(d => { S.zones = (d.exists && (d.data().list || [])) || []; if (S.ready.scooters && S.ready.contracts && S.ready.payments) render(); }, () => {});
-  loadStaff();
+  loadAccess(); loadStaff();
   db.doc('settings/site').onSnapshot(d => { S.site = (d.exists && d.data()) || {}; if (S.ready.scooters && S.ready.contracts && S.ready.payments) render(); }, () => {});
   db.doc('settings/owner').onSnapshot(d => { S.settings = (d.exists && d.data()) || {}; if (S.ready.scooters && S.ready.contracts && S.ready.payments) render(); }, () => {});
   ['scooters', 'contracts', 'payments', 'customers'].forEach(n => db.collection(n).onSnapshot(snap => {
