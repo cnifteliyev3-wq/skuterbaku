@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Skuter Baku">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b4dff"/><stop offset="1" stop-color="#4d17b0"/></linearGradient>
+    <linearGradient id="fl" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff7a3d"/><stop offset="1" stop-color="#ffd36b"/></linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#bg)"/>
+  <!-- Flame Towers (Bakı) -->
+  <g fill="url(#fl)">
+    <path d="M12.5 37C12.5 29 15 22 17 17c2 5 4.5 12 4.5 20z" opacity=".9"/>
+    <path d="M22.5 37C22.5 27 25.5 18 27.5 10c2 8 5 17 5 27z"/>
+    <path d="M32.5 37C32.5 29 35 22 37 17c2 5 4.5 12 4.5 20z" opacity=".9"/>
+  </g>
+  <!-- Scooter -->
+  <g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M13 41h31" stroke-width="4.5"/>
+    <path d="M44 41l5.5-21M45.5 19.5H55" stroke-width="4"/>
+    <circle cx="17" cy="49" r="4.6" stroke-width="3.6"/>
+    <circle cx="48" cy="49" r="4.6" stroke-width="3.6"/>
+  </g>
+</svg>

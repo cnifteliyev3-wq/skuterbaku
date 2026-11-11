@@ -9,20 +9,24 @@
 <meta property="og:description" content="Skuterləri seçin, qiyməti görün, WhatsApp ilə sifariş edin.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#6d2bd6">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%236d2bd6'/%3E%3Cpath d='M16 42h22l6-18h6M38 42l-4-18' stroke='%23fff' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='20' cy='44' r='6' fill='%23fff'/%3E%3Ccircle cx='46' cy='44' r='6' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="apple-touch-icon" href="logo.svg">
+<link rel="canonical" href="https://skuterbaku.az/">
+<meta property="og:url" content="https://skuterbaku.az/">
+<meta property="og:site_name" content="Skuter Baku">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f7f5fc;--surface:#fff;--ink:#1b1530;--muted:#6b6483;--line:#e6e1f2;
-  --accent:#6d2bd6;--accent-ink:#fff;--accent-soft:#efe7fc;--grad:linear-gradient(135deg,#8b4dff,#5a1fc4);
+  --bg:#f4f0fd;--surface:#fff;--ink:#14122b;--muted:#5f5a78;--line:#e9e3f8;
+  --accent:#5a35d6;--accent-ink:#fff;--accent-soft:#eeeafc;--grad:linear-gradient(135deg,#6a43ea,#3d27b8);
   --ok:#14804a;--ok-soft:#e3f5ea;--warn:#a15c00;--warn-soft:#fdf0d9;--bad:#b3261e;--bad-soft:#fde8e6;
   --shadow:0 10px 30px rgba(60,20,120,.10);
 }
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#120d1f;--surface:#1b1530;--ink:#f1edfb;--muted:#a49bbd;--line:#2e2547;
-  --accent:#a77bff;--accent-ink:#17102b;--accent-soft:#2a1f47;
+  --accent:#a99bff;--accent-ink:#17102b;--accent-soft:#2a1f47;
   --ok:#5fd394;--ok-soft:#14301f;--warn:#f0b35a;--warn-soft:#3a2a10;--bad:#ff8a80;--bad-soft:#3c1a18;--shadow:0 10px 30px rgba(0,0,0,.35);}}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -32,7 +36,9 @@ a{color:inherit}
 header.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 header.top .wrap{display:flex;align-items:center;gap:16px;min-height:64px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;text-decoration:none;letter-spacing:-.02em}
-.logo{width:34px;height:34px;border-radius:10px;background:var(--grad);display:grid;place-items:center;color:#fff}
+.brand .mark{width:40px;height:40px;border-radius:11px;display:block;box-shadow:0 4px 12px rgba(90,31,196,.3)}
+.wm{font-weight:800;letter-spacing:-.03em}.wm em{font-style:normal;color:var(--accent)}
+.fbrand{display:flex;align-items:center;gap:10px;color:var(--ink);font-weight:800;text-decoration:none}.fbrand img{width:32px;height:32px;border-radius:9px}
 nav.m{display:flex;gap:6px;margin-left:auto}
 nav.m a{padding:8px 12px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px;color:var(--muted)}
 nav.m a:hover{background:var(--accent-soft);color:var(--accent)}
@@ -111,21 +117,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
 .art.real video,.art.real img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
 .art{border-radius:28px;box-shadow:0 30px 60px rgba(90,31,196,.35);overflow:hidden;animation:float 6s ease-in-out infinite}
 .art svg{filter:none}
-@keyframes float{50%{transform:translateY(-8px)}}
-@keyframes slide{to{transform:translateX(-520px)}}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes bob{50%{transform:translateY(-3px)}}
-@keyframes dash{to{stroke-dashoffset:-48}}
-@keyframes zoomline{0%{transform:translateX(0);opacity:.0}30%{opacity:.5}100%{transform:translateX(-60px);opacity:0}}
 @keyframes glow{50%{opacity:.5;transform:scale(1.08)}}
-.layer.l1{animation:slide 38s linear infinite}
-.layer.l2{animation:slide 16s linear infinite}
-.road{animation:dash .7s linear infinite}
-.wheel{animation:spin .6s linear infinite;transform-box:view-box}
-.body{animation:bob .5s ease-in-out infinite}
-.sp{animation:zoomline 1s linear infinite}.sp.s2{animation-delay:.3s}.sp.s3{animation-delay:.6s}
-.sun{transform-origin:400px 96px;animation:glow 4s ease-in-out infinite}
-.towers{animation:glow 5s ease-in-out infinite;transform-origin:center bottom;transform-box:fill-box}
 .rv{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
 .rv.in{opacity:1;transform:none}
 .card{transition:transform .25s ease,box-shadow .25s ease}
@@ -146,6 +138,54 @@ header.top{transition:box-shadow .2s,min-height .2s}header.top.sc{box-shadow:0 6
 @keyframes fade{from{opacity:0}}
 @media(prefers-reduced-motion:reduce){.layer,.road,.wheel,.body,.sp,.sun,.towers,.art{animation:none!important}.rv{opacity:1;transform:none}}
 .bar{display:none}
+/* ===== 1ge üslubu: ağ başlıq, böyük ağ hero kartı, pill düymələr, yumşaq kartlar ===== */
+header.top{background:var(--surface);backdrop-filter:none;border-bottom:1px solid var(--line)}
+header.top .wrap{min-height:76px;width:min(1280px,100% - 40px)}
+.brand{font-size:22px}
+.brand .mark{width:46px;height:46px;border-radius:13px}
+nav.m{margin-left:28px;margin-right:auto}
+nav.m a{color:var(--ink);font-weight:700;font-size:15px;border-radius:999px;padding:10px 16px}
+nav.m a:hover{background:var(--accent-soft);color:var(--accent)}
+.btn{border-radius:999px;min-height:48px;padding:0 24px;border-color:var(--line)}
+.btn.sm{min-height:44px;padding:0 20px}
+.btn.p{background:var(--grad);box-shadow:0 10px 22px rgba(70,40,190,.28)}
+.btn.wa{box-shadow:0 10px 22px rgba(31,168,85,.25)}
+.hero{padding:22px 0 10px;background:none}
+.hero>.wrap{width:min(1280px,100% - 40px);position:relative;display:block;background:var(--surface);border-radius:34px;padding:64px 56px 56px;overflow:hidden;min-height:470px;box-shadow:0 24px 60px rgba(90,50,200,.08)}
+.herogrid>div:first-child{position:relative;z-index:2;max-width:56%}
+.hero h1{font-size:clamp(34px,5.6vw,68px);line-height:1.04;letter-spacing:-.045em;max-width:none}
+.hero h1 em{background:linear-gradient(90deg,#b52fe0,#6f3df0);-webkit-background-clip:text;background-clip:text}
+.hero p{color:var(--ink);opacity:.82;font-size:clamp(16px,2vw,20px);max-width:44ch}
+.eyebrow{background:var(--accent-soft);border-radius:999px}
+.hero .art{position:absolute;inset:0 0 0 auto;width:62%;max-width:none;border-radius:0;box-shadow:none;animation:none;margin:0;
+  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 38%);mask-image:linear-gradient(to right,transparent 0,#000 38%)}
+.hero .art svg{width:100%;height:100%}
+.hero .art.real img,.hero .art.real video{height:100%;aspect-ratio:auto;object-position:75% 40%}
+.chips{margin-top:30px}
+.chip{background:var(--surface);border:1px solid var(--line);color:var(--ink);padding:10px 18px;font-size:14px;box-shadow:0 4px 12px rgba(90,50,200,.06)}
+.card,.feat,.step,.ct,.terms,.faq details{border-radius:24px;border-color:var(--line);box-shadow:0 8px 28px rgba(90,50,200,.07)}
+.feat .ic{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,var(--accent-soft),#fff);box-shadow:0 6px 16px rgba(90,50,200,.12)}
+.step i{background:var(--grad);box-shadow:0 6px 14px rgba(70,40,190,.3)}
+.specs span{border-radius:999px}
+.badge{border-radius:999px}
+section h2{letter-spacing:-.03em}
+@media(max-width:860px){
+  .hero>.wrap{padding:28px 22px 30px;min-height:0;border-radius:28px}
+  .herogrid>div:first-child{max-width:none}
+  .hero .art{position:relative;inset:auto;width:calc(100% + 44px);margin:-28px -22px 22px;height:230px;
+    -webkit-mask-image:linear-gradient(to bottom,#000 55%,transparent);mask-image:linear-gradient(to bottom,#000 55%,transparent)}
+}
+.wm,.brand{white-space:nowrap}
+@media(max-width:720px){
+  header.top .wrap{min-height:64px;gap:8px;width:min(1280px,100% - 24px)}
+  .brand{font-size:18px;gap:8px}.brand .mark{width:38px;height:38px}
+  nav.m{margin-left:auto}nav.m a{padding:8px 9px;font-size:13.5px}
+  header.top .btn.wa{display:none}
+  .hero>.wrap{width:min(1280px,100% - 24px)}
+  .bar .btn{white-space:nowrap;padding:0 12px}
+}
+@media(max-width:480px){nav.m a:not([href="#skuterler"]){display:none}nav.m a{padding:8px 7px;font-size:13px}.brand{font-size:17px}}
+html,body{overflow-x:clip}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 @media(max-width:860px){.herogrid{grid-template-columns:1fr}.art{max-width:340px;margin:0 auto;order:-1}}
 @media(max-width:720px){nav.m a.hide{display:none}.hero{padding-top:28px}header.top .btn.wa span{display:none}
@@ -157,7 +197,7 @@ header.top{transition:box-shadow .2s,min-height .2s}header.top.sc{box-shadow:0 6
 <body>
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#"><span class="logo" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="2.6"/><circle cx="19" cy="18" r="2.6"/><path d="M8.6 18H14l3-9h3M14 18l-2-9"/></svg></span>Skuter Baku</a>
+    <a class="brand" href="#" aria-label="Skuter Baku — ana səhifə"><img class="mark" src="logo.svg" alt="" width="40" height="40"><span class="wm">Skuter<em> Baku</em></span></a>
     <nav class="m" aria-label="Menyu">
       <a href="#skuterler">Skuterlər</a><a class="hide" href="#niye">Üstünlüklər</a><a class="hide" href="#nece">Necə işləyir</a><a class="hide" href="#faq">Suallar</a><a href="#elaqe">Əlaqə</a>
     </nav>
@@ -174,47 +214,7 @@ header.top{transition:box-shadow .2s,min-height .2s}header.top.sc{box-shadow:0 6
     <div class="cta"><a class="btn p" href="#skuterler">Skuterlərə bax</a><a class="btn wa" id="hero-wa" href="#elaqe" hidden>WhatsApp ilə yaz</a></div>
     <div class="chips"><span class="chip">Onlayn müqavilə</span><span class="chip">Təhvil şəkillə qeyd olunur</span><span class="chip">Gün · həftə · ay</span></div>
   </div>
-  <div class="art" aria-hidden="true">
-    <svg viewBox="0 0 520 380" role="img" fill="none" stroke-linecap="round" stroke-linejoin="round">
-      <defs>
-        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9b63ff"/><stop offset=".62" stop-color="#5a1fc4"/><stop offset="1" stop-color="#2b1062"/></linearGradient>
-        <linearGradient id="fl" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff7a3d"/><stop offset="1" stop-color="#ffd36b"/></linearGradient>
-        <linearGradient id="deck" x1="0" x2="1"><stop stop-color="#c9a8ff"/><stop offset="1" stop-color="#8b4dff"/></linearGradient>
-        <clipPath id="clip"><rect width="520" height="380" rx="28"/></clipPath>
-        <g id="far" fill="#fff" opacity=".13"><rect x="6" y="210" width="38" height="110"/><rect x="52" y="180" width="30" height="140"/><rect x="92" y="226" width="46" height="94"/><rect x="146" y="196" width="28" height="124"/><rect x="184" y="236" width="52" height="84"/><rect x="246" y="190" width="34" height="130"/><rect x="290" y="222" width="42" height="98"/><rect x="342" y="170" width="26" height="150"/><rect x="378" y="214" width="48" height="106"/><rect x="436" y="200" width="32" height="120"/><rect x="476" y="232" width="40" height="88"/></g>
-        <g id="near" fill="#1a0a40" opacity=".42"><rect x="0" y="250" width="54" height="70"/><rect x="62" y="232" width="40" height="88"/><rect x="112" y="262" width="62" height="58"/><rect x="184" y="240" width="36" height="80"/><rect x="230" y="258" width="58" height="62"/><rect x="298" y="228" width="44" height="92"/><rect x="352" y="256" width="60" height="64"/><rect x="422" y="238" width="38" height="82"/><rect x="468" y="262" width="52" height="58"/></g>
-      </defs>
-      <g clip-path="url(#clip)">
-        <rect width="520" height="380" fill="url(#sky)"/>
-        <circle cx="400" cy="96" r="44" fill="#ffe9b8" opacity=".95" class="sun"/>
-        <circle cx="400" cy="96" r="66" fill="#ffe9b8" opacity=".14" class="sun"/>
-        <g class="layer l1"><use href="#far" x="0"/><use href="#far" x="520"/></g>
-        <g transform="translate(146 150)" class="towers">
-          <path d="M0 170 C0 110 18 54 30 14 C42 54 60 110 60 170Z" fill="url(#fl)" opacity=".92"/>
-          <path d="M70 170 C70 96 92 40 108 0 C124 40 146 96 146 170Z" fill="url(#fl)"/>
-          <path d="M156 170 C156 112 174 60 186 22 C198 60 216 112 216 170Z" fill="url(#fl)" opacity=".92"/>
-        </g>
-        <g class="layer l2"><use href="#near" x="0"/><use href="#near" x="520"/></g>
-        <rect y="318" width="520" height="62" fill="#1d0b45"/>
-        <path d="M-60 349H600" stroke="#8b6bd6" stroke-width="4" stroke-dasharray="28 20" class="road"/>
-        <g class="rider">
-          <g stroke="#fff" opacity=".35" stroke-width="3"><path d="M96 282h40" class="sp s1"/><path d="M76 298h52" class="sp s2"/><path d="M104 312h34" class="sp s3"/></g>
-          <g class="body">
-            <path d="M160 300h140" stroke="url(#deck)" stroke-width="14"/>
-            <path d="M296 300 L318 196" stroke="#e9dcff" stroke-width="8"/>
-            <path d="M308 196h30" stroke="#fff" stroke-width="9"/>
-            <path d="M220 292 L236 236 L250 200" stroke="#ffd36b" stroke-width="13"/>
-            <path d="M250 206 L304 202" stroke="#ffd36b" stroke-width="9"/>
-            <circle cx="256" cy="178" r="15" fill="#ffd9b5" stroke="none"/>
-            <path d="M246 170c4-12 22-14 28-2" stroke="#2b1062" stroke-width="8"/>
-            <path d="M236 240 L222 300" stroke="#2a1568" stroke-width="12"/>
-            <g class="wheel" style="transform-origin:174px 304px"><circle cx="174" cy="304" r="22" fill="#14082f" stroke="#fff" stroke-width="5"/><path d="M174 284v40M154 304h40" stroke="#c9a8ff" stroke-width="3"/></g>
-            <g class="wheel" style="transform-origin:304px 304px"><circle cx="304" cy="304" r="22" fill="#14082f" stroke="#fff" stroke-width="5"/><path d="M304 284v40M284 304h40" stroke="#c9a8ff" stroke-width="3"/></g>
-          </g>
-        </g>
-      </g>
-    </svg>
-  </div>
+  <div class="art real"><img src="img/baku-hero.webp" alt="Alov Qüllələri və Bakı bulvarı" width="1576" height="875" fetchpriority="high"></div>
 </div></div>
 
 <section id="skuterler"><div class="wrap">
@@ -271,7 +271,7 @@ header.top{transition:box-shadow .2s,min-height .2s}header.top.sc{box-shadow:0 6
 </main>
 
 <div class="bar" id="bar" hidden><a class="btn" id="bar-call" href="#elaqe">Zəng et</a><a class="btn wa" id="bar-wa" href="#elaqe">WhatsApp</a></div>
-<footer><div class="wrap"><span>© <span id="yr"></span> Skuter Baku</span><a href="panel.html" rel="nofollow">İdarəetmə paneli</a></div></footer>
+<footer><div class="wrap"><a class="fbrand" href="#"><img src="logo.svg" alt="" width="32" height="32"><span class="wm">Skuter<em> Baku</em></span></a><span>© <span id="yr"></span> Skuter Baku · Bakıda elektrik skuter icarəsi</span><a href="panel.html" rel="nofollow">İdarəetmə paneli</a></div></footer>
 
 <script>
 (function(){
