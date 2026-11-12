@@ -9,8 +9,8 @@
 <link rel="icon" type="image/svg+xml" href="logo.svg">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap">
 <style>
-:root{--bg:#f5f0ff;--surface:#fff;--ink:#1c1235;--muted:#6b6485;--line:#e6dcf7;--accent:#6d2bd6;--ok:#12803c;--bad:#c0262d}
-@media (prefers-color-scheme:dark){:root{--bg:#130b25;--surface:#1d1434;--ink:#f1ebff;--muted:#a99fc7;--line:#33265a;--accent:#a77bff;--ok:#4cc57a;--bad:#ff7a80}}
+:root{--bg:#e9edf3;--surface:#fff;--ink:#141b2d;--muted:#6b7589;--line:#e1e8f2;--accent:#0b72ff;--ok:#12803c;--bad:#c0262d}
+@media (prefers-color-scheme:dark){:root{--bg:#0c1220;--surface:#141c2e;--ink:#e9eefa;--muted:#98a6c0;--line:#26324d;--accent:#6db0ff;--ok:#4cc57a;--bad:#ff7a80}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Manrope,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px 16px 40px}
 main{max-width:720px;margin:0 auto;display:grid;gap:16px}
@@ -23,8 +23,8 @@ h1{font-size:22px;margin:0}h2{font-size:17px;margin:0 0 4px}
 .step{display:grid;gap:8px}
 .step+.step{border-top:1px solid var(--line);padding-top:16px;margin-top:4px}
 .tag{display:inline-block;font-size:12px;font-weight:700;border-radius:99px;padding:2px 9px;background:var(--line);color:var(--muted)}
-.tag.req{background:#ece0ff;color:#4a1fa8}
-@media (prefers-color-scheme:dark){.tag.req{background:#32215e;color:#d9c8ff}}
+.tag.req{background:#e3efff;color:#0a58c4}
+@media (prefers-color-scheme:dark){.tag.req{background:#173560;color:#bcd7ff}}
 .pick{display:block;border:2px dashed var(--line);border-radius:12px;padding:14px;text-align:center;font-weight:600;cursor:pointer}
 .pick input{position:absolute;opacity:0;width:1px;height:1px}
 .pick:focus-within{outline:3px solid var(--accent)}
@@ -35,7 +35,7 @@ label.chk{display:flex;gap:10px;align-items:flex-start}
 label.chk input{width:22px;height:22px;margin-top:2px;flex:none}
 input[type=text]{width:100%;font:inherit;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 canvas{width:100%;height:180px;background:#fff;border:1px solid var(--line);border-radius:10px;touch-action:none;display:block}
-button.main{font:inherit;font-weight:800;width:100%;padding:15px;border:0;border-radius:99px;background:linear-gradient(135deg,#8b4dff,#5a1fc4);color:#fff;cursor:pointer}
+button.main{font:inherit;font-weight:800;width:100%;padding:15px;border:0;border-radius:99px;background:linear-gradient(135deg,#4da3ff,#0a5fe0);color:#fff;cursor:pointer}
 button.main:disabled{opacity:.5}
 button.link{font:inherit;border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:4px 0}
 .err{color:var(--bad);font-weight:600;min-height:1.2em}

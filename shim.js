@@ -9,7 +9,7 @@
   var resolveAuth, authed = new Promise(function (r) { resolveAuth = r; });
   var gate = document.createElement('div');
   gate.id = 'gate';
-  gate.innerHTML = '<form id="gform"><h2>Skuter İcarə</h2><p class="muted">İdarəetmə panelinə giriş</p>' +
+  gate.innerHTML = '<form id="gform"><img src="logo.svg" alt="" width="56" height="56" style="display:block;border-radius:16px;margin:0 0 14px;box-shadow:0 8px 20px rgba(11,114,255,.3)"><h2>Skuter Baku</h2><p class="muted">İdarəetmə panelinə giriş</p>' +
     '<div class="f"><label for="gem">E-poçt</label><input id="gem" type="email" autocomplete="username" required></div>' +
     '<div class="f"><label for="gpw">Şifrə</label><input id="gpw" type="password" autocomplete="current-password" required></div>' +
     '<div class="err" id="gerr" role="alert"></div><button class="primary" id="gbtn">Daxil ol</button>' +

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 64" role="img" aria-label="Skuter Baku">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b4dff"/><stop offset="1" stop-color="#4d17b0"/></linearGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4da3ff"/><stop offset="1" stop-color="#0a52c8"/></linearGradient>
     <linearGradient id="fl" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff7a3d"/><stop offset="1" stop-color="#ffd36b"/></linearGradient>
   </defs>
   <rect width="64" height="64" rx="16" fill="url(#bg)"/>
@@ -15,6 +15,6 @@
     <circle cx="17" cy="49" r="4.6" stroke-width="3.6"/>
     <circle cx="48" cy="49" r="4.6" stroke-width="3.6"/>
   </g>
-  <text x="80" y="40" font-family="Manrope,'Segoe UI',Arial,sans-serif" font-size="34" font-weight="800" letter-spacing="-1" fill="#1b1530">Skuter<tspan fill="#6d2bd6"> Baku</tspan></text>
-  <text x="82" y="57" font-family="Manrope,'Segoe UI',Arial,sans-serif" font-size="10.5" font-weight="700" letter-spacing="3.2" fill="#6b6483">ELEKTRİK SKUTER İCARƏSİ</text>
+  <text x="80" y="40" font-family="Manrope,'Segoe UI',Arial,sans-serif" font-size="34" font-weight="800" letter-spacing="-1" fill="#141b2d">Skuter<tspan fill="#0b72ff"> Baku</tspan></text>
+  <text x="82" y="57" font-family="Manrope,'Segoe UI',Arial,sans-serif" font-size="10.5" font-weight="700" letter-spacing="3.2" fill="#6b7589">ELEKTRİK SKUTER İCARƏSİ</text>
 </svg>

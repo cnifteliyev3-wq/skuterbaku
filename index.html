@@ -8,7 +8,7 @@
 <meta property="og:title" content="Skuter Baku: Bakıda elektrik skuter icarəsi">
 <meta property="og:description" content="Skuterləri seçin, qiyməti görün, WhatsApp ilə sifariş edin.">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#6d2bd6">
+<meta name="theme-color" content="#0b72ff">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
 <script src="pwa.js?v=2"></script><link rel="manifest" href="site.webmanifest">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
@@ -22,14 +22,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f4f0fd;--surface:#fff;--ink:#14122b;--muted:#5f5a78;--line:#e9e3f8;
-  --accent:#5a35d6;--accent-ink:#fff;--accent-soft:#eeeafc;--grad:linear-gradient(135deg,#6a43ea,#3d27b8);
-  --ok:#14804a;--ok-soft:#e3f5ea;--warn:#a15c00;--warn-soft:#fdf0d9;--bad:#b3261e;--bad-soft:#fde8e6;
-  --shadow:0 10px 30px rgba(60,20,120,.10);
+  --bg:#e8ebf1;--surface:#fff;--ink:#1a2233;--muted:#7b8497;--line:#e9edf3;
+  --accent:#0b72ff;--accent-ink:#fff;--accent-soft:#e6f0ff;--grad:linear-gradient(135deg,#2f8cff,#0a62e8);
+  --ok:#1f9d55;--ok-soft:#e1f6e9;--warn:#a15c00;--warn-soft:#fdf0d9;--bad:#b3261e;--bad-soft:#fde8e6;
+  --shadow:0 10px 30px rgba(20,40,90,.08);
 }
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#120d1f;--surface:#1b1530;--ink:#f1edfb;--muted:#a49bbd;--line:#2e2547;
-  --accent:#a99bff;--accent-ink:#17102b;--accent-soft:#2a1f47;
+  --bg:#0c1220;--surface:#141c2e;--ink:#e9eefa;--muted:#98a6c0;--line:#26324d;
+  --accent:#5ea3ff;--accent-ink:#06142e;--accent-soft:#17325e;
   --ok:#5fd394;--ok-soft:#14301f;--warn:#f0b35a;--warn-soft:#3a2a10;--bad:#ff8a80;--bad-soft:#3c1a18;--shadow:0 10px 30px rgba(0,0,0,.35);}}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -39,7 +39,7 @@ a{color:inherit}
 header.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 header.top .wrap{display:flex;align-items:center;gap:16px;min-height:64px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;text-decoration:none;letter-spacing:-.02em}
-.brand .mark{width:40px;height:40px;border-radius:11px;display:block;box-shadow:0 4px 12px rgba(90,31,196,.3)}
+.brand .mark{width:40px;height:40px;border-radius:11px;display:block;box-shadow:0 4px 12px rgba(10,95,224,.3)}
 .wm{font-weight:800;letter-spacing:-.03em}.wm em{font-style:normal;color:var(--accent)}
 .fbrand{display:flex;align-items:center;gap:10px;color:var(--ink);font-weight:800;text-decoration:none}.fbrand img{width:32px;height:32px;border-radius:9px}
 nav.m{display:flex;gap:6px;margin-left:auto}
@@ -98,7 +98,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
 @keyframes sh{to{background-position:-200% 0}}
 .herogrid{display:grid;gap:32px;align-items:center;grid-template-columns:1.15fr .85fr}
 .eyebrow{display:inline-block;background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border-radius:999px;margin-bottom:16px}
-.art svg{width:100%;height:auto;display:block;filter:drop-shadow(0 18px 30px rgba(90,31,196,.25))}
+.art svg{width:100%;height:auto;display:block;filter:drop-shadow(0 18px 30px rgba(10,95,224,.25))}
 .feats{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
 .feat{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px}
 .feat .ic{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--accent-soft);color:var(--accent);margin-bottom:12px}
@@ -118,20 +118,20 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
 .depn{color:var(--muted);font-size:13.5px}.depn b{color:var(--ink)}
 .art.real{animation:none;background:var(--accent-soft)}
 .art.real video,.art.real img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
-.art{border-radius:28px;box-shadow:0 30px 60px rgba(90,31,196,.35);overflow:hidden;animation:float 6s ease-in-out infinite}
+.art{border-radius:28px;box-shadow:0 30px 60px rgba(10,95,224,.35);overflow:hidden;animation:float 6s ease-in-out infinite}
 .art svg{filter:none}
 @keyframes glow{50%{opacity:.5;transform:scale(1.08)}}
 .rv{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
 .rv.in{opacity:1;transform:none}
 .card{transition:transform .25s ease,box-shadow .25s ease}
-.card:hover{transform:translateY(-6px);box-shadow:0 22px 44px rgba(90,31,196,.22)}
+.card:hover{transform:translateY(-6px);box-shadow:0 22px 44px rgba(10,95,224,.22)}
 .ph img{transition:transform .6s ease,opacity .5s;opacity:0}.ph img.ok{opacity:1}
 .card:hover .ph img{transform:scale(1.07)}
 .ph.zoomable{cursor:zoom-in}
-.ph .none{background:linear-gradient(135deg,#8b4dff,#5a1fc4);color:#fff;opacity:1}
+.ph .none{background:linear-gradient(135deg,#4da3ff,#0a5fe0);color:#fff;opacity:1}
 .ph .none b{position:absolute;left:16px;bottom:14px;font-size:18px;letter-spacing:-.01em}
 .badge:not(.rented):not(.off)::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;margin-right:7px;animation:glow 1.6s ease-in-out infinite}
-header.top{transition:box-shadow .2s,min-height .2s}header.top.sc{box-shadow:0 6px 24px rgba(40,10,90,.14)}
+header.top{transition:box-shadow .2s,min-height .2s}header.top.sc{box-shadow:0 6px 24px rgba(20,30,60,.14)}
 .lb{position:fixed;inset:0;z-index:60;background:rgba(10,4,24,.92);display:none;align-items:center;justify-content:center;padding:20px}
 .lb.on{display:flex;animation:fade .2s}
 .lb img{max-width:min(100%,1100px);max-height:86vh;border-radius:14px;box-shadow:0 20px 70px rgba(0,0,0,.6)}
@@ -151,24 +151,25 @@ nav.m a{color:var(--ink);font-weight:700;font-size:15px;border-radius:999px;padd
 nav.m a:hover{background:var(--accent-soft);color:var(--accent)}
 .btn{border-radius:999px;min-height:48px;padding:0 24px;border-color:var(--line)}
 .btn.sm{min-height:44px;padding:0 20px}
-.btn.p{background:var(--grad);box-shadow:0 10px 22px rgba(70,40,190,.28)}
+.btn.p{background:var(--grad);box-shadow:0 10px 22px rgba(10,90,220,.28)}
 .btn.wa{box-shadow:0 10px 22px rgba(31,168,85,.25)}
 .hero{padding:22px 0 10px;background:none}
-.hero>.wrap{width:min(1280px,100% - 40px);position:relative;display:block;background:var(--surface);border-radius:34px;padding:64px 56px 56px;overflow:hidden;min-height:470px;box-shadow:0 24px 60px rgba(90,50,200,.08)}
+.hero>.wrap{width:min(1280px,100% - 40px);position:relative;display:block;background:var(--surface);border-radius:34px;padding:64px 56px 56px;overflow:hidden;min-height:470px;box-shadow:0 24px 60px rgba(20,40,90,.08)}
 .herogrid>div:first-child{position:relative;z-index:2;max-width:56%}
 .hero h1{font-size:clamp(34px,5.6vw,68px);line-height:1.04;letter-spacing:-.045em;max-width:none}
-.hero h1 em{background:linear-gradient(90deg,#b52fe0,#6f3df0);-webkit-background-clip:text;background-clip:text}
+.hero h1 em{background:linear-gradient(90deg,#0b72ff,#2aa0ff);-webkit-background-clip:text;background-clip:text}
 .hero p{color:var(--ink);opacity:.82;font-size:clamp(16px,2vw,20px);max-width:44ch}
 .eyebrow{background:var(--accent-soft);border-radius:999px}
 .hero .art{position:absolute;inset:0 0 0 auto;width:62%;max-width:none;border-radius:0;box-shadow:none;animation:none;margin:0;
   -webkit-mask-image:linear-gradient(to right,transparent 0,#000 38%);mask-image:linear-gradient(to right,transparent 0,#000 38%)}
 .hero .art svg{width:100%;height:100%}
+.hero .art img{transform:scale(1.04);transform-origin:right center}
 .hero .art.real img,.hero .art.real video{height:100%;aspect-ratio:auto;object-position:75% 40%}
 .chips{margin-top:30px}
-.chip{background:var(--surface);border:1px solid var(--line);color:var(--ink);padding:10px 18px;font-size:14px;box-shadow:0 4px 12px rgba(90,50,200,.06)}
-.card,.feat,.step,.ct,.terms,.faq details{border-radius:24px;border-color:var(--line);box-shadow:0 8px 28px rgba(90,50,200,.07)}
-.feat .ic{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,var(--accent-soft),#fff);box-shadow:0 6px 16px rgba(90,50,200,.12)}
-.step i{background:var(--grad);box-shadow:0 6px 14px rgba(70,40,190,.3)}
+.chip{background:var(--surface);border:1px solid var(--line);color:var(--ink);padding:10px 18px;font-size:14px;box-shadow:0 4px 12px rgba(20,40,90,.06)}
+.card,.feat,.step,.ct,.terms,.faq details{border-radius:24px;border-color:var(--line);box-shadow:0 8px 28px rgba(20,40,90,.07)}
+.feat .ic{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,var(--accent-soft),#fff);box-shadow:0 6px 16px rgba(20,40,90,.12)}
+.step i{background:var(--grad);box-shadow:0 6px 14px rgba(10,90,220,.3)}
 .specs span{border-radius:999px}
 .badge{border-radius:999px}
 section h2{letter-spacing:-.03em}
@@ -195,6 +196,101 @@ html,body{overflow-x:clip}
   .bar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;gap:10px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--surface);border-top:1px solid var(--line)}
   .bar .btn{flex:1}.bar[hidden]{display:none}body{padding-bottom:74px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* ===== Katalog tətbiqi: filtr + siyahı + detal (avtomobil icarəsi üslubu) ===== */
+.wrap.wide{width:min(1280px,100% - 32px)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.app{background:var(--surface);border:1px solid var(--line);border-radius:30px;box-shadow:0 24px 60px rgba(20,40,90,.10);display:grid;grid-template-columns:1fr;overflow:hidden}
+.filters{padding:20px 20px 8px;display:grid;gap:18px;border-bottom:1px solid var(--line);grid-template-columns:repeat(auto-fit,minmax(200px,1fr));align-items:start}
+.filters .fh{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;font-size:17px}
+.lnk{background:none;border:0;color:var(--muted);font:600 13px 'Manrope',sans-serif;cursor:pointer;padding:4px}.lnk:hover{color:var(--accent)}
+.fs{display:flex;align-items:center;gap:8px;background:var(--bg);border-radius:12px;padding:0 12px;color:var(--muted);grid-column:1/-1}
+.fs input{flex:1;border:0;background:none;color:var(--ink);font:500 15px 'Manrope',sans-serif;min-height:44px;outline:0;min-width:0}
+.fs:focus-within{box-shadow:0 0 0 2px var(--accent)}
+.ft{font-size:11px;letter-spacing:.08em;font-weight:800;color:var(--ink);margin-bottom:10px;display:block}.ft b{color:var(--accent)}
+.seg{display:flex;background:var(--bg);border-radius:10px;padding:3px;gap:3px}
+.seg button{flex:1;border:0;background:none;border-radius:8px;min-height:34px;font:700 13px 'Manrope',sans-serif;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff;box-shadow:0 4px 10px rgba(11,114,255,.3)}
+.sw{display:flex;justify-content:space-between;align-items:center;gap:10px}.sw .ft{margin:0}
+.tg{position:relative;width:44px;height:26px;flex:none;cursor:pointer}
+.tg input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.tg i{position:absolute;inset:0;border-radius:99px;background:var(--line);transition:background .2s}
+.tg i::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.2);transition:transform .2s}
+.tg input:checked+i{background:var(--accent)}.tg input:checked+i::after{transform:translateX(18px)}
+.tg input:focus-visible+i{outline:3px solid var(--accent);outline-offset:2px}
+input[type=range]{width:100%;accent-color:var(--accent);margin:0}
+.filters select,.bf input{width:100%;min-height:44px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:600 14px 'Manrope',sans-serif;padding:0 12px}
+.vlist{display:flex;flex-direction:column;min-width:0;background:var(--bg)}
+.vl-h{padding:16px 20px 4px;font-size:15px}
+.vl{padding:12px 16px 20px;display:grid;gap:14px;align-content:start;grid-auto-rows:max-content}
+.vc{background:var(--surface);border:2px solid transparent;border-radius:20px;overflow:hidden;cursor:pointer;box-shadow:0 4px 14px rgba(20,40,90,.06);transition:box-shadow .2s,border-color .2s,transform .2s}
+.vc:hover{box-shadow:0 12px 28px rgba(20,40,90,.14);transform:translateY(-2px)}
+.vc.on{border-color:var(--accent)}
+.vc:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.vph{position:relative;aspect-ratio:2.3/1;background:var(--accent-soft);overflow:hidden}
+.vph img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .4s}.vph img.ok{opacity:1}
+.vph .none,.dg .none{position:absolute;inset:0;display:grid;place-items:center;color:var(--accent);background:var(--accent-soft)}
+.badge{background:var(--ok-soft);color:var(--ok);font-size:11.5px;padding:4px 10px;top:10px;left:10px}
+.vb{padding:12px 14px 14px;display:grid;gap:10px}
+.vt{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.vt h3{margin:0;font-size:16px;letter-spacing:-.01em;line-height:1.25}
+.vp{text-align:right;white-space:nowrap}.vp b{font-size:18px}.vp span{color:var(--muted);font-size:12.5px;font-weight:600;margin-left:3px}
+.vs{display:flex;flex-wrap:wrap;gap:6px 14px;color:var(--muted);font-size:12.5px;font-weight:600;border-top:1px solid var(--line);padding-top:10px}
+.vs span{display:inline-flex;align-items:center;gap:5px}.vs svg{color:var(--accent)}
+.vl .empty{grid-column:1/-1}
+.detail{background:var(--surface);padding:0}
+.d-empty{padding:60px 20px;text-align:center;color:var(--muted)}
+.detail .dx{position:absolute;top:12px;right:12px;z-index:3;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:var(--ink);font-size:16px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.2);display:none}
+.dg{position:relative;aspect-ratio:16/10;background:var(--accent-soft);overflow:hidden;border-radius:0}
+.dg img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
+.detail .thumbs{padding:10px 18px 0}.detail .thumbs button{width:64px;height:48px;border-radius:10px}
+.dh{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;padding:16px 20px 4px}
+.dh small{color:var(--muted);font-weight:800;letter-spacing:.08em;font-size:11px}.dh h3{margin:2px 0 0;font-size:21px;letter-spacing:-.02em}
+.dp{white-space:nowrap}.dp b{font-size:24px;letter-spacing:-.02em}.dp span{color:var(--muted);font-weight:600;font-size:13px;margin-left:3px}
+.tabs{display:flex;gap:4px;padding:6px 20px 0;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{border:0;background:none;padding:10px 12px;font:700 14px 'Manrope',sans-serif;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.dbody{padding:16px 20px;display:grid;gap:14px}
+.bk{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bf label{display:block;font-size:11px;letter-spacing:.08em;font-weight:800;color:var(--muted);margin-bottom:6px;text-transform:uppercase}
+.stp{display:flex;gap:6px}.stp input{text-align:center;min-width:0}
+.stp button{flex:none;width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:20px;cursor:pointer}
+.stp button:hover{background:var(--accent-soft);color:var(--accent)}
+.ins{display:grid;gap:8px}
+.ins label{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:600;font-size:14px}
+.ins label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.ins input{accent-color:var(--accent);width:18px;height:18px;margin:0}
+.sum{border-top:1px solid var(--line);padding-top:10px;display:grid;gap:8px}
+.sr2{display:flex;justify-content:space-between;gap:10px;font-size:14px}.sr2 small{color:var(--muted)}
+.sr2.tot{font-size:16px;font-weight:800;border-top:1px dashed var(--line);padding-top:10px}.sr2.tot b{font-size:22px;color:var(--accent)}
+.hint,.dd{margin:0;color:var(--muted);font-size:13.5px}.dd{font-size:15px;color:var(--ink)}
+.kv{display:grid;gap:0}.kv div{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);font-size:14.5px}.kv span{color:var(--muted)}
+.detail .terms{box-shadow:none;border:0;padding:0}
+.addr{display:flex;gap:12px;align-items:center;background:var(--bg);border-radius:14px;padding:12px 14px;font-size:14px}
+.addr>span{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--surface);color:var(--accent);flex:none}
+.addr small{display:block;color:var(--muted);font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase}.addr a{color:var(--accent);font-weight:700}
+.cta-bar{display:flex;margin:4px 20px 20px;background:var(--accent);color:#fff;border-radius:16px;overflow:hidden;text-decoration:none;box-shadow:0 12px 26px rgba(11,114,255,.32);transition:transform .15s}
+.cta-bar:hover{transform:translateY(-2px)}
+.cta-bar.alt{background:var(--ink);box-shadow:none}
+.cta-bar .cl{flex:1;padding:14px 20px;display:grid;gap:1px}.cta-bar small{font-size:11px;letter-spacing:.08em;font-weight:800;opacity:.8}.cta-bar b{font-size:17px}
+.cta-bar .arr{width:68px;display:grid;place-items:center;background:rgba(0,0,0,.18)}
+@media(min-width:1180px){
+  .app{grid-template-columns:270px minmax(0,1fr) 440px;height:min(820px,calc(100vh - 110px));min-height:640px}
+  .filters{display:block;border-bottom:0;border-right:1px solid var(--line);overflow:auto;padding:22px 20px}
+  .filters>*+*{margin-top:22px}
+  .vlist{overflow:hidden}.vl{overflow:auto}
+  .detail{overflow:auto;border-left:1px solid var(--line)}
+}
+@media(min-width:760px) and (max-width:1179px){.vl{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1179px){
+  .detail{position:fixed;inset:0;z-index:60;overflow:auto;display:none;background:var(--surface)}
+  .detail.open{display:block;animation:fade .2s}
+  .detail .dx{display:block;position:fixed}
+  .detail .dg{border-radius:0}
+  .cta-bar{position:sticky;bottom:12px}
+}
+@media(max-width:520px){.bk{grid-template-columns:1fr}.app{border-radius:24px}}
+@media(max-width:720px){body{padding-bottom:74px}}
 </style>
 </head>
 <body>
@@ -220,10 +316,21 @@ html,body{overflow-x:clip}
   <div class="art real"><img src="img/baku-hero.webp" alt="Alov Qüllələri və Bakı bulvarı" width="1576" height="875" fetchpriority="high"></div>
 </div></div>
 
-<section id="skuterler"><div class="wrap">
+<section id="skuterler"><div class="wrap wide">
   <h2>Skuterlərimiz</h2>
-  <p class="sub">Qiymətlər manatla. Boş skuter üçün birbaşa sifariş verə bilərsiniz.</p>
-  <div class="grid" id="list"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>
+  <p class="sub">Seçin, müddəti yazın, qiyməti dərhal görün və WhatsApp ilə sifariş edin.</p>
+  <div class="app" id="app">
+    <aside class="filters" aria-label="Filtr">
+      <div class="fh"><b>Filtr</b><button type="button" class="lnk" id="f-reset">Sıfırla</button></div>
+      <label class="fs"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="sr">Axtar</span><input id="f-q" type="search" placeholder="Skuter axtar" autocomplete="off"></label>
+      <div class="fg"><div class="ft">İCARƏ MÜDDƏTİ</div><div class="seg" id="f-mode"><button type="button" data-m="day" aria-pressed="true">Günlük</button><button type="button" data-m="month" aria-pressed="false">Aylıq</button></div></div>
+      <div class="fg"><div class="sw"><span class="ft">YALNIZ BOŞ OLANLAR</span><label class="tg"><input type="checkbox" id="f-av" aria-label="Yalnız boş olanlar"><i></i></label></div></div>
+      <div class="fg" id="f-pg" hidden><div class="ft">MAKS. QİYMƏT <b id="f-pv"></b></div><input type="range" id="f-pr" min="0" max="100" step="1" aria-label="Maksimum qiymət"></div>
+      <div class="fg"><label class="ft" for="f-so">SIRALAMA</label><select id="f-so"><option value="">Əvvəlcə boş olanlar</option><option value="asc">Ucuzdan bahaya</option><option value="desc">Bahadan ucuza</option></select></div>
+    </aside>
+    <div class="vlist"><div class="vl-h"><b id="vl-n">Yüklənir…</b></div><div class="vl" id="list"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div></div>
+    <section class="detail" id="detail" aria-live="polite"><div class="d-empty">Skuter seçin</div></section>
+  </div>
 </div></section>
 
 <section id="niye"><div class="wrap">
@@ -325,36 +432,159 @@ html,body{overflow-x:clip}
   }
 
   var AV = {free:['Boşdur',''],rented:['Hazırda kirayədədir','rented'],off:['Müvəqqəti əlçatmaz','off']};
+  var IC = {
+    range:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+    speed:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>',
+    bat:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2M6 10v4M10 10v4"/></svg>',
+    scooter:'<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="2.6"/><circle cx="19" cy="18" r="2.6"/><path d="M8.6 18H14l3-9h3M14 18l-2-9"/></svg>',
+    arrow:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>'
+  };
+  var pv = function(v){ return (v===''||v==null||isNaN(+v)) ? null : Math.round(+v*100)/100; };
+  var fm = function(v){ return String(Math.round(v*100)/100).replace('.',','); };
+  function prices(s){
+    var pr = s.prices||{}, P = {d:pv(pr.day), m:pv(pr.month), dn:pv(pr.dayNo), mn:pv(pr.monthNo), dep:pv(pr.deposit)};
+    if (P.d==null && P.m==null && P.dn==null && P.mn==null && +s.rate){
+      var r = +s.rate; P.d = Math.round((s.unit==='week' ? r/7 : s.unit==='month' ? r/30 : r)*100)/100;
+    }
+    return P;
+  }
+  function shown(s){ var P = prices(s); return F.mode==='month' ? (P.m!=null?P.m:P.mn) : (P.d!=null?P.d:P.dn); }
+  function specsRow(s){
+    var sp = s.specs||{}, o = [];
+    if (sp.range) o.push('<span>'+IC.range+esc(sp.range)+' km</span>');
+    if (sp.speed) o.push('<span>'+IC.speed+esc(sp.speed)+' km/s</span>');
+    if (sp.battery) o.push('<span>'+IC.bat+esc(sp.battery)+'</span>');
+    return o.length ? '<div class="vs">'+o.join('')+'</div>' : '';
+  }
   function card(s){
-    var ph = (s.photos||[]).filter(https), sp = s.specs||{}, av = AV[s.avail]||AV.free;
-    var chips = [];
-    if (sp.range) chips.push('Məsafə: '+esc(sp.range)+' km');
-    if (sp.speed) chips.push('Sürət: '+esc(sp.speed)+' km/s');
-    if (sp.battery) chips.push(esc(sp.battery));
-    var pr = s.prices||{};
-    var pv = function(v){ return (v===''||v==null||isNaN(+v)) ? null : Math.round(+v*100)/100; };
-    var P = {d:pv(pr.day), m:pv(pr.month), dn:pv(pr.dayNo), mn:pv(pr.monthNo), dep:pv(pr.deposit)};
-    var cell = function(v){ return v==null ? '<span class="soft">razılaşma ilə</span>' : '<b>'+v+' ₼</b>'; };
-    var price = (P.d!=null||P.m!=null||P.dn!=null||P.mn!=null)
-      ? '<table class="ptab"><thead><tr><th></th><th>Depozitli</th><th>Depozitsiz</th></tr></thead><tbody>'+
-        '<tr><td>Günlük</td><td>'+cell(P.d)+'</td><td>'+cell(P.dn)+'</td></tr>'+
-        '<tr><td>Aylıq<small> (hər gün)</small></td><td>'+cell(P.m)+'</td><td>'+cell(P.mn)+'</td></tr></tbody></table>'+
-        '<div class="depn">'+(P.dep!=null ? 'Depozit: <b>'+P.dep+' ₼</b>' : 'Depozit məbləği razılaşma ilə')+'</div>'
-      : (+s.rate ? '<div class="price"><b>'+(Math.round(s.rate*100)/100)+' ₼</b><span>/ '+(UNIT[s.unit]||'gün')+'</span></div>' : '<div class="price"><span>Qiymət üçün yazın</span></div>');
-    var order = s.avail==='free' ? '<a class="btn wa" target="_blank" rel="noopener" href="'+esc(waLink('Salam! "'+s.name+'" skuterini icarəyə götürmək istəyirəm.'))+'">Sifariş et</a>'
-      : '<a class="btn" target="_blank" rel="noopener" href="'+esc(waLink('Salam! "'+s.name+'" skuteri nə vaxt boş olacaq?'))+'">'+(s.avail==='rented'?'Nə vaxt boş olacaq?':'Soruş')+'</a>';
-    return '<article class="card rv" data-id="'+esc(s.id)+'"><div class="ph'+(ph.length?' zoomable':'')+'">'+
-      (ph.length ? '<img src="'+esc(ph[0])+'" alt="'+esc(s.name)+'" loading="lazy" onload="this.classList.add(\'ok\')">' : '<div class="none"><b>'+esc(s.name)+'</b><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="2.6"/><circle cx="19" cy="18" r="2.6"/><path d="M8.6 18H14l3-9h3M14 18l-2-9"/></svg></div>')+
+    var ph = (s.photos||[]).filter(https), av = AV[s.avail]||AV.free, v = shown(s);
+    return '<article class="vc rv'+(s.id===selId?' on':'')+'" data-id="'+esc(s.id)+'" tabindex="0" role="button" aria-label="'+esc(s.name)+'">'+
+      '<div class="vph">'+(ph.length ? '<img src="'+esc(ph[0])+'" alt="" loading="lazy" onload="this.classList.add(\'ok\')">' : '<div class="none">'+IC.scooter+'</div>')+
       '<span class="badge '+av[1]+'">'+av[0]+'</span></div>'+
-      (ph.length>1 ? '<div class="thumbs">'+ph.map(function(u,i){return '<button type="button" data-i="'+i+'" aria-label="Şəkil '+(i+1)+'"'+(i===0?' aria-current="true"':'')+'><img src="'+esc(u)+'" alt="" loading="lazy"></button>'}).join('')+'</div>' : '')+
-      '<div class="body"><h3>'+esc(s.name)+'</h3>'+(s.desc?'<p>'+esc(s.desc)+'</p>':'')+(chips.length?'<div class="specs">'+chips.map(function(c){return '<span>'+c+'</span>'}).join('')+'</div>':'')+price+order+'</div></article>';
+      '<div class="vb"><div class="vt"><h3>'+esc(s.name)+'</h3><div class="vp">'+(v!=null ? '<b>'+fm(v)+' ₼</b><span>/ '+(F.mode==='month'?'gün (aylıq)':'gün')+'</span>' : '<span>razılaşma ilə</span>')+'</div></div>'+specsRow(s)+'</div></article>';
   }
 
-  var data = [];
-  function render(list){
-    data = list;
-    $('#list').innerHTML = list.length ? list.map(card).join('') : '<div class="empty" style="grid-column:1/-1">Skuterlər tezliklə əlavə olunacaq. Hazırda əlaqə vasitəsilə sifariş verə bilərsiniz.</div>';
+  var data = [], selId = null, F = {q:'', mode:'day', av:false, max:null, sort:''}, pmax = 0;
+  var book = {date:'', days:7, dep:true}, tab = 'rent', gi = 0;
+  var wide = window.matchMedia('(min-width:1180px)');
+
+  function filtered(){
+    var q = F.q.trim().toLowerCase();
+    var l = data.filter(function(s){
+      if (q && (s.name+' '+(s.desc||'')).toLowerCase().indexOf(q)<0) return false;
+      if (F.av && s.avail!=='free') return false;
+      var v = shown(s); if (F.max!=null && v!=null && v>F.max) return false;
+      return true;
+    });
+    var rank = function(s){ return s.avail==='free'?0 : s.avail==='rented'?1 : 2; };
+    l.sort(function(a,b){
+      if (F.sort){ var x=shown(a), y=shown(b); if (x==null) x=1e9; if (y==null) y=1e9; if (x!==y) return F.sort==='asc' ? x-y : y-x; }
+      else if (rank(a)!==rank(b)) return rank(a)-rank(b);
+      return String(a.name).localeCompare(String(b.name),'az');
+    });
+    return l;
+  }
+  function renderList(){
+    var l = filtered();
+    $('#vl-n').textContent = l.length ? l.length+' skuter' : 'Skuter tapılmadı';
+    $('#list').innerHTML = l.length ? l.map(card).join('') : '<div class="empty">'+(data.length ? 'Seçilmiş filtrə uyğun skuter yoxdur. Filtri sıfırlayın.' : 'Skuterlər tezliklə əlavə olunacaq. Hazırda əlaqə vasitəsilə sifariş verə bilərsiniz.')+'</div>';
     reveal();
+    return l;
+  }
+  function initFilters(){
+    var mx = 0; data.forEach(function(s){ var P = prices(s); [P.d,P.dn,P.m,P.mn].forEach(function(x){ if (x!=null && x>mx) mx = x; }); });
+    pmax = Math.ceil(mx);
+    var r = $('#f-pr'); $('#f-pg').hidden = !pmax; r.max = pmax; r.value = pmax; F.max = null; $('#f-pv').textContent = '';
+  }
+  function dateStr(d){ if(!d) return ''; var a = d.split('-'); return a[2]+'.'+a[1]+'.'+a[0]; }
+  function todayISO(){ var d = new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); }
+  function calc(s){
+    var P = prices(s), days = Math.max(1, Math.min(365, parseInt(book.days,10)||1));
+    var dayP = book.dep ? (P.d!=null?P.d:P.dn) : (P.dn!=null?P.dn:P.d);
+    var monP = book.dep ? (P.m!=null?P.m:P.mn) : (P.mn!=null?P.mn:P.m);
+    var per = (days>=30 && monP!=null) ? monP : dayP;
+    return {days:days, per:per, total: per!=null ? Math.round(per*days*100)/100 : null, dep: (book.dep && P.dep!=null) ? P.dep : null, monthly: days>=30 && monP!=null};
+  }
+  function orderMsg(s, c){
+    var t = 'Salam! "'+s.name+'" skuterini icarəyə götürmək istəyirəm.';
+    if (book.date) t += ' Tarix: '+dateStr(book.date)+'.';
+    t += ' Müddət: '+c.days+' gün.';
+    t += book.dep ? ' Depozitlə.' : ' Depozitsiz.';
+    if (c.total!=null) t += ' Təxmini məbləğ: '+fm(c.total)+' ₼.';
+    return t;
+  }
+  function sumHtml(s){
+    var c = calc(s), o = '';
+    if (c.per!=null){
+      o += '<div class="sr2"><span>İcarə haqqı</span><span>'+c.days+' gün × '+fm(c.per)+' ₼'+(c.monthly?' <small>(aylıq tarif)</small>':'')+'</span></div>';
+      if (c.dep!=null) o += '<div class="sr2"><span>Depozit <small>(qaytarılır)</small></span><span>'+fm(c.dep)+' ₼</span></div>';
+      o += '<div class="sr2 tot"><span>İcarə cəmi</span><b>'+fm(c.total)+' ₼</b></div>';
+    } else o += '<div class="sr2 tot"><span>İcarə cəmi</span><b>razılaşma ilə</b></div>';
+    return o;
+  }
+  function updCalc(){
+    var s = current(); if (!s) return;
+    var el = $('#d-sum'); if (el) el.innerHTML = sumHtml(s);
+    var a = $('#d-cta'); if (a && s.avail==='free') a.href = waLink(orderMsg(s, calc(s)));
+  }
+  function current(){ return data.filter(function(x){ return x.id===selId; })[0]; }
+
+  function detail(s){
+    var ph = (s.photos||[]).filter(https), av = AV[s.avail]||AV.free, P = prices(s), sp = s.specs||{};
+    var hasDep = P.d!=null || P.m!=null, hasNo = P.dn!=null || P.mn!=null;
+    if (book.dep && !hasDep && hasNo) book.dep = false; if (!book.dep && !hasNo && hasDep) book.dep = true;
+    var v = shown(s);
+    var gal = '<div class="dg">'+(ph.length ? '<img id="d-main" src="'+esc(ph[Math.min(gi,ph.length-1)])+'" alt="'+esc(s.name)+'" class="'+'zoomable">' : '<div class="none">'+IC.scooter+'</div>')+'<span class="badge '+av[1]+'">'+av[0]+'</span></div>'+
+      (ph.length>1 ? '<div class="thumbs">'+ph.map(function(u,i){ return '<button type="button" data-i="'+i+'" aria-label="Şəkil '+(i+1)+'"'+(i===gi?' aria-current="true"':'')+'><img src="'+esc(u)+'" alt="" loading="lazy"></button>'; }).join('')+'</div>' : '');
+    var terms = (site.terms||'').split(/\n+/).map(function(x){ return x.trim(); }).filter(Boolean);
+    var tabs = [['rent','İcarə'],['spec','Xüsusiyyətlər']]; if (terms.length) tabs.push(['terms','Şərtlər']);
+    if (!tabs.some(function(t){ return t[0]===tab; })) tab = 'rent';
+    var body = '';
+    if (tab==='rent'){
+      body = '<div class="bk"><div class="bf"><label for="d-date">Götürmə tarixi</label><input type="date" id="d-date" min="'+todayISO()+'" value="'+esc(book.date)+'"></div>'+
+        '<div class="bf"><label for="d-days">Müddət (gün)</label><div class="stp"><button type="button" id="d-m" aria-label="Azalt">−</button><input type="number" id="d-days" min="1" max="365" value="'+book.days+'" inputmode="numeric"><button type="button" id="d-p" aria-label="Artır">+</button></div></div></div>'+
+        ((hasDep&&hasNo) ? '<div class="ins" role="radiogroup" aria-label="Depozit">'+
+          '<label><input type="radio" name="d-dep" value="1"'+(book.dep?' checked':'')+'><span>Depozitlə</span><b>'+(P.d!=null?fm(P.d)+' ₼/gün':'razılaşma ilə')+'</b></label>'+
+          '<label><input type="radio" name="d-dep" value="0"'+(!book.dep?' checked':'')+'><span>Depozitsiz</span><b>'+(P.dn!=null?fm(P.dn)+' ₼/gün':'razılaşma ilə')+'</b></label></div>' : '')+
+        '<div class="sum" id="d-sum">'+sumHtml(s)+'</div>'+
+        (P.m!=null||P.mn!=null ? '<p class="hint">30 gün və daha çox üçün aylıq tarif (hər gün üçün) tətbiq olunur.</p>' : '');
+    } else if (tab==='spec'){
+      var rows = [];
+      if (sp.range) rows.push(['Məsafə', esc(sp.range)+' km']); if (sp.speed) rows.push(['Maksimum sürət', esc(sp.speed)+' km/s']); if (sp.battery) rows.push(['Batareya', esc(sp.battery)]);
+      body = (s.desc ? '<p class="dd">'+esc(s.desc)+'</p>' : '')+(rows.length ? '<div class="kv">'+rows.map(function(r){ return '<div><span>'+r[0]+'</span><b>'+r[1]+'</b></div>'; }).join('')+'</div>' : (s.desc ? '' : '<p class="hint">Əlavə məlumat yoxdur.</p>'));
+    } else {
+      body = '<ul class="terms">'+terms.map(function(t){ return '<li>'+esc(t)+'</li>'; }).join('')+'</ul>';
+    }
+    var cta = s.avail==='free'
+      ? '<a class="cta-bar" id="d-cta" target="_blank" rel="noopener" href="'+esc(waLink(orderMsg(s, calc(s))))+'"><span class="cl"><small>SKUTERİ SİFARİŞ ET</small><b>WhatsApp ilə təsdiqləyin</b></span><span class="arr">'+IC.arrow+'</span></a>'
+      : '<a class="cta-bar alt" target="_blank" rel="noopener" href="'+esc(waLink('Salam! "'+s.name+'" skuteri nə vaxt boş olacaq?'))+'"><span class="cl"><small>'+(s.avail==='rented'?'HAZIRDA KİRAYƏDƏDİR':'MÜVƏQQƏTİ ƏLÇATMAZ')+'</small><b>'+(s.avail==='rented'?'Nə vaxt boş olacaq?':'Soruş')+'</b></span><span class="arr">'+IC.arrow+'</span></a>';
+    var addr = site.address ? '<div class="addr"><span>'+IC.range+'</span><div><small>Götürmə ünvanı</small>'+(https(site.mapUrl)?'<a href="'+esc(site.mapUrl)+'" target="_blank" rel="noopener">'+esc(site.address)+'</a>':'<b>'+esc(site.address)+'</b>')+'</div></div>' : '';
+    return '<button type="button" class="dx" id="d-x" aria-label="Bağla">✕</button>'+gal+
+      '<div class="dh"><div><small>SKUTER</small><h3>'+esc(s.name)+'</h3></div><div class="dp">'+(v!=null?'<b>'+fm(v)+' ₼</b><span>/ gün</span>':'<span>razılaşma ilə</span>')+'</div></div>'+
+      '<div class="tabs" role="tablist">'+tabs.map(function(t){ return '<button type="button" role="tab" data-t="'+t[0]+'" aria-selected="'+(t[0]===tab)+'">'+t[1]+'</button>'; }).join('')+'</div>'+
+      '<div class="dbody">'+body+addr+'</div>'+cta;
+  }
+  function renderDetail(){
+    var s = current(), box = $('#detail');
+    if (!s){ box.innerHTML = '<div class="d-empty">Skuter seçin</div>'; return; }
+    box.innerHTML = detail(s);
+  }
+  function select(id, open){
+    selId = id; gi = 0; renderDetail();
+    document.querySelectorAll('.vc').forEach(function(c){ c.classList.toggle('on', c.dataset.id===id); });
+    if (open && !wide.matches){ $('#detail').classList.add('open'); document.body.style.overflow = 'hidden'; $('#d-x') && $('#d-x').focus(); }
+  }
+  function closeDetail(){ $('#detail').classList.remove('open'); document.body.style.overflow = ''; }
+  function render(list){
+    data = list; initFilters();
+    var l = renderList();
+    if (l.length){ var keep = l.filter(function(x){ return x.id===selId; })[0]; selId = (keep||l[0]).id; renderDetail(); document.querySelectorAll('.vc').forEach(function(c){ c.classList.toggle('on', c.dataset.id===selId); }); }
+    else { selId = null; renderDetail(); }
+  }
+  function refresh(){
+    var l = renderList();
+    if (l.length && !l.some(function(x){ return x.id===selId; })){ selId = l[0].id; renderDetail(); }
+    document.querySelectorAll('.vc').forEach(function(c){ c.classList.toggle('on', c.dataset.id===selId); });
   }
 
   /* görünmə effekti */
@@ -384,15 +614,37 @@ html,body{overflow-x:clip}
     if (e.key==='ArrowRight'){ lbI=(lbI+1)%lbPh.length; lbShow(); }
   });
 
-  $('#list').addEventListener('click', function(e){
-    var b = e.target.closest('.thumbs button');
-    var c = e.target.closest('.card'); if(!c) return;
-    var s = data.filter(function(x){return x.id===c.dataset.id})[0]; if(!s) return;
-    var ph = (s.photos||[]).filter(https);
-    if (!b){ if (e.target.closest('.ph.zoomable') && ph.length){ var cur = c.querySelector('.thumbs button[aria-current="true"]'); lbOpen(ph, cur ? +cur.dataset.i : 0); } return; }
-    var i = +b.dataset.i;
-    var im = c.querySelector('.ph img'); im.classList.remove('ok'); im.src = ph[i];
-    c.querySelectorAll('.thumbs button').forEach(function(x){ x.setAttribute('aria-current', x===b ? 'true' : 'false'); });
+  $('#list').addEventListener('click', function(e){ var c = e.target.closest('.vc'); if (c) select(c.dataset.id, true); });
+  $('#list').addEventListener('keydown', function(e){ if (e.key!=='Enter' && e.key!==' ') return; var c = e.target.closest('.vc'); if (c){ e.preventDefault(); select(c.dataset.id, true); } });
+  var det = $('#detail');
+  det.addEventListener('click', function(e){
+    var s = current(); if (!s) return;
+    if (e.target.closest('#d-x')) return closeDetail();
+    var t = e.target.closest('.tabs button'); if (t){ tab = t.dataset.t; renderDetail(); return; }
+    var th = e.target.closest('.thumbs button');
+    if (th){ gi = +th.dataset.i; var ph = (s.photos||[]).filter(https), im = $('#d-main'); if (im) im.src = ph[gi]; det.querySelectorAll('.thumbs button').forEach(function(x){ x.setAttribute('aria-current', x===th ? 'true' : 'false'); }); return; }
+    if (e.target.closest('#d-main')){ var ph2 = (s.photos||[]).filter(https); if (ph2.length) lbOpen(ph2, gi); return; }
+    if (e.target.closest('#d-m')){ book.days = Math.max(1, (parseInt(book.days,10)||1)-1); $('#d-days').value = book.days; updCalc(); return; }
+    if (e.target.closest('#d-p')){ book.days = Math.min(365, (parseInt(book.days,10)||1)+1); $('#d-days').value = book.days; updCalc(); return; }
+  });
+  det.addEventListener('input', function(e){
+    if (e.target.id==='d-date'){ book.date = e.target.value; updCalc(); }
+    else if (e.target.id==='d-days'){ book.days = e.target.value; updCalc(); }
+    else if (e.target.name==='d-dep'){ book.dep = e.target.value==='1'; updCalc(); }
+  });
+  document.addEventListener('keydown', function(e){ if (e.key==='Escape' && det.classList.contains('open')) closeDetail(); });
+  wide.addEventListener && wide.addEventListener('change', function(){ closeDetail(); });
+
+  $('#f-q').addEventListener('input', function(e){ F.q = e.target.value; refresh(); });
+  $('#f-av').addEventListener('change', function(e){ F.av = e.target.checked; refresh(); });
+  $('#f-so').addEventListener('change', function(e){ F.sort = e.target.value; refresh(); });
+  $('#f-pr').addEventListener('input', function(e){ var v = +e.target.value; F.max = v>=pmax ? null : v; $('#f-pv').textContent = F.max==null ? '' : '· '+v+' ₼'; refresh(); });
+  $('#f-mode').addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b) return; F.mode = b.dataset.m; this.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', x===b ? 'true' : 'false'); }); refresh(); renderDetail(); });
+  $('#f-reset').addEventListener('click', function(){
+    F = {q:'', mode:'day', av:false, max:null, sort:''};
+    $('#f-q').value = ''; $('#f-av').checked = false; $('#f-so').value = ''; $('#f-pr').value = pmax; $('#f-pv').textContent = '';
+    document.querySelectorAll('#f-mode button').forEach(function(x){ x.setAttribute('aria-pressed', x.dataset.m==='day' ? 'true' : 'false'); });
+    refresh(); renderDetail();
   });
 
   fetch(SB + '/rest/v1/rpc/site_catalog', { method:'POST', headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'}, body:'{}' })
